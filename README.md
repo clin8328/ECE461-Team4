@@ -4,4 +4,4 @@ chuhan- Dummy commit
 junpei - Dummy Commit
 1: Chuhan Lin
 2: Pranav Sankar
-3. Junpei
+3. Junpei Ota
