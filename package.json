@@ -39,9 +39,10 @@
     "typescript": "^5.2.2",
     "universal-user-agent": "^6.0.0",
     "util-deprecate": "^1.0.2",
-    "wrappy": "^1.0.2"
+    "wrappy": "^1.0.2",
+    "@octokit/rest": "20.0.1",
+    "@types/node": "20.5.9"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

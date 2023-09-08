@@ -1,5 +1,0 @@
-typescript
-axios
-axios @octokit/rest
-isomorphic-git
-@types/node
