@@ -7,8 +7,9 @@ import { Octokit } from "@octokit/core";
 
 /*
 This is a testing file that I am using to see if there is another way of 
-extracting a repository license throug the GitHub API
+extracting a repository license by using Octokit to interact with Github API
 */
+
 const octokit = new Octokit({
   auth: "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",
 });

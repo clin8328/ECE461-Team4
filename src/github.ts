@@ -12,6 +12,7 @@ async function fetchRepositoryData(repositoryUrl: string): Promise<string | null
     const owner = urlParts[3];
     const repoName = urlParts[4];
     const cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
+
     //Make a GET request to the github api of the repo
     const response = await axios.get(cleanedURL);
 
@@ -32,35 +33,9 @@ async function fetchRepositoryData(repositoryUrl: string): Promise<string | null
   }
 }
 
-async function listFilesInRepository(repositoryUrl: string): Promise<string[] | null> {
-  try {
-    // Make a GET request to the GitHub API to list files in the repository's root directory
-    const urlParts = repositoryUrl.split('/');
-    const owner = urlParts[3];
-    const repoName = urlParts[4];
-    const cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName + '/contents';
-
-    const response = await axios.get(cleanedURL);
-
-    // Check if the response is successful
-    if (response.status === 200) {
-      // Extract and return the list of file names
-      const fileNames: string[] = response.data.map((file: any) => file.name);
-      return fileNames;
-    } else {
-      console.error('Failed to fetch file list');
-      return null;
-    }
-  } catch (error) {
-    const axiosError = error as AxiosError;
-    console.error('Error fetching file list:', axiosError.message);
-    return null;
-  }
-}
-
 
 // Example usage
-const repositoryUrl = 'https://github.com/clin8328/ECE461-Teaam4'; // Replace with the actual repository URL
+const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL
 fetchRepositoryData(repositoryUrl)
   .then((repositoryData) => {
     if (repositoryData) {
