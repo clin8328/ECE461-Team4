@@ -1,11 +1,21 @@
 /*
   Original Author: Chuhan Lin
   Date edit: 9/7/2023
+  File description: This file will store all helper functions that we will use to
+  simplify our project
 */
 
 import axios, { AxiosError } from 'axios';
 
-async function fetchRepositoryData(repositoryUrl: string): Promise<string | null> {
+async function get_api_url(repositoryUrl: string): Promise<string | null> {
+/*
+  args: string (github repo URL)
+  return: string (github API)
+
+  Description: The function takes in a github repository URL and outputs the 
+  github API URL. It will test the API URL and if a response is succesful, it
+  will return the URL or else it returns an empty string.
+*/
   try {
     //Get repo owner from url by doing some input cleaning
     const urlParts = repositoryUrl.split('/');
@@ -16,13 +26,12 @@ async function fetchRepositoryData(repositoryUrl: string): Promise<string | null
     //Make a GET request to the github api of the repo
     const response = await axios.get(cleanedURL);
 
-    //Check if the GET request is successful
     if (response.status === 200) {
-      return response.data;
+      return cleanedURL;
     } 
     else{
-      console.error(cleanedURL + ' is not a valid repo');
-      return null;
+      console.error(cleanedURL + ' is not a valid github API');
+      return "";
     }
   } 
   catch (error) {
@@ -36,13 +45,9 @@ async function fetchRepositoryData(repositoryUrl: string): Promise<string | null
 
 // Example usage
 const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL
-fetchRepositoryData(repositoryUrl)
+get_api_url(repositoryUrl)
   .then((repositoryData) => {
-    if (repositoryData) {
-      console.log('Repository Data:', repositoryData);
-    } else {
-      console.log('Repository data not found.');
-    }
+    console.log(repositoryData)
   })
   .catch((error) => {
     console.error('Error:', error);
