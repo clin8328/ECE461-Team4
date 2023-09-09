@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import * as fs from 'fs/promises';
-import { read } from 'fs';
 
 /*
 We decided to use the javascript library, isomorphic-git, to help us clone git repository.
@@ -96,18 +95,16 @@ class License{
 
       for (const file of files) {
         //If a License file is found, evaluate the file for valid licenses
-        if(license_regex.test(file)){
-          await this.evaluate_License(file);
-        }
         if(readme_regex.test(file)){
-          await this.evaluate_License(file);
+          const output = await this.evaluate_License(file);
+          return output;
         }
       }
-      return true;
+      return 0;
     } 
     catch (error) {
       console.error(`Error listing files in directory '${this.dirPath}':`, error);
-      return false;
+      return 0;
     }
   }
 
@@ -119,16 +116,29 @@ class License{
       Description: This function searches through the license file to see if there are any 
       license that are compatible with LGPLv2.1
       LGPLv2.1 compatible licenses: 
-      [apache-2.0, bsd-2-clause, bsd-3-clause, mit, LGPL-2.1, GPL-2.0+, GPL-3.0+, MPL-2.0, CPL-1.0]
-
-      NOTE: Currently work in progress, trying to think of a way to best search for this license,
-      as different authors of repository have different ways of displaying licenses
+      [apache-2.0, bsd-2-clause, bsd-3-clause, MIT, LGPL-2.1, GPL-2.0+, GPL-3.0+, MPL-2.0, CPL-1.0]
       */ 
     try {
+
+      //regex to check for valid license
       const find_license_regex = new RegExp('(apache-2.0)|(bsd-[2-3]-clause)|(MIT)|(lgpl-2.1)|(lgpl-3.0)|(gpl-[2-3].0)','i'); 
 
-      const fileContent = await fs.readFile(this.dirPath + "\\" + path);
-      console.log(`File content for "${path}":\n${fileContent}`);
+      //Read the readme.md file
+      const fileContent = await fs.readFile(this.dirPath + "\\" + path, 'utf-8');
+      
+      //Find the license section 
+      const licenseRegex = /(#+)\s*(License|Licence)([\s\S]*)/i;
+
+      const licenseMatch = fileContent.match(licenseRegex);
+      if(licenseMatch){
+        console.log(`File content for "${path}":\n${licenseMatch[0]}`);
+
+        //Find if there are valid licenses
+        if(find_license_regex.test(licenseMatch[0])){
+          return 1;
+        }
+      }
+      return 0;
     } 
     catch (error) {
         console.error(`Error reading file "${path}":`, error);
@@ -141,16 +151,16 @@ class License{
 
 
 /*                        EXAMPLE                         */
-let x = new License('https://github.com/davisjam/safe-regex', 'test-clone')
-x.cloneRepository().then((cloneSuccessful) => {
-  if (cloneSuccessful) {
+// let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
+// x.cloneRepository().then((cloneSuccessful) => {
+//   if (cloneSuccessful) {
 
-    x.Find_And_ReadLicense();
+//     x.Find_And_ReadLicense();
 
-    x.deleteDirectory();
-  }
-  else {
-    // Handle the case where cloning failed              
-    console.error('Cloning was not successful; skipping deletion.');
-  }
-});
+//     x.deleteDirectory();
+//   }
+//   else {
+//     // Handle the case where cloning failed              
+//     console.error('Cloning was not successful; skipping deletion.');
+//   }
+// });
