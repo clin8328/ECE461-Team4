@@ -25,9 +25,13 @@ Steps to calculate License metric:
 class License{
   url: string;
   dirPath: string;
+  //Compatible licenses with LGPLv2.1
+  // GPLv2+, MIT, BSD (BSD-3-clause, BSD-2-clause, Apache 2.0, Mozilla Public License 2.0, CPL)
+  license: string[];
   constructor(url: string, dirPath: string){
     this.url = url;
     this.dirPath = dirPath;
+    this.license = [];
   }
 
   /*
@@ -86,18 +90,21 @@ class License{
       const files = await fs.readdir(this.dirPath);
 
       // 'i' flag makes the search case-insensitive
-      const regex = new RegExp('^(license|licence)', 'i'); 
+      const license_regex = new RegExp('^(license|licence)', 'i'); 
+      const readme_regex = new RegExp('^readme', 'i'); 
+
       for (const file of files) {
         //If a License file is found, evaluate the file for valid licenses
-        if(regex.test(file)){
-            await this.evaluate_License(file);
+        if(readme_regex.test(file)){
+          const output = await this.evaluate_License(file);
+          return output;
         }
       }
-      return true;
+      return 0;
     } 
     catch (error) {
       console.error(`Error listing files in directory '${this.dirPath}':`, error);
-      return false;
+      return 0;
     }
   }
 
@@ -106,17 +113,32 @@ class License{
       args: string (license file)
       return: int (0 or 1)
 
-      Description: This function searches through the license file to see if are any license
-      that are listed as LGPLv2.1
-
-      NOTE: Currently work in progress, trying to think of a way to best search for this license,
-      as different authors of repository have different ways of displaying licenses
-    */ 
+      Description: This function searches through the license file to see if there are any 
+      license that are compatible with LGPLv2.1
+      LGPLv2.1 compatible licenses: 
+      [apache-2.0, bsd-2-clause, bsd-3-clause, MIT, LGPL-2.1, GPL-2.0+, GPL-3.0+, MPL-2.0, CPL-1.0]
+      */ 
     try {
-      const regex = new RegExp('', 'i'); 
 
-      const fileContent = await fs.readFile(this.dirPath + "\\" + path);
-      console.log(`File content for "${path}":\n${fileContent}`);
+      //regex to check for valid license
+      const find_license_regex = new RegExp('(apache-2.0)|(bsd-[2-3]-clause)|(MIT)|(lgpl-2.1)|(lgpl-3.0)|(gpl-[2-3].0)','i'); 
+
+      //Read the readme.md file
+      const fileContent = await fs.readFile(this.dirPath + "\\" + path, 'utf-8');
+      
+      //Find the license section 
+      const licenseRegex = /(#+)\s*(License|Licence)([\s\S]*)/i;
+
+      const licenseMatch = fileContent.match(licenseRegex);
+      if(licenseMatch){
+        console.log(`File content for "${path}":\n${licenseMatch[0]}`);
+
+        //Find if there are valid licenses
+        if(find_license_regex.test(licenseMatch[0])){
+          return 1;
+        }
+      }
+      return 0;
     } 
     catch (error) {
         console.error(`Error reading file "${path}":`, error);
@@ -129,16 +151,16 @@ class License{
 
 
 /*                        EXAMPLE                         */
-let x = new License('https://github.com/nullivex/nodist', 'test-clone')
-x.cloneRepository().then((cloneSuccessful) => {
-  if (cloneSuccessful) {
+// let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
+// x.cloneRepository().then((cloneSuccessful) => {
+//   if (cloneSuccessful) {
 
-    x.Find_And_ReadLicense();
+//     x.Find_And_ReadLicense();
 
-    x.deleteDirectory();
-  } 
-  else {
-    // Handle the case where cloning failed              
-    console.error('Cloning was not successful; skipping deletion.');
-  }
-});
+//     x.deleteDirectory();
+//   }
+//   else {
+//     // Handle the case where cloning failed              
+//     console.error('Cloning was not successful; skipping deletion.');
+//   }
+// });
