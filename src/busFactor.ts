@@ -5,20 +5,19 @@ import { request } from 'http';
 
 
 async function Bus_Factor() {
-    const score = 0;
-   
+    
 
    
     const octokit = new Octokit({
-            auth: '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'
+            auth: 'token'
             
         });
 
     
     try {
         const response = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
-            owner: 'octokit',
-            repo: 'octokit.js',
+            owner: 'Brandons42',
+            repo: 'personal-website',
             
             per_page: 100,
         });
