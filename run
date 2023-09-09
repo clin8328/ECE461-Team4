@@ -1,0 +1,24 @@
+# Author: Will Stonebridge - jwstoneb@purdue.edu
+#
+# Handles the following
+# ./run install - installs dependencies
+# ./run URL_FILE - Evaluates a file containing github and npm links
+# ./run test - runs a test suite on our repository
+
+if [ "$1" == "install" ]; then
+    pip install --user -r requirements.txt #TODO: NEEDS A FAILURE CONDITION
+    #TODO: Figure out how to install requirements.txt from npm
+    exit 0
+elif [ "$1" == "test" ]; then 
+    echo "TODO: Test Suite currently nonexistent" # TODO: build test suite
+    exit 1
+elif [ -e $1 ]; then # is the argument an existing file?
+    py call_CLI.py $1
+    exit $?
+else #If an invalid argument is provided, fail
+    echo "INVALID ARGUMENT. Valid arguments include:"
+    echo "[url_file] - An absolute path to a file containing github and npm links. These will be evaluated and stored in a NDJSON."
+    echo "install - installs dependencies of this program (run this first)"
+    echo "test - runs a test suite on our repository"
+    exit 1
+fi
