@@ -22,7 +22,7 @@ Steps to calculate License metric:
 
   (Example listed in EOF)
 */ 
-class License{
+export class License{
   url: string;
   dirPath: string;
   //Compatible licenses with LGPLv2.1
@@ -60,7 +60,7 @@ class License{
     }
   }
 
-  async deleteDirectory() {
+  async deleteRepository() {
     /*
         args: none
         return: bool (if deleting was successful or not)
@@ -68,6 +68,7 @@ class License{
         Description: This function deletes the cloned directory in our system
     */ 
     try {
+        await fs.chmod(this.dirPath, 0o755);
         await fs.rm(this.dirPath, { recursive: true });
         console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
         return true;
@@ -151,16 +152,16 @@ class License{
 
 
 /*                        EXAMPLE                         */
-// let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
-// x.cloneRepository().then((cloneSuccessful) => {
-//   if (cloneSuccessful) {
+let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
+x.cloneRepository().then((cloneSuccessful) => {
+  if (cloneSuccessful) {
 
-//     x.Find_And_ReadLicense();
+    x.Find_And_ReadLicense();
 
-//     x.deleteDirectory();
-//   }
-//   else {
-//     // Handle the case where cloning failed              
-//     console.error('Cloning was not successful; skipping deletion.');
-//   }
-// });
+    x.deleteRepository();
+  }
+  else {
+    // Handle the case where cloning failed              
+    console.error('Cloning was not successful; skipping deletion.');
+  }
+});
