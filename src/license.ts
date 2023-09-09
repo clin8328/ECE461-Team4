@@ -69,6 +69,7 @@ export class License{
     */ 
     try {
         await fs.chmod(this.dirPath, 0o755);
+        console.log('permissions changed');
         await fs.rm(this.dirPath, { recursive: true });
         console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
         return true;
@@ -152,16 +153,16 @@ export class License{
 
 
 /*                        EXAMPLE                         */
-let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
-x.cloneRepository().then((cloneSuccessful) => {
-  if (cloneSuccessful) {
+// let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
+// x.cloneRepository().then((cloneSuccessful) => {
+//   if (cloneSuccessful) {
 
-    x.Find_And_ReadLicense();
+//     x.Find_And_ReadLicense();
 
-    x.deleteRepository();
-  }
-  else {
-    // Handle the case where cloning failed              
-    console.error('Cloning was not successful; skipping deletion.');
-  }
-});
+//     x.deleteRepository();
+//   }
+//   else {
+//     // Handle the case where cloning failed              
+//     console.error('Cloning was not successful; skipping deletion.');
+//   }
+// });

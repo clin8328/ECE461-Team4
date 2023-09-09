@@ -9,11 +9,17 @@ import {License} from './license';
 
 const url_path: string = process.argv[2];
 
-let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
-x.cloneRepository();
-const license_metric = x.Find_And_ReadLicense();
-x.deleteRepository();
-console.log(license_metric);
+
+async function main(){
+    //Get the license metric
+    let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
+    await x.cloneRepository();
+    const metric = await x.Find_And_ReadLicense();
+    await x.deleteRepository();
+}
+
+main();
+
 
 
 /*
