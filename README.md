@@ -1,5 +1,4 @@
 # ECE461-Team4
-
 # Instructions to compile and run
 1: type 'npm install'
     - This will install all the libraries you need to run the program
@@ -12,3 +11,4 @@
 3: type 'node .\dist\github.js'
     - This will run the compiled .js file named github.js. You can change the 
     executable accordingly.
+
