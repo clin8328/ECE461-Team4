@@ -4,10 +4,12 @@ import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
 import * as fs from 'fs'
 import { Stream } from "stream";
 
+//This class gathers the expected logging environment variables and allows them to be used to make log providers
 export class logger461 {
-  public logPath: string
-  public logLvl: LogLevel
-  public logStream: fs.WriteStream
+  public logPath: string //path to where the log file should be written
+  public logLvl: LogLevel  //loglevel that should be allowed in the log file
+  public logStream: fs.WriteStream //filestream for the logfile
+  //generic provider definition so that the compiler doesn't yell before a method is called
   public loggerProvider: Log4TSProvider = Log4TSProvider.createProvider("baseProvider", {
     groups: [{
       expression: new RegExp(".+"),
@@ -15,7 +17,7 @@ export class logger461 {
     });
   constructor() {
     // Constructor function that checks if the environement variables are correctly set and uses them to initialize the logger variables
-    process.env.LOG_FILE = String(process.cwd())
+    //process.env.LOG_FILE = String(process.cwd()) //This is in place because setting my environment variables in terminal wasn't working
     if(process.env.LOG_FILE) {
       this.logPath = String(process.env.LOG_FILE)
     }
@@ -36,10 +38,12 @@ export class logger461 {
     else{
       this.logLvl = LogLevel.Debug
     }
-
+    //create the filestream to write the log to
     this.logStream = fs.createWriteStream(String(this.logPath)+'/log.txt')
   }
-  
+  //createConsoleProvider method
+  //input: none
+  //output: logger provider pointed at the console with correct logging level
   createConsoleProvider():Log4TSProvider  { 
     let provider = Log4TSProvider.createProvider("consoleProvider", {
     groups: [{
@@ -53,7 +57,11 @@ export class logger461 {
     });
     return provider
   }
-    //method for creating the file logger provider
+
+  //createFileProvider method
+  //input: none
+  //output: logger provider pointed at the log file stream with correct logging level
+  //method for creating the file logger provider
   createFileProvider():Log4TSProvider {
     let provider = Log4TSProvider.createProvider("fileProvider", {
       groups: [{
