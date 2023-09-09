@@ -6,8 +6,7 @@
 # ./run test - runs a test suite on our repository
 
 if [ "$1" == "install" ]; then
-    pip install --user -r requirements.txt #TODO: NEEDS A FAILURE CONDITION
-    #TODO: Figure out how to install requirements.txt from npm
+    npm install #TODO: NEEDS A FAILURE CONDITION
     exit 0
 elif [ "$1" == "test" ]; then 
     echo "TODO: Test Suite currently nonexistent" # TODO: build test suite
