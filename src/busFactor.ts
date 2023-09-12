@@ -1,23 +1,23 @@
 import { Octokit } from '@octokit/rest';
-import { request } from 'http';
 
 
 
 
-async function Bus_Factor() {
+
+async function Bus_Factor(_owner: string, _repo: string) {
     
 
    
     const octokit = new Octokit({
-            auth: 'token'
+            auth: 'total'
             
         });
 
     
     try {
         const response = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
-            owner: 'Brandons42',
-            repo: 'personal-website',
+            owner: _owner,
+            repo: _repo,
             
             per_page: 100,
         });
@@ -40,6 +40,7 @@ async function Bus_Factor() {
         
         return good / total;
         
+        
 
 
             
@@ -60,8 +61,4 @@ async function Bus_Factor() {
 
     
 
-let answer = Bus_Factor();
-answer.then(function()
-{
-    console.log(answer)
-})
+let answer = Bus_Factor('octokit', 'octokit.js');
