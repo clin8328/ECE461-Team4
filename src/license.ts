@@ -27,11 +27,9 @@ export class License{
   dirPath: string;
   //Compatible licenses with LGPLv2.1
   // GPLv2+, MIT, BSD (BSD-3-clause, BSD-2-clause, Apache 2.0, Mozilla Public License 2.0, CPL)
-  license: string[];
   constructor(url: string, dirPath: string){
     this.url = url;
     this.dirPath = dirPath;
-    this.license = [];
   }
 
   /*
