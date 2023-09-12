@@ -9,7 +9,7 @@ async function Bus_Factor(_owner: string, _repo: string) {
 
    
     const octokit = new Octokit({
-            auth: 'total'
+            auth: 'token'
             
         });
 
