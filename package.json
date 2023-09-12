@@ -13,6 +13,7 @@
     "clean-git-ref": "^2.0.1",
     "combined-stream": "^1.0.8",
     "crc-32": "^1.2.2",
+    "date-fns": "^2.30.0",
     "decompress-response": "^6.0.0",
     "delayed-stream": "^1.0.0",
     "deprecation": "^2.3.1",
