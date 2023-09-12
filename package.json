@@ -4,6 +4,7 @@
   "description": "ECE 461 team 4\r chuhan- Dummy commit\r junpei - Dummy Commit\r 1: Chuhan Lin\r 2: Pranav Sankar\r 3. Junpei\r 4: Justin Cambridge",
   "main": "index.js",
   "dependencies": {
+    "ts-node": "^10.9.1",
     "@types/jest": "^29.5.4",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
@@ -47,13 +48,18 @@
     "wrappy": "^1.0.2"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --ext .ts"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.4",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1"
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "jest": "^29.6.4",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   }
 }
