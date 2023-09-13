@@ -1,37 +1,40 @@
 /*
   Original Author: Will Stonebridge
   Date edit: 9/9/2023
+
+  Main is called by the run executable and gathers all of the metrics
 */
 
 import process from 'process';
 import fs from 'fs';
-import {License} from './license';
-
-const url_path: string = process.argv[2];
+import {get_License_Metric} from './license';
 
 
-async function main(){
-    //Get the license metric
-    let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
-    await x.cloneRepository();
-    const metric = await x.Find_And_ReadLicense();
-    await x.deleteRepository();
+
+async function evaluate_URL(url : string) {
+  let metrics = {
+    'license' : -1,
+    'bus factor' : -1,
+    'responsiveness' : -1,
+    'correctness' : -1,
+    'ramp up' : -1,
+    'overall' : -1
+  };
+
+  await get_License_Metric(url).then((metric) => {metrics['license'] = metric});
+  console.log(metrics);
+
+  
+
+  return metrics 
 }
 
+function main() {
+  const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
+
+  //TODO: read each url in here
+  let metrics = evaluate_URL('https://github.com/cloudinary/cloudinary_npm');
+}
+
+
 main();
-
-
-
-/*
-fs.readFile(url_path, 'utf8', (err, file_lines) => {
-    if (err) {
-      console.log('Error reading file'); //TODO: log file I/O failure
-      process.exit(1);
-    }
-    console.log("no error");
-    const urls : string[] = file_lines.split('\n');
-    console.log(urls);
-  });
-  
-console.log('success');
-process.exit(0); //exit successfully*/

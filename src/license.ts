@@ -15,14 +15,14 @@ The License class will take in a 'URL' of a github repository and a 'dirPath' of
 you want to clone the repistory to.
 
 Steps to calculate License metric:
-  1) Istantiate the class and provide the repository URL and path destination
+  1) Instantiate the class and provide the repository URL and path destination
   2) Call cloneRepository()
   3) Call Find_And_ReadLicense()
   4) Call deleteRepository()
 
   (Example listed in EOF)
 */ 
-export class License{
+export class License {
   url: string;
   dirPath: string;
   //Compatible licenses with LGPLv2.1
@@ -144,25 +144,30 @@ export class License{
     } 
     catch (error) {
         console.error(`Error reading file "${path}":`, error);
+        return 0;
     }
   }
 
   //End-Of-Class
 }
 
+export async function get_License_Metric(url: string): Promise<number> {
+  let metric: number;
+  let lic = new License(url, 'test-clone');
+
+  try {
+    await lic.cloneRepository();
+    metric = await lic.Find_And_ReadLicense();
+  } catch (error) {
+    // Handle errors here if needed
+    metric = 0;
+    console.error(error);
+  } finally {
+    await lic.deleteRepository();
+  }
+
+  return metric;
+}
 
 
-/*                        EXAMPLE                         */
-// let x = new License('https://github.com/cloudinary/cloudinary_npm', 'test-clone')
-// x.cloneRepository().then((cloneSuccessful) => {
-//   if (cloneSuccessful) {
 
-//     x.Find_And_ReadLicense();
-
-//     x.deleteRepository();
-//   }
-//   else {
-//     // Handle the case where cloning failed              
-//     console.error('Cloning was not successful; skipping deletion.');
-//   }
-// });
