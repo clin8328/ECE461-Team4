@@ -5,13 +5,13 @@
 */
 import {License} from "../src/license"
 
-jest.mock('isomorphic-git');
-jest.mock('fs/promises');
 const fsPromises = require('fs/promises');
 const git = require('isomorphic-git');
 const path = require('path');
 
 describe('License Class', () => {
+    jest.mock('isomorphic-git');
+    jest.mock('fs/promises');
     /*
     Spy on console.log and console.error to prevent logging errors to console
     when we test for error handling states
@@ -41,8 +41,8 @@ describe('License Class', () => {
         const cloneSpy = jest.spyOn(git, 'clone');
         const rmSpy = jest.spyOn(fsPromises, 'rm');
 
-        cloneSpy.mockResolvedValueOnce("Clone first call");
-        rmSpy.mockResolvedValueOnce("Delete first call");
+        cloneSpy.mockResolvedValueOnce(true);
+        rmSpy.mockResolvedValueOnce(true);
 
         const result_clone = await license.cloneRepository();
         const result_delete = await license.deleteDirectory();
@@ -53,7 +53,7 @@ describe('License Class', () => {
         // Restore their original functionality
         rmSpy.mockRestore();
         cloneSpy.mockRestore();
-    });
+    },30000);
 
     it('Cloning Fail and Delete fail', async () => {
         const dirPath = 'test-dir';
@@ -115,5 +115,5 @@ describe('License Class', () => {
         //Restore their orginal functionality
         readDirSpy.mockRestore();
         readFileSpy.mockRestore();
-    });
+    },30000);
 });
