@@ -112,8 +112,14 @@ class Responsiveness{
             return -1; // Return a default score or handle the error as needed
         }
     }
-    
+}
 
+/*
+used in main to return an integer representing the score from a string representing the url
+*/
+export async function getResponsiveness(url: string) {
+    let test = new Responsiveness(url);
+    return await test.numCollaborators();
 }
 
 
