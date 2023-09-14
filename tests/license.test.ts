@@ -53,7 +53,7 @@ describe('License Class', () => {
         // Restore their original functionality
         rmSpy.mockRestore();
         cloneSpy.mockRestore();
-    },30000);
+    },20000);
 
     it('Cloning Fail and Delete fail', async () => {
         const dirPath = 'test-dir';
@@ -84,7 +84,7 @@ describe('License Class', () => {
         // Restore their original functionality
         cloneSpy.mockRestore();
         rmSpy.mockRestore();
-    });
+    },20000);
 
     it('Testing fail/success conditions on evaluate license', async () => {
         const dirPath = 'test-dir';
@@ -115,5 +115,5 @@ describe('License Class', () => {
         //Restore their orginal functionality
         readDirSpy.mockRestore();
         readFileSpy.mockRestore();
-    },30000);
+    },20000);
 });
