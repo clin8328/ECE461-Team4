@@ -1,24 +1,15 @@
 import { Octokit } from '@octokit/rest';
 
-
-
-
-
 async function Bus_Factor(_owner: string, _repo: string) {
-    
-
-   
+ 
     const octokit = new Octokit({
-            auth: 'token'
-            
+            auth: 'token'        
         });
 
-    
     try {
         const response = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
             owner: _owner,
-            repo: _repo,
-            
+            repo: _repo,      
             per_page: 100,
         });
        
@@ -26,39 +17,18 @@ async function Bus_Factor(_owner: string, _repo: string) {
         var total = 0;
         
         if (response.status === 200) {
-            //console.log(response.data)
             for (const person of response.data) {
                 if (person.contributions >= 10)
                 {
                     good += 1;
                 }
-
                 total +=1;
-                
- 
+        } 
+        return good / total;     
         }
-        
-        return good / total;
-        
-        
-
-
-            
-        }
-    }
-
-        
-    catch(error)
-        {
+    } catch(error) {
             console.log(error);
         }
-        
-
-        
-        
-        }
-    
-
-    
+}
 
 let answer = Bus_Factor('octokit', 'octokit.js');
