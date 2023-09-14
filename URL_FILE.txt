@@ -1,0 +1,4 @@
+https://github.com/opentffoundation/opentf
+https://github.com/KillianLucas/open-interpreter
+https://github.com/WillStonebridge/CycleGan_Reimplementation\
+thingy

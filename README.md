@@ -12,3 +12,27 @@
     - This will run the compiled .js file named github.js. You can change the 
     executable accordingly.
 
+# Testing framework
+1: type 'npm install'
+    - Added new dependencies for testing. We will be using Jest.
+
+2: Create testing files
+    - All testing files should follow the below structure:
+        {filename}.test.ts
+    
+    - All unit tests should follow the below structure:
+
+        describe({name of function/class you're testing} () => {
+
+            //test {number}
+            it({description of what you're testing}, () => {
+                ...
+            });
+
+            ...
+        });
+    
+    - All unit tests should test for error handling states
+
+3: Type 'npm test'
+    - This will run all the test files within the 'test' folder
