@@ -9,7 +9,7 @@ async function Bus_Factor(url: string) {
 
    
     const octokit = new Octokit({
-            auth: 'Token'
+            auth: 'Token' //Put token here for your github account
             
         });
 
@@ -45,7 +45,7 @@ async function Bus_Factor(url: string) {
                 
  
         }
-        console.log(good / total);
+       
         return good / total;
 
 
@@ -61,9 +61,10 @@ async function Bus_Factor(url: string) {
             console.log(error);
         }
 
-        }
+    }
     
 
     
 
-let answer = Bus_Factor('https://github.com/clin8328/ECE461-Team4');
+
+
