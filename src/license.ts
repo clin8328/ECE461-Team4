@@ -63,7 +63,7 @@ export class License {
         Description: This function deletes the cloned directory in our system
     */ 
     try {
-        await fs.chmod(this.dirPath, 0o755);
+        //await fs.chmod(this.dirPath, 0o755);
         console.log('permissions changed');
         await fs.rm(this.dirPath, { recursive: true });
         console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);

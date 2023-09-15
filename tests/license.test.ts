@@ -45,7 +45,7 @@ describe('License Class', () => {
         rmSpy.mockResolvedValueOnce(true);
 
         const result_clone = await license.cloneRepository();
-        const result_delete = await license.deleteDirectory();
+        const result_delete = await license.deleteRepository();
 
         expect(result_clone).toBe(true);
         expect(result_delete).toBe(true);
@@ -76,7 +76,7 @@ describe('License Class', () => {
 
         //Call the functions after all mocking is complete
         const result_clone = await license.cloneRepository();
-        const result_delete = await license.deleteDirectory();
+        const result_delete = await license.deleteRepository();
 
         expect(result_clone).toBe(false);
         expect(result_delete).toBe(false);
