@@ -4,14 +4,18 @@ import { Octokit } from '@octokit/rest';
 
 
 
-async function Bus_Factor(_owner: string, _repo: string) {
+async function Bus_Factor(url: string) {
     
 
    
     const octokit = new Octokit({
-            auth: 'token'
+            auth: 'Token'
             
         });
+
+        const urlParts = url.split('/');
+        const _owner = urlParts[3]; //Obtain owner of repo
+        const _repo = urlParts[4]; //Obtain repo name
 
     
     try {
@@ -32,16 +36,20 @@ async function Bus_Factor(_owner: string, _repo: string) {
                 {
                     good += 1;
                 }
+                
 
                 total +=1;
                 
+                
+            
+                
  
         }
-        
+        console.log(good / total);
         return good / total;
-        
-        
 
+
+        
 
             
         }
@@ -52,13 +60,10 @@ async function Bus_Factor(_owner: string, _repo: string) {
         {
             console.log(error);
         }
-        
 
-        
-        
         }
     
 
     
 
-let answer = Bus_Factor('octokit', 'octokit.js');
+let answer = Bus_Factor('https://github.com/clin8328/ECE461-Team4');
