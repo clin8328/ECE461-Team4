@@ -1,3 +1,9 @@
+/*
+  Original Author: Chuhan Lin
+  Date edit: 9/14/2023
+  File description: This is used as an example of how to conduct unit testing
+*/
+
 const { add } = require('../src/example');
 
 describe('add function', () => {

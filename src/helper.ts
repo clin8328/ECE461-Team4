@@ -7,7 +7,7 @@
 
 import axios, { AxiosError } from 'axios';
 
-async function get_api_url(repositoryUrl: string): Promise<string | null> {
+export async function get_api_url(repositoryUrl: string): Promise<string | null> {
 /*
   args: string (github repo URL)
   return: string (github API)
@@ -17,16 +17,11 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
   will return the URL or else it returns an empty string.
 */
   try {
-    //Get repo owner from url by doing some input cleaning
-    const urlParts = repositoryUrl.split('/');
-    const owner = urlParts[3];
+    var urlParts = repositoryUrl.split('/');
+    var owner = urlParts[3];
     var repoName = urlParts[4];
-    if(urlParts[4].endsWith(".git")){
-      repoName = urlParts[4].substring(0 , urlParts[4].length-4);
-    }
-
-    const cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
-
+    var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
+    
     //Make a GET request to the github api of the repo
     const response = await axios.get(cleanedURL);
 
@@ -35,7 +30,7 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
     } 
     else{
       console.error(cleanedURL + ' is not a valid github API');
-      return "";
+      return null;
     }
   } 
   catch (error) {
@@ -48,13 +43,13 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
 
 
 // Example usage
-const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4.git'; // Replace with the actual repository URL
-get_api_url(repositoryUrl)
-  .then((repositoryData) => {
-    console.log(repositoryData)
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+// const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL
+// get_api_url(repositoryUrl)
+//   .then((repositoryData) => {
+//     console.log(repositoryData)
+//   })
+//   .catch((error) => {
+//     console.error('Error:', error);
+//   });
 
 
