@@ -18,26 +18,19 @@ export class logger461 {
   constructor() {
     // Constructor function that checks if the environement variables are correctly set and uses them to initialize the logger variables
     //process.env.LOG_FILE = String(process.cwd()) //This is in place because setting my environment variables in terminal wasn't working
-    if(process.env.LOG_FILE) {
-      this.logPath = String(process.env.LOG_FILE)
+    this.logPath = String(process.env.LOG_FILE)
+
+    if(Number(process.env.LOG_LEVEL) == 0) {
+      this.logLvl = LogLevel.Off
+      console.log("env working")
     }
-    else{
-      this.logPath = "./"
-    }
-    if(process.env.LOG_LEVEL) {
-      if(Number(process.env.LOG_LEVEL) == 0) {
-        this.logLvl = LogLevel.Off
-      }
-      else if(Number(process.env.LOG_LEVEL) == 1) {
-        this.logLvl = LogLevel.Info
-      }
-      else{
-        this.logLvl = LogLevel.Debug
-      }
+    else if(Number(process.env.LOG_LEVEL) == 1) {
+      this.logLvl = LogLevel.Info
     }
     else{
       this.logLvl = LogLevel.Debug
     }
+
     //create the filestream to write the log to
     this.logStream = fs.createWriteStream(String(this.logPath)+'/log.txt')
   }

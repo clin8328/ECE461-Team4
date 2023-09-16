@@ -1,4 +1,6 @@
 import {logger461} from "./logConfig"
+require("dotenv").config()
+
 
 //intialize the logger for typescript
 let loggerInit = new logger461();
@@ -8,5 +10,5 @@ export const logProvider = loggerInit.createFileProvider()
 //create "main logger"
 let logger0 = logProvider.getLogger("Main");
 
-
 logger0.info("Beginning Program")
+logger0.info("print")
