@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import * as fs from 'fs/promises';
-
 /*
 We decided to use the javascript library, isomorphic-git, to help us clone git repository.
 This way we are able to access source codes and check the license the package uses.
@@ -25,8 +24,6 @@ Steps to calculate License metric:
 export class License {
   url: string;
   dirPath: string;
-  //Compatible licenses with LGPLv2.1
-  // GPLv2+, MIT, BSD (BSD-3-clause, BSD-2-clause, Apache 2.0, Mozilla Public License 2.0, CPL)
   constructor(url: string, dirPath: string){
     this.url = url;
     this.dirPath = dirPath;
@@ -66,7 +63,7 @@ export class License {
         Description: This function deletes the cloned directory in our system
     */ 
     try {
-        await fs.chmod(this.dirPath, 0o755);
+        //await fs.chmod(this.dirPath, 0o755);
         console.log('permissions changed');
         await fs.rm(this.dirPath, { recursive: true });
         console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
@@ -89,8 +86,7 @@ export class License {
     try {
       const files = await fs.readdir(this.dirPath);
 
-      // 'i' flag makes the search case-insensitive
-      const license_regex = new RegExp('^(license|licence)', 'i'); 
+      // 'i' flag makes the search case-insensitive 
       const readme_regex = new RegExp('^readme', 'i'); 
 
       for (const file of files) {
