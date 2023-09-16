@@ -1,68 +1,43 @@
 import { Octokit } from '@octokit/rest';
 
+export async function Bus_Factor(url: string): Promise<number> {
+    let res: number = -1; // Initialize res with a default value in case of an error
 
-
-
-
-async function Bus_Factor(url: string) {
-    
-
-   
-    const octokit = new Octokit({
-            auth: 'Token' //Put token here for your github account
-            
+    try {
+        const octokit = new Octokit({
+            auth: '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' // Put your GitHub token here
         });
 
         const urlParts = url.split('/');
-        const _owner = urlParts[3]; //Obtain owner of repo
-        const _repo = urlParts[4]; //Obtain repo name
-
-    
-    try {
+        const _owner = urlParts[3]; // Obtain the owner of the repo
+        const _repo = urlParts[4]; // Obtain the repo name
         const response = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
             owner: _owner,
-            repo: _repo,      
+            repo: _repo,
             per_page: 100,
         });
-       
-        var good = 0;
-        var total = 0;
-        
+
         if (response.status === 200) {
+            let good = 0;
+            let total = 0;
+
             for (const person of response.data) {
-                if (person.contributions >= 10)
-                {
+                if (person.contributions >= 10) {
                     good += 1;
                 }
-                
+                total += 1;
+            }
 
-                total +=1;
-                
-                
-            
-                
- 
+            if (total === 0) {
+                res = 0;
+            } else {
+                res = Math.round(good / total * 10) / 10;
+            }
         }
-       
-        return good / total;
-
-
+    } catch (error) {
         
-
-            
-        }
+        return -1;
     }
 
-        
-    catch(error)
-        {
-            console.log(error);
-        }
-
-    }
-    
-
-    
-
-
-
+    return res;
+}
