@@ -23,7 +23,7 @@ class Responsiveness{
         const repoName = urlParts[4]; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: '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' //Insert token
         });
     
         try {
@@ -68,8 +68,6 @@ class Responsiveness{
 
         let numIssuesClosed = 0; //Number of issues closed within 3 months
         let totalTimeOpen = 0; //Total time open for issues
-
-        console.log(completedWithin3Months);
     
         for (const issue of completedWithin3Months) {
             if (issue.closed_at !== null) {
@@ -88,7 +86,6 @@ class Responsiveness{
     
         const maxBenchmarkDays = 30;
         const score = Math.max(0, (maxBenchmarkDays - averageDaysOpen) / maxBenchmarkDays);
-        console.log(score);
     
         return score;
     }
