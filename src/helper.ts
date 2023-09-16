@@ -20,7 +20,11 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
     //Get repo owner from url by doing some input cleaning
     const urlParts = repositoryUrl.split('/');
     const owner = urlParts[3];
-    const repoName = urlParts[4];
+    var repoName = urlParts[4];
+    if(urlParts[4].endsWith(".git")){
+      repoName = urlParts[4].substring(0 , urlParts[4].length-4);
+    }
+
     const cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
 
     //Make a GET request to the github api of the repo
@@ -44,7 +48,7 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
 
 
 // Example usage
-const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL
+const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4.git'; // Replace with the actual repository URL
 get_api_url(repositoryUrl)
   .then((repositoryData) => {
     console.log(repositoryData)

@@ -6,10 +6,9 @@
 */
 
 import process from 'process';
-import fs from 'fs';
 import {get_License_Metric} from './license';
 import { getResponsiveness } from './responsiveness';
-
+import * as fs from 'fs/promises';
 
 
 async function evaluate_URL(url : string) {
@@ -24,7 +23,7 @@ async function evaluate_URL(url : string) {
 
   await getResponsiveness(url).then((metric) => {metrics['responsiveness'] = metric});
   await get_License_Metric(url).then((metric) => {metrics['license'] = metric});
-  console.log(metrics);
+  //console.log(metrics);
 
   
 
@@ -33,11 +32,15 @@ async function evaluate_URL(url : string) {
 
 function main() {
   const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
+  console.log(url_file_path);
+
+  const fileContent = fs.readFile(url_file_path, 'utf-8');
 
   //TODO: read each url in here
   let other_metrics = evaluate_URL('https://github.com/davisjam/safe-regex');
   let metrics = evaluate_URL('https://github.com/cloudinary/cloudinary_npm');
-  console.log('evaluating second');
+  console.log(fileContent);
+  //console.log('evaluating second');
 }
 
 
