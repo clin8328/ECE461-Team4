@@ -33,6 +33,7 @@
         });
     
     - All unit tests should test for error handling states
+    - Acheive at least 80% code coverage
 
 3: Type 'npm test'
     - This will run all the test files within the 'test' folder

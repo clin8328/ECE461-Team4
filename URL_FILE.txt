@@ -1,0 +1,4 @@
+https://github.com/davisjam/safe-regex
+https://github.com/KillianLucas/open-interpreter/
+https://github.com/WillStonebridge/CycleGan_Reimplementation\
+thingy

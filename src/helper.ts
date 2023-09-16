@@ -6,8 +6,9 @@
 */
 
 import axios, { AxiosError } from 'axios';
+import { Octokit } from '@octokit/rest';
 
-async function get_api_url(repositoryUrl: string): Promise<string | null> {
+export async function get_api_url(repositoryUrl: string): Promise<string> {
 /*
   args: string (github repo URL)
   return: string (github API)
@@ -17,14 +18,30 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
   will return the URL or else it returns an empty string.
 */
   try {
-    //Get repo owner from url by doing some input cleaning
-    const urlParts = repositoryUrl.split('/');
-    const owner = urlParts[3];
-    const repoName = urlParts[4];
-    const cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
+    var urlParts = repositoryUrl.split('/');
+    var owner = urlParts[3];
+    var repoName = urlParts[4];
 
-    //Make a GET request to the github api of the repo
-    const response = await axios.get(cleanedURL);
+    //Check if it ends with .git or and backslashes '\' and remove them
+    if(repoName.endsWith('.git\r')){
+      repoName = repoName.substring(0,repoName.length-5)
+    }
+
+    const regex = /[\\]*\r$/;
+    if(regex.test(repoName)){
+      repoName = repoName.replace(regex,'');
+    }
+
+    const octokit = new Octokit({
+      auth: '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' //Insert token
+    });
+
+    var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
+
+    const response = await octokit.request(cleanedURL, {
+      owner: owner,
+      repo: repoName,
+    });
 
     if (response.status === 200) {
       return cleanedURL;
@@ -38,19 +55,19 @@ async function get_api_url(repositoryUrl: string): Promise<string | null> {
     // Use type assertion to specify the type of the error object
     const axiosError = error as AxiosError;
     console.error('Error fetching repository information:', axiosError.message);
-    return null;
+    return "";
   }
 }
 
 
 // Example usage
-const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL
-get_api_url(repositoryUrl)
-  .then((repositoryData) => {
-    console.log(repositoryData)
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+// const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL
+// get_api_url(repositoryUrl)
+//   .then((repositoryData) => {
+//     console.log(repositoryData)
+//   })
+//   .catch((error) => {
+//     console.error('Error:', error);
+//   });
 
 
