@@ -3,7 +3,7 @@
   Date edit: 9/14/2023
   File description: Testing the License Metric class
 */
-import {License} from "../src/license"
+import {License, get_License_Metric} from "../src/license"
 
 const fsPromises = require('fs/promises');
 const git = require('isomorphic-git');
@@ -28,7 +28,7 @@ describe('License Class', () => {
         console.log = originalConsoleLog;
         console.error = originalConsoleError;
     });
-    
+
     it('Cloning Success and Delete success', async () => {
         const dirPath = 'test-dir'
         const license = new License('https://github.com/nullivex/nodist', dirPath);
@@ -36,8 +36,8 @@ describe('License Class', () => {
         path.join = jest.fn((baseDir, dirPath) => {
             return "";
           });
-
-        // Create a spy on git.clone and fs.rm and make it return with success whenever it is called
+        
+        //Mock git.clone and fs.rm 
         const cloneSpy = jest.spyOn(git, 'clone');
         const rmSpy = jest.spyOn(fsPromises, 'rm');
 
@@ -49,10 +49,10 @@ describe('License Class', () => {
 
         expect(result_clone).toBe(true);
         expect(result_delete).toBe(true);
-    
-        // Restore their original functionality
-        rmSpy.mockRestore();
+        
+        //restore their original functionality
         cloneSpy.mockRestore();
+        rmSpy.mockRestore();
     },20000);
 
     it('Cloning Fail and Delete fail', async () => {
@@ -64,12 +64,12 @@ describe('License Class', () => {
           return `${baseDir}/${dirPath}`;
         });
     
-        // Create a spy on git.clone and make it return with fail whenever it is called
-        const cloneSpy = jest.spyOn(git, 'clone');
         const error = new Error('Cloning error');
-
-        const rmSpy = jest.spyOn(fsPromises, 'rm');
         const error1 = new Error('Deletion error');
+
+        //Mock git.clone and fs.rm functions
+        const cloneSpy = jest.spyOn(git, 'clone');
+        const rmSpy = jest.spyOn(fsPromises, 'rm');
 
         cloneSpy.mockRejectedValueOnce(error);
         rmSpy.mockRejectedValueOnce(error1);
@@ -81,7 +81,7 @@ describe('License Class', () => {
         expect(result_clone).toBe(false);
         expect(result_delete).toBe(false);
 
-        // Restore their original functionality
+        //restore their functionality
         cloneSpy.mockRestore();
         rmSpy.mockRestore();
     },20000);
@@ -90,9 +90,10 @@ describe('License Class', () => {
         const dirPath = 'test-dir';
         const license = new License('https://github.com/mock/mock', dirPath);
         
+        //Mock fs.readdir and fs.readFile
         const readDirSpy = jest.spyOn(fsPromises, 'readdir');
         const readFileSpy = jest.spyOn(fsPromises, 'readFile');
-        
+
         //Mock a random list of files
         readDirSpy.mockReturnValue(["1","2","readme.md"]);
         
@@ -112,8 +113,18 @@ describe('License Class', () => {
         const result_readDir_fail = await license.Find_And_ReadLicense();
         expect(result_readDir_fail).toBe(0);
 
-        //Restore their orginal functionality
+        // Restore their original functionality
         readDirSpy.mockRestore();
         readFileSpy.mockRestore();
     },20000);
+
+    it('Test integration function', async() => {
+        const cloneSpy = jest.spyOn(git, 'clone');
+        const rmSpy = jest.spyOn(fsPromises, 'rm');
+
+        await get_License_Metric("url");
+        
+        cloneSpy.mockRestore();
+        rmSpy.mockRestore();
+    });
 });
