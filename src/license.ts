@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import * as fs from 'fs/promises';
-
 /*
 We decided to use the javascript library, isomorphic-git, to help us clone git repository.
 This way we are able to access source codes and check the license the package uses.
@@ -15,14 +14,14 @@ The License class will take in a 'URL' of a github repository and a 'dirPath' of
 you want to clone the repistory to.
 
 Steps to calculate License metric:
-  1) Istantiate the class and provide the repository URL and path destination
+  1) Instantiate the class and provide the repository URL and path destination
   2) Call cloneRepository()
   3) Call Find_And_ReadLicense()
   4) Call deleteRepository()
 
   (Example listed in EOF)
 */ 
-class License{
+export class License {
   url: string;
   dirPath: string;
   constructor(url: string, dirPath: string){
@@ -56,7 +55,7 @@ class License{
     }
   }
 
-  async deleteDirectory() {
+  async deleteRepository() {
     /*
         args: none
         return: bool (if deleting was successful or not)
@@ -64,6 +63,8 @@ class License{
         Description: This function deletes the cloned directory in our system
     */ 
     try {
+        //await fs.chmod(this.dirPath, 0o755);
+        console.log('permissions changed');
         await fs.rm(this.dirPath, { recursive: true });
         console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
         return true;
@@ -85,19 +86,21 @@ class License{
     try {
       const files = await fs.readdir(this.dirPath);
 
-      // 'i' flag makes the search case-insensitive
-      const regex = new RegExp('^(license|licence)', 'i'); 
+      // 'i' flag makes the search case-insensitive 
+      const readme_regex = new RegExp('^readme', 'i'); 
+
       for (const file of files) {
         //If a License file is found, evaluate the file for valid licenses
-        if(regex.test(file)){
-            await this.evaluate_License(file);
+        if(readme_regex.test(file)){
+          const output = await this.evaluate_License(file);
+          return output;
         }
       }
-      return true;
+      return 0;
     } 
     catch (error) {
       console.error(`Error listing files in directory '${this.dirPath}':`, error);
-      return false;
+      return 0;
     }
   }
 
@@ -106,39 +109,59 @@ class License{
       args: string (license file)
       return: int (0 or 1)
 
-      Description: This function searches through the license file to see if are any license
-      that are listed as LGPLv2.1
-
-      NOTE: Currently work in progress, trying to think of a way to best search for this license,
-      as different authors of repository have different ways of displaying licenses
-    */ 
+      Description: This function searches through the license file to see if there are any 
+      license that are compatible with LGPLv2.1
+      LGPLv2.1 compatible licenses: 
+      [apache-2.0, bsd-2-clause, bsd-3-clause, MIT, LGPL-2.1, GPL-2.0+, GPL-3.0+, MPL-2.0, CPL-1.0]
+      */ 
     try {
-      const regex = new RegExp('', 'i'); 
 
-      const fileContent = await fs.readFile(this.dirPath + "\\" + path);
-      console.log(`File content for "${path}":\n${fileContent}`);
+      //regex to check for valid license
+      const find_license_regex = new RegExp('(apache-2.0)|(bsd-[2-3]-clause)|(MIT)|(lgpl-2.1)|(lgpl-3.0)|(gpl-[2-3].0)','i'); 
+
+      //Read the readme.md file
+      const fileContent = await fs.readFile(this.dirPath + "\\" + path, 'utf-8');
+      
+      //Find the license section 
+      const licenseRegex = /(#+)\s*(License|Licence)([\s\S]*)/i;
+
+      const licenseMatch = fileContent.match(licenseRegex);
+      if(licenseMatch){
+        console.log(`File content for "${path}":\n${licenseMatch[0]}`);
+
+        //Find if there are valid licenses
+        if(find_license_regex.test(licenseMatch[0])){
+          return 1;
+        }
+      }
+      return 0;
     } 
     catch (error) {
         console.error(`Error reading file "${path}":`, error);
+        return 0;
     }
   }
 
   //End-Of-Class
 }
 
+export async function get_License_Metric(url: string): Promise<number> {
+  let metric: number;
+  let lic = new License(url, 'test-clone');
 
-
-/*                        EXAMPLE                         */
-let x = new License('https://github.com/nullivex/nodist', 'test-clone')
-x.cloneRepository().then((cloneSuccessful) => {
-  if (cloneSuccessful) {
-
-    x.Find_And_ReadLicense();
-
-    x.deleteDirectory();
-  } 
-  else {
-    // Handle the case where cloning failed              
-    console.error('Cloning was not successful; skipping deletion.');
+  try {
+    await lic.cloneRepository();
+    metric = await lic.Find_And_ReadLicense();
+  } catch (error) {
+    // Handle errors here if needed
+    metric = 0;
+    console.error(error);
+  } finally {
+    await lic.deleteRepository();
   }
-});
+
+  return metric;
+}
+
+
+

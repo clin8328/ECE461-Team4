@@ -21,8 +21,7 @@ async function Bus_Factor(url: string) {
     try {
         const response = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
             owner: _owner,
-            repo: _repo,
-            
+            repo: _repo,      
             per_page: 100,
         });
        
@@ -30,7 +29,6 @@ async function Bus_Factor(url: string) {
         var total = 0;
         
         if (response.status === 200) {
-            //console.log(response.data)
             for (const person of response.data) {
                 if (person.contributions >= 10)
                 {
