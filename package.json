@@ -4,7 +4,7 @@
   "description": "ECE 461 team 4\r chuhan- Dummy commit\r junpei - Dummy Commit\r 1: Chuhan Lin\r 2: Pranav Sankar\r 3. Junpei\r 4: Justin Cambridge",
   "main": "index.js",
   "dependencies": {
-    "@octokit/rest": "20.0.1",
+    "@octokit/rest": "^20.0.1",
     "@types/jest": "^29.5.4",
     "@types/node": "20.5.9",
     "async-lock": "^1.4.0",
@@ -31,6 +31,7 @@
     "mimic-response": "^3.1.0",
     "minimist": "^1.2.8",
     "minimisted": "^2.0.1",
+    "octokit": "^3.1.0",
     "once": "^1.4.0",
     "pako": "^1.0.11",
     "pify": "^4.0.1",
