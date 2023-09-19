@@ -23,7 +23,7 @@ class Responsiveness{
         const repoName = urlParts[4]; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: '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' //Insert token
         });
     
         try {
