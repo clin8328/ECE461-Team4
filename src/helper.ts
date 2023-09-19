@@ -33,7 +33,7 @@ export async function get_api_url(repositoryUrl: string): Promise<string> {
     }
 
     const octokit = new Octokit({
-      auth: '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' //Insert token
+      auth: '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' //Insert token
     });
 
     var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;

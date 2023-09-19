@@ -3,32 +3,35 @@ import {get_License_Metric} from './license';
 import { getResponsiveness } from './responsiveness';
 import * as fs from 'fs/promises';
 import { get_api_url } from './helper';
-
+import { Bus_Factor } from './busFactor';
 
 async function evaluate_URL(url: string) {
   try {
     const metrics = {
-      'license': -1,
-      'bus factor': -1,
-      'responsiveness': -1,
-      'correctness': -1,
-      'ramp up': -1,
-      'overall': -1
+      "URL" : url,
+      "NET_SCORE": -1,
+      "RAMP_UP_SCORE": -1,
+      "CORRECTNESS_SCORE": -1,
+      "BUS_FACTOR_SCORE": -1,
+      "RESPONSIVE_MAINTAINER_SCORE": -1,
+      "LICENSE_SCORE": -1,
     };
-    metrics['license'] = await get_License_Metric(url);
-    metrics['responsiveness'] = await getResponsiveness(url);
-    metrics['bus factor'] = await Bus_Factor(url);
+    metrics["LICENSE_SCORE"] = await get_License_Metric(url);
+    metrics["RESPONSIVE_MAINTAINER_SCORE"] = await getResponsiveness(url);
+    metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
 
     return metrics;
+
   } catch (error) {
     console.error(error);
     return {
-      'license': -1,
-      'bus factor': -1,
-      'responsiveness': -1,
-      'correctness': -1,
-      'ramp up': -1,
-      'overall': -1
+      "URL" : url,
+      "NET_SCORE": -1,
+      "RAMP_UP_SCORE": -1,
+      "CORRECTNESS_SCORE": -1,
+      "BUS_FACTOR_SCORE": -1,
+      "RESPONSIVE_MAINTAINER_SCORE": -1,
+      "LICENSE_SCORE": -1,
     };
   }
 }
@@ -52,7 +55,6 @@ async function main() {
   for (let link of fileList) {
     const response = await get_api_url(link);
     console.log("-------------------------------------------------");
-    console.log(link)
     if(response != ""){
       const output = await evaluate_URL(link.substring(0,link.length-1));
       console.log(output);
