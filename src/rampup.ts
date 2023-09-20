@@ -81,7 +81,7 @@ class RampUp {
                 console.log(`Total lines in TypeScript files: ${linesInFiles}`);
                 console.log(`Total lines in README: ${linesInReadme}`);
     
-                metric = Math.max(linesInFiles / (linesInReadme * scale ), 1);
+                metric = Math.min(linesInFiles / (linesInReadme * scale ), 1);
     
             } else {
                 console.log('README not found in the repository.');
