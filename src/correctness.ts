@@ -12,7 +12,7 @@ class Correctness {
   // Constructor
   constructor(directory_path: string) {
     this.directory_path = directory_path;
-    this.blacklist = ['modules', 'dist'];
+    this.blacklist = ['modules', 'module', 'dist'];
   }
 
   // Method
@@ -26,8 +26,8 @@ class Correctness {
     }
 
     console.log("errors: ", errors, " | lines: ", lines);
-    console.log("metric: ", errors/lines);
-    return errors / lines;
+    console.log("metric: ", 1 - errors/lines);
+    return 1 - errors / lines;
   }
 
   getAlltsjsFiles(filepath: string): string[] {
@@ -99,8 +99,8 @@ function setIncludes(str: string, list: string[]): boolean {
   return false;
 }
 
-//let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
-//metric.getMetric();
+let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
+metric.getMetric();
 
 //getAlltsjsFiles('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
 
