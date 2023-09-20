@@ -64,7 +64,7 @@ export class License {
     */ 
     try {
         //await fs.chmod(this.dirPath, 0o755);
-        console.log('permissions changed');
+        //console.log('permissions changed');
         await fs.rm(this.dirPath, { recursive: true });
         console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
         return true;
@@ -127,7 +127,7 @@ export class License {
 
       const licenseMatch = fileContent.match(licenseRegex);
       if(licenseMatch){
-        console.log(`File content for "${path}":\n${licenseMatch[0]}`);
+        //console.log(`File content for "${path}":\n${licenseMatch[0]}`);
 
         //Find if there are valid licenses
         if(find_license_regex.test(licenseMatch[0])){
