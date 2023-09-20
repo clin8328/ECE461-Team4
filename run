@@ -17,8 +17,7 @@ elif [ "$1" == "test" ]; then
     exit 0
 elif [ -e $1 ]; then # is the argument an existing file?
     clear
-    tsc #compile typescript into js
-    node dist/src/main.js $1
+    npx tsc && node dist/src/main.js $1
     exit $?
 else #If an invalid argument is provided, fail
     echo "INVALID ARGUMENT. Valid arguments include:"
