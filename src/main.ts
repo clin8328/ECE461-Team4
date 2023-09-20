@@ -1,6 +1,7 @@
 import process from 'process';
 import {get_License_Metric} from './license';
 import { getResponsiveness } from './responsiveness';
+import { Bus_Factor } from './busFactor';
 import * as fs from 'fs/promises';
 import { get_api_url } from './helper';
 import { Bus_Factor } from './busFactor';

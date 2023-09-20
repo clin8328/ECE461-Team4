@@ -33,6 +33,7 @@ node_modules
 *.sql
 *.sqlite
 coverage/
+
 # OS generated files #
 ######################
 .DS_Store
@@ -42,6 +43,7 @@ coverage/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.env
 
 # Cloned Repositories #
 #######################
