@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { subMonths, isBefore } from "date-fns";
 
-class Responsiveness{
+export class Responsiveness{
     url: string;
     constructor(url: string){
       this.url = url;
@@ -23,7 +23,7 @@ class Responsiveness{
         const repoName = urlParts[4]; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: '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' //Insert token
         });
     
         try {
@@ -41,8 +41,8 @@ class Responsiveness{
                 const completedWithin3Months = completedIssues.data.filter((issue) => (
                     issue.state === 'closed' && //Filter for closed issues
                     issue.state_reason === 'completed' && //Filter for issues that have been marked as completed
-                    issue.closed_at !== null &&
-                    isBefore(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
+                    issue.closed_at !== null
+                    //isBefore(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
                 ));
 
                 return completedWithin3Months; //Return the data that contiains 
