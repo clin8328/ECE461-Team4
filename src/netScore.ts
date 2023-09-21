@@ -1,3 +1,8 @@
+/*
+  Original Author: Chuhan Lin
+  Date edit: 9/21/2023
+*/
+
 export function net_score(metrics: { [key: string]: any }): number {
     let net_score: number = 0;
 

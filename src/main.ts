@@ -1,60 +1,5 @@
 import process from 'process';
-import {get_License_Metric} from './license';
-import { getResponsiveness } from './responsiveness';
-import { Bus_Factor } from './busFactor';
-import * as fs from 'fs/promises';
-import { get_api_url } from './helper';
-import { RampUp } from './rampup';
-import { Correctness } from './correctness';
-import { net_score } from './netScore';
-
-async function evaluate_URL(url: string) {
-  try {
-    const metrics = {
-      "URL" : url,
-      "NET_SCORE": -1,
-      "RAMP_UP_SCORE": -1,
-      "CORRECTNESS_SCORE": -1,
-      "BUS_FACTOR_SCORE": -1,
-      "RESPONSIVE_MAINTAINER_SCORE": -1,
-      "LICENSE_SCORE": -1,
-    };
-
-    let correctness = new Correctness(url);
-    let rampup = new RampUp();
-
-    metrics["LICENSE_SCORE"] = await get_License_Metric(url);
-    metrics["RESPONSIVE_MAINTAINER_SCORE"] = await getResponsiveness(url);
-    metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
-    //metrics["RAMP_UP_SCORE"] = await rampup.rampup();
-    //metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
-    metrics["NET_SCORE"] = net_score(metrics);
-    
-    return metrics;
-
-  } catch (error) {
-    console.error(error);
-    return {
-      "URL" : url,
-      "NET_SCORE": -1,
-      "RAMP_UP_SCORE": -1,
-      "CORRECTNESS_SCORE": -1,
-      "BUS_FACTOR_SCORE": -1,
-      "RESPONSIVE_MAINTAINER_SCORE": -1,
-      "LICENSE_SCORE": -1,
-    };
-  }
-}
-
-async function read_file(url: string) {
-  try {
-    const fileContent = await fs.readFile(url, 'utf-8');
-    return fileContent;
-  } catch (error) {
-    console.error('Error reading file:', error);
-    throw error;
-  }
-}
+import { get_api_url, read_file, evaluate_URL } from './helper';
 
 async function main() {
   const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
@@ -71,6 +16,7 @@ async function main() {
     }
     break;
   }
+  process.exit(0);
 }
 
 main();

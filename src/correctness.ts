@@ -25,9 +25,9 @@ export class Correctness {
       lines += await countLinesInFile(file);
     }
 
-    console.log("errors: ", errors, " | lines: ", lines);
-    console.log("metric: ", 1 - errors/lines);
-    return 1 - errors / lines;
+    //console.log("errors: ", errors, " | lines: ", lines);
+    //console.log("metric: ", 1 - errors/lines);
+    return Math.round((1 - errors / lines)*10) / 10;
   }
 
   getAlltsjsFiles(filepath: string): string[] {

@@ -65,7 +65,7 @@ export class RampUp {
     }
     
     async rampup():Promise <number> {
-        const repoDirectory = '/Users/junpeiota/nest'; // Replace with the path to your cloned repository directory
+        const repoDirectory = 'test-clone'; // Replace with the path to your cloned repository directory
         const extension = '.js'; // Change the file extension as needed
         const scale = 10; //How many lines of code in files to one line in the Readme
         let linesInFiles = 0; //LinesInFiles
@@ -78,8 +78,8 @@ export class RampUp {
     
             if (readmePath) {
                 const linesInReadme = await this.countLinesInReadme(readmePath);
-                console.log(`Total lines in TypeScript files: ${linesInFiles}`);
-                console.log(`Total lines in README: ${linesInReadme}`);
+                //console.log(`Total lines in TypeScript files: ${linesInFiles}`);
+                //console.log(`Total lines in README: ${linesInReadme}`);
     
                 metric = Math.min(linesInFiles / (linesInReadme * scale ), 1);
     
@@ -93,7 +93,7 @@ export class RampUp {
             metric = -1;
         }
     
-        return metric;
+        return Math.round(metric * 10) / 10;
     }
     
 }
