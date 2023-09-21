@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { Octokit } from '@octokit/rest';
 import * as path from 'path';
+import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
+import {logProvider} from "./logConfig";
 
 require('dotenv').config();
 
@@ -16,13 +18,14 @@ export class Metric {
     repoName: string;
     repoPath: string;
     githubToken: string; 
+    logger: Logger;
 
-    constructor(Url: string) {
+    constructor(Url: string, metricName: string) {
         this.githubRepoUrl = "";
         this.repoOwner = "";
         this.repoName = "";
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
-
+        this.logger = logProvider.getLogger(metricName);
 
         // -Determne if its a GitHub URL or a NPM URL
         // -If NPM URL obtain the github url
