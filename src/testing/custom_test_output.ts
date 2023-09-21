@@ -9,7 +9,7 @@
 import * as fs from 'fs';
 function print_test_results() {
     // Read the contents of the output.txt file
-    const outputText = fs.readFileSync('src/testing_custom_output/output.txt', 'utf8');
+    const outputText = fs.readFileSync('src/testing/output.txt', 'utf8');
 
     //Regex to find total num of test cases and num of passed test cases and code coverage
     const coverageRegex = /All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|/;
