@@ -88,6 +88,7 @@ export async function evaluate_URL(url: string) {
     let correctness = new Correctness("test-clone");
     let rampup = new RampUp();
     let lic = new License(url, "test-clone");
+
     await lic.cloneRepository();
     metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
     metrics["RESPONSIVE_MAINTAINER_SCORE"] = await getResponsiveness(url);
@@ -96,6 +97,7 @@ export async function evaluate_URL(url: string) {
     metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
     metrics["NET_SCORE"] = net_score(metrics);
     await lic.deleteRepository();
+
     return metrics;
 
   } catch (error) {
@@ -109,6 +111,7 @@ export async function evaluate_URL(url: string) {
       "RESPONSIVE_MAINTAINER_SCORE": -1,
       "LICENSE_SCORE": -1,
     };
+    process.exit(1);
   }
 }
 
@@ -123,8 +126,8 @@ export async function read_file(url: string) {
     const fileContent = await fs.readFile(url, 'utf-8');
     return fileContent;
   } catch (error) {
-    console.error('Error reading file:', error);
-    throw error;
+    //console.error('Error reading file:', error);
+    process.exit(1);
   }
 }
 

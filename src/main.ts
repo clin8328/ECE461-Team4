@@ -9,7 +9,6 @@ async function main() {
 
   for (let link of fileList) {
     const response = await get_api_url(link);
-    console.log("-------------------------------------------------");
     if(response != ""){
       const output = await evaluate_URL(link.substring(0,link.length-1));
       console.log(output);
