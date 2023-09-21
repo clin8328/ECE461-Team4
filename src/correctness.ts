@@ -32,9 +32,9 @@ export class Correctness {
       lines += await countLinesInFile(file);
     }
 
-    console.log("errors: ", errors, " | lines: ", lines);
-    console.log("metric: ", 1 - errors/lines);
-    return 1 - errors / lines;
+    //console.log("errors: ", errors, " | lines: ", lines);
+    //console.log("metric: ", 1 - errors/lines);
+    return Math.round((1 - errors / lines)*10) / 10;
   }
 
   getAlltsjsFiles(filepath: string): string[] {
@@ -104,8 +104,8 @@ export function setIncludes(str: string, list: string[]): boolean {
   return false;
 }
 
-//let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
-//metric.getMetric();
+// let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
+// metric.getMetric();
 
 //getAlltsjsFiles('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
 

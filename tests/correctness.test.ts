@@ -51,8 +51,8 @@ describe('Testing Correctness', () => {
   it('Evaluate Metric', async () => {
     let metric = new Correctness('../');
     let value = await metric.getMetric();
-    expect(value).toBeLessThan(1);
-    expect(value).toBeGreaterThan(0);
+    expect(value).toBeLessThanOrEqual(1);
+    expect(value).toBeGreaterThanOrEqual(0);
   });
 });
   
