@@ -1,6 +1,7 @@
 import process from 'process';
 import { get_api_url, read_file, evaluate_URL } from './helper';
 
+
 async function main() {
   const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
 
