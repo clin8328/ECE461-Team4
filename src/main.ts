@@ -71,10 +71,6 @@ async function main() {
     }
     break;
   }
-  //TODO: read each url in here
-  //let other_metrics = evaluate_URL('https://github.com/davisjam/safe-regex');
-  //let metrics = evaluate_URL('https://github.com/cloudinary/cloudinary_npm');
-  //console.log('evaluating second');
 }
 
 main();

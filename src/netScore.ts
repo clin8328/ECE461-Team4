@@ -7,20 +7,14 @@ export function net_score(metrics: { [key: string]: any }): number {
         }
 
         if(metrics[key] >= 0 && metrics[key] <= 1){
-            net_score += (metrics[key] / 5);
+            net_score += (metrics[key] * 0.25);
         }
     }
 
-    
-    net_score *= metrics["LICENSE_SCORE"];
+    if(typeof metrics["LICENSE_SCORE"] == 'number'){
+        net_score *= metrics["LICENSE_SCORE"];
+    }
 
-    if(net_score < 0){
-        return 0;
-    }
-    else if(net_score > 1){
-        return 1;
-    }
-    else{
-        return net_score;
-    }
+    return Math.round(net_score * 10) / 10;
+
 }
