@@ -6,8 +6,9 @@
 */
 
 import axios, { AxiosError } from 'axios';
+import { Octokit } from '@octokit/rest';
 
-export async function get_api_url(repositoryUrl: string): Promise<string | null> {
+export async function get_api_url(repositoryUrl: string): Promise<string> {
 /*
   args: string (github repo URL)
   return: string (github API)
@@ -20,24 +21,41 @@ export async function get_api_url(repositoryUrl: string): Promise<string | null>
     var urlParts = repositoryUrl.split('/');
     var owner = urlParts[3];
     var repoName = urlParts[4];
+
+    //Check if it ends with .git or and backslashes '\' and remove them
+    if(repoName.endsWith('.git\r')){
+      repoName = repoName.substring(0,repoName.length-5)
+    }
+
+    const regex = /[\\]*\r$/;
+    if(regex.test(repoName)){
+      repoName = repoName.replace(regex,'');
+    }
+
+    const octokit = new Octokit({
+      auth: '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' //Insert token
+    });
+
     var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
-    
-    //Make a GET request to the github api of the repo
-    const response = await axios.get(cleanedURL);
+
+    const response = await octokit.request(cleanedURL, {
+      owner: owner,
+      repo: repoName,
+    });
 
     if (response.status === 200) {
       return cleanedURL;
     } 
     else{
       console.error(cleanedURL + ' is not a valid github API');
-      return null;
+      return "";
     }
   } 
   catch (error) {
     // Use type assertion to specify the type of the error object
     const axiosError = error as AxiosError;
     console.error('Error fetching repository information:', axiosError.message);
-    return null;
+    return "";
   }
 }
 
