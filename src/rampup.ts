@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-class RampUp {
+export class RampUp {
     async countLinesInDir(directory: string, extension: string): Promise<number> {
         let totalLines = 0;
     

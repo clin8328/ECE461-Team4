@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 
-class Correctness {
+export class Correctness {
   // Properties
   directory_path: string; //the absolute path to the repository
   blacklist: string[]; 
@@ -99,8 +99,8 @@ function setIncludes(str: string, list: string[]): boolean {
   return false;
 }
 
-let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
-metric.getMetric();
+// let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
+// metric.getMetric();
 
 //getAlltsjsFiles('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
 

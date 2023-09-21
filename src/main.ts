@@ -4,8 +4,9 @@ import { getResponsiveness } from './responsiveness';
 import { Bus_Factor } from './busFactor';
 import * as fs from 'fs/promises';
 import { get_api_url } from './helper';
-import { Bus_Factor } from './busFactor';
-
+import { RampUp } from './rampup';
+import { Correctness } from './correctness';
+import { net_score } from './netScore';
 
 async function evaluate_URL(url: string) {
   try {
@@ -18,10 +19,17 @@ async function evaluate_URL(url: string) {
       "RESPONSIVE_MAINTAINER_SCORE": -1,
       "LICENSE_SCORE": -1,
     };
+
+    let correctness = new Correctness(url);
+    let rampup = new RampUp();
+
     metrics["LICENSE_SCORE"] = await get_License_Metric(url);
     metrics["RESPONSIVE_MAINTAINER_SCORE"] = await getResponsiveness(url);
     metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
-
+    //metrics["RAMP_UP_SCORE"] = await rampup.rampup();
+    //metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
+    metrics["NET_SCORE"] = net_score(metrics);
+    
     return metrics;
 
   } catch (error) {

@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { subMonths, isBefore } from "date-fns";
 
-class Responsiveness{
+export class Responsiveness{
     url: string;
     constructor(url: string){
       this.url = url;
