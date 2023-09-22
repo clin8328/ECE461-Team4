@@ -51,7 +51,7 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "test-json": "jest --coverage > src/testing_custom_output/output.txt 2>&1",
+    "test-json": "jest --coverage > src/testing/output.txt 2>&1",
     "lint": "eslint . --ext .ts"
   },
   "author": "",

@@ -44,11 +44,12 @@
 //         cloneSpy.mockResolvedValueOnce(true);
 //         rmSpy.mockResolvedValueOnce(true);
 
-//         const result_clone = await responsiveness.cloneRepository();
-//         const result_delete = await responsiveness.deleteRepository();
+        //ISSUE: Responsiveness does not have either a cloneRepository or deleteRepository method???
+        //const result_clone = await responsiveness.cloneRepository();
+        //const result_delete = await responsiveness.deleteRepository();
 
-//         expect(result_clone).toBe(true);
-//         expect(result_delete).toBe(true);
+        //expect(result_clone).toBe(true);
+        //expect(result_delete).toBe(true);
 
 //         //restore their original functionality
 //         cloneSpy.mockRestore();

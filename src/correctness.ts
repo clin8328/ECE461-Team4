@@ -1,3 +1,10 @@
+/*
+Author: Will Stonebridge
+
+Correctness is calculated by totalling the linter errors within all source files and dividing by the number of
+lines within all source files. 
+*/
+
 import { ESLint } from 'eslint';
 import { type } from 'os';
 import * as fs from 'fs';
@@ -12,7 +19,7 @@ export class Correctness {
   // Constructor
   constructor(directory_path: string) {
     this.directory_path = directory_path;
-    this.blacklist = ['modules', 'module', 'dist'];
+    this.blacklist = ['test', 'module', 'dist', '@', '.bin']; //list of names that should not be counted as source files
   }
 
   // Method
@@ -54,27 +61,25 @@ export class Correctness {
   }
 }
 
-async function lintFile(filePath: string): Promise<number> {
+export async function lintFile(filePath: string): Promise<number> {
   // Initialize ESLint
   const eslint = new ESLint();
-
-  try {
-    // Lint the specified file
-    const results = await eslint.lintFiles([filePath]);
-
-    //Parse the errors from the linting results
-    const formatter = await eslint.loadFormatter('stylish');
-    const resultText = await formatter.format(results);
-    const errors = resultText.split('\n').slice(2, -4);
-
-    return errors.length;
-  } catch (error) {
-    console.error('An error occurred while running ESLint:', error);
-    process.exit(1);
+  
+  // Lint the specified file
+  if (!setIncludes(filePath, ['.js', '.ts'])) {
+    throw new Error("File must be of type js or ts");
   }
+  const results = await eslint.lintFiles([filePath]);
+
+  //Parse the errors from the linting results
+  const formatter = await eslint.loadFormatter('stylish');
+  const resultText = await formatter.format(results);
+  const errors = resultText.split('\n').slice(2, -3);
+
+  return errors.length;
 }
 
-function countLinesInFile(filePath: string): Promise<number> {
+export function countLinesInFile(filePath: string): Promise<number> {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf-8', (err, data) => {
       if (err) {
@@ -90,10 +95,10 @@ function countLinesInFile(filePath: string): Promise<number> {
   });
 }
 
-function setIncludes(str: string, list: string[]): boolean {
+export function setIncludes(str: string, list: string[]): boolean {
   for (let elem of list) {
     if (str.includes(elem)) {
-      return true
+      return true;
     }
   }
   return false;
@@ -117,4 +122,6 @@ function setIncludes(str: string, list: string[]): boolean {
 
 
 
-//lintFile('/home/shay/a/jwstoneb/SWE/ECE461-Team4/src/logConfig.ts');
+// lintFile('/home/shay/a/jwstoneb/SWE/ECE461-Team4/src/testing/example.ts').then((data) => {
+//   console.log(data);
+// });
