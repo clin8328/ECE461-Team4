@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { subMonths, isAfter, differenceInDays } from "date-fns";
+import { subMonths, isBefore } from "date-fns";
 
 class Responsiveness{
     url: string;
@@ -23,7 +23,7 @@ class Responsiveness{
         const repoName = urlParts[4]; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: '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' //Insert token
         });
     
         try {
@@ -36,19 +36,14 @@ class Responsiveness{
     
             if (completedIssues.status === 200) {
                 const threeMonthsAgo = subMonths(new Date(), 3);
-
+    
                 //Filter for issues that have been completed within 3 months
                 const completedWithin3Months = completedIssues.data.filter((issue) => (
                     issue.state === 'closed' && //Filter for closed issues
                     issue.state_reason === 'completed' && //Filter for issues that have been marked as completed
                     issue.closed_at !== null &&
-                    isAfter(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
+                    isBefore(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
                 ));
-                    
-                // console.log(completedWithin3Months)
-                // console.log(new Date('2023-08-30T21:31:09Z'));
-                // console.log(threeMonthsAgo);
-                // console.log(isAfter(new Date('2023-08-30T21:31:09Z'), threeMonthsAgo));
 
                 return completedWithin3Months; //Return the data that contiains 
             } else {
@@ -60,7 +55,7 @@ class Responsiveness{
         }
     }
     
-    async calculateScore(completedWithin3Months: any, maxBenchmarkDays: number) {
+    async calculateScore(completedWithin3Months: any) {
         /*
         args: any (Data contains issues that have been completed within 3 months)
         return: const (Metric score between [0, 1])
@@ -70,29 +65,27 @@ class Responsiveness{
         3 months. It then converts the time to a metric score.
         */ 
 
+
         let numIssuesClosed = 0; //Number of issues closed within 3 months
-        var totalDaysOpen = 0; //Total time open for issues
-        var score = 0;
+        let totalTimeOpen = 0; //Total time open for issues
     
         for (const issue of completedWithin3Months) {
             if (issue.closed_at !== null) {
                 const create_date = new Date(issue.created_at);
                 const closed_date = new Date(issue.closed_at);
-                totalDaysOpen += differenceInDays(closed_date, create_date);
+    
+                totalTimeOpen += closed_date.getTime() - create_date.getTime();
                 numIssuesClosed++;
             }
         }
-
-        if(numIssuesClosed === 0 ) {
-            score = 0;
-        }
-        else {
-            const averageDaysOpen = totalDaysOpen / numIssuesClosed;        
-        
-            // console.log(`Average time to close an issue: ${averageDaysOpen} days, number of issues closed: ${numIssuesClosed}`);
-        
-            score = Math.max(0, (maxBenchmarkDays - averageDaysOpen) / maxBenchmarkDays);
-        }
+    
+        const averageTimeOpen = totalTimeOpen / numIssuesClosed;          
+        const averageDaysOpen = Math.floor(averageTimeOpen / 1000 / 60 / 60 / 24);
+    
+        // console.log(`Average time to close an issue: ${averageDaysOpen} days, number of issues closed: ${numIssuesClosed}`);
+    
+        const maxBenchmarkDays = 30;
+        const score = Math.max(0, (maxBenchmarkDays - averageDaysOpen) / maxBenchmarkDays);
     
         return score;
     }
@@ -105,11 +98,11 @@ class Responsiveness{
         Description: This function calls the necessary functions to
         calculate the metric score
         */ 
-        const maxBenchmarkDays = 30;
+
 
         try {
             let data = await this.getCompletedIssues(this.url);
-            const score = await this.calculateScore(data, maxBenchmarkDays);
+            const score = await this.calculateScore(data);
             return score;
         } catch (error) {
             console.error(error);
@@ -130,15 +123,10 @@ export async function getResponsiveness(url: string) {
 /* Example - Note: This example may have potential issues, requires further testing
 
 (async () => {
-    let test = new Responsiveness('https://github.com/clin8328/ECE461-Team4'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
+    let test = new Responsiveness('https://github.com/davisjam/safe-regex');
     const score = await test.numCollaborators();
-    console.log(`Score: ${score}`);
+    // console.log(`Score: ${score}`);
 })();
 
 */
 
-(async () => {
-    let test = new Responsiveness('https://github.com/davisjam/safe-regex'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
-    const score = await test.numCollaborators();
-    console.log(`Score: ${score}`);
-})();
