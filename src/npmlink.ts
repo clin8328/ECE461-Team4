@@ -74,15 +74,15 @@ export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
   }
 }
 
-const npmUrl = 'https://www.npmjs.com/package/@babel/core'; // Replace with the name of the npm package you want to fetch
-npmToGitRepoUrl(npmUrl)
-  .then((repoUrl) => {
-    if (repoUrl) {
-      console.log(`Git repository URL for ${npmUrl}: ${repoUrl}`);
-    } else {
-      console.log(`No Git repository found for ${npmUrl}`);
-    }
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+// const npmUrl = 'https://www.npmjs.com/package/@babel/core'; // Replace with the name of the npm package you want to fetch
+// npmToGitRepoUrl(npmUrl)
+//   .then((repoUrl) => {
+//     if (repoUrl) {
+//       console.log(`Git repository URL for ${npmUrl}: ${repoUrl}`);
+//     } else {
+//       console.log(`No Git repository found for ${npmUrl}`);
+//     }
+//   })
+//   .catch((error) => {
+//     console.error('Error:', error);
+//   });

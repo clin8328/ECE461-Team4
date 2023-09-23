@@ -1,6 +1,81 @@
 import process from 'process';
-import { get_api_url, read_file, evaluate_URL } from './helper';
+import {License} from './license';
+import { Bus_Factor } from './busFactor';
+import * as fs from 'fs/promises';
+import { RampUp } from './rampup';
+import { Correctness } from './correctness';
+import { net_score } from './netScore';
+import { Responsiveness } from './responsiveness';
+import { Metric } from './metric';
+import { get_api_url } from './helper';
 
+export async function evaluate_URL(url: string) {
+  /*
+    args: string (github repo URL)
+    return: ndjson
+
+    Description: This is the function to call inside main that evaluates a given github url and
+    returns 6 metrics analyzed from the package.
+  */
+  try {
+    const metrics = {
+      "URL" : url,
+      "NET_SCORE": -1,
+      "RAMP_UP_SCORE": -1,
+      "CORRECTNESS_SCORE": -1,
+      "BUS_FACTOR_SCORE": -1,
+      "RESPONSIVE_MAINTAINER_SCORE": -1,
+      "LICENSE_SCORE": -1,
+    };
+
+    let metric = new Metric(url,"test-clone");
+    let correctness = new Correctness("test-clone");
+    let rampup = new RampUp();
+    let lic = new License(url);
+    let responsiveness = new Responsiveness(url);
+    
+    await metric.cloneRepository();
+    metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
+    metrics["RESPONSIVE_MAINTAINER_SCORE"] = await responsiveness.numCollaborators()
+    metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
+    metrics["RAMP_UP_SCORE"] = await rampup.rampup();
+    metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
+    metrics["NET_SCORE"] = net_score(metrics);
+    await metric.deleteRepository();
+
+    return metrics;
+
+  } catch (error) {
+    console.error(error);
+    return {
+      "URL" : url,
+      "NET_SCORE": -1,
+      "RAMP_UP_SCORE": -1,
+      "CORRECTNESS_SCORE": -1,
+      "BUS_FACTOR_SCORE": -1,
+      "RESPONSIVE_MAINTAINER_SCORE": -1,
+      "LICENSE_SCORE": -1,
+    };
+    process.exit(1);
+  }
+}
+
+export async function read_file(url: string): Promise<string> {
+  /*
+  args: string (file path)
+  return: string (file content)
+
+  Description: The function takes in a path to a file and reads the content of it
+  */
+  try {
+    const fileContent = await fs.readFile(url, 'utf-8');
+    return fileContent;
+  } catch (error) {
+    console.error('Error reading file:', error);
+    throw error;
+    process.exit(1);
+  }
+}
 
 async function main() {
 
