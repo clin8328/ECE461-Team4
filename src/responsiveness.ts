@@ -137,8 +137,8 @@ export async function getResponsiveness(url: string) {
 
 */
 
-(async () => {
-    let test = new Responsiveness('https://github.com/davisjam/safe-regex'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
-    const score = await test.numCollaborators();
-    console.log(`Score: ${score}`);
-})();
+// (async () => {
+//     let test = new Responsiveness('https://github.com/davisjam/safe-regex'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
+//     const score = await test.numCollaborators();
+//     console.log(`Score: ${score}`);
+// })();
