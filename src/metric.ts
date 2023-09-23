@@ -32,11 +32,12 @@ export class Metric {
         this.repoOwner = ""; //Set in get_api_url
         this.repoName = ""; //Set in get_api_url
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
-        this.repoPath = path.join(process.cwd(), this.repoName);
+        
         this.logger = logProvider.getLogger(metricName);
         this.api_call_remaining = 0;
 
         this.getGitHubRepoUrl(Url);
+        this.repoPath = path.join(process.cwd(), this.repoName);
     }
 
     async getGitHubRepoUrl(Url: string) {
@@ -127,8 +128,9 @@ export class Metric {
           Description: This function uses the javascript library 'isomorphic-git' to clone
           a repository on github if the user provides a valid github repository URL.
       */ 
-      const dir = path.join(process.cwd(), this.repoPath);
+      const dir = path.join(this.repoPath);
       try {
+          console.log(dir)
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           console.log('Repository cloned successfully.');
           return true;

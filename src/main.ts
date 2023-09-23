@@ -38,14 +38,15 @@ export async function evaluate_URL(url: string) {
     metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
     metrics["RESPONSIVE_MAINTAINER_SCORE"] = await responsiveness.numCollaborators()
     metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
-    metrics["RAMP_UP_SCORE"] = await rampup.rampup();
-    metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
+    //metrics["RAMP_UP_SCORE"] = await rampup.rampup();
+    //metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
     metrics["NET_SCORE"] = net_score(metrics);
     await metric.deleteRepository();
 
     return metrics;
 
   } catch (error) {
+    console.log("error");
     console.error(error);
     return {
       "URL" : url,
@@ -56,7 +57,6 @@ export async function evaluate_URL(url: string) {
       "RESPONSIVE_MAINTAINER_SCORE": -1,
       "LICENSE_SCORE": -1,
     };
-    process.exit(1);
   }
 }
 
@@ -78,7 +78,6 @@ export async function read_file(url: string): Promise<string> {
 }
 
 async function main() {
-
   const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
   const fileContent = await read_file(url_file_path);
   const fileList = fileContent.split('\n');
