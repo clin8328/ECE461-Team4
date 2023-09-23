@@ -117,7 +117,7 @@ export async function evaluate_URL(url: string) {
   }
 }
 
-export async function read_file(url: string) {
+export async function read_file(url: string): Promise<string> {
   /*
   args: string (file path)
   return: string (file content)
@@ -129,6 +129,7 @@ export async function read_file(url: string) {
     return fileContent;
   } catch (error) {
     console.error('Error reading file:', error);
+    throw error;
     process.exit(1);
   }
 }
