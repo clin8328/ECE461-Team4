@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { subMonths, isAfter, differenceInDays } from "date-fns";
 
-class Responsiveness{
+export class Responsiveness{
     url: string;
     constructor(url: string){
       this.url = url;
@@ -23,7 +23,7 @@ class Responsiveness{
         const repoName = urlParts[4]; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: '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' //Insert token
         });
     
         try {
