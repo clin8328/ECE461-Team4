@@ -2,9 +2,9 @@
   Original Author: Chuhan Lin
   Date edit: 9/7/2023
 */
-
-import * as fs from 'fs/promises';
 import { Metric } from './metric';
+import * as fs from 'fs/promises';
+
 /*
 We decided to use the javascript library, isomorphic-git, to help us clone git repository.
 This way we are able to access source codes and check the license the package uses.
@@ -99,24 +99,6 @@ export class License extends Metric{
   }
 
   //End-Of-Class
-}
-
-export async function get_License_Metric(url: string): Promise<number> {
-  let metric: number;
-  let lic = new License(url);
-
-  try {
-    await lic.cloneRepository();
-    metric = await lic.Find_And_ReadLicense();
-  } catch (error) {
-    // Handle errors here if needed
-    metric = 0;
-    console.error(error);
-  } finally {
-    await lic.deleteRepository();
-  }
-
-  return metric;
 }
 
 

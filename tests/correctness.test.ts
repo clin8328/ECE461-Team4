@@ -33,8 +33,8 @@ describe('Testing Correctness', () => {
   // });
 
   it('Lints Correctly', () => {
-    const expected_errors = 3;
-    lintFile('src/testing/example.ts').then((observed_errors) => {
+    const expected_errors = 6;
+    lintFile('src/testing/custom_test_output.ts').then((observed_errors) => {
       expect(observed_errors).toBe(expected_errors);
     });
   });

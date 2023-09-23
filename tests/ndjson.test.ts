@@ -1,5 +1,5 @@
 import { readFile } from "fs";
-import { evaluate_URL , read_file } from "../src/helper";
+import { evaluate_URL , read_file } from "../src/main";
 
 describe('test ndjson', () => {
     // Test case 1
