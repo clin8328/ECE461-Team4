@@ -14,6 +14,7 @@ import * as fs from 'fs/promises';
 import { RampUp } from './rampup';
 import { Correctness } from './correctness';
 import { net_score } from './netScore';
+import { Metric } from './metric';
 
 export async function get_api_url(repositoryUrl: string): Promise<string> {
 /*
@@ -85,18 +86,19 @@ export async function evaluate_URL(url: string) {
       "LICENSE_SCORE": -1,
     };
 
+    let metric = new Metric(url,"test-clone");
     let correctness = new Correctness("test-clone");
     let rampup = new RampUp();
-    let lic = new License(url, "test-clone");
+    let lic = new License(url);
 
-    await lic.cloneRepository();
+    await metric.cloneRepository();
     metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
     metrics["RESPONSIVE_MAINTAINER_SCORE"] = await getResponsiveness(url);
     metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
     metrics["RAMP_UP_SCORE"] = await rampup.rampup();
     metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
     metrics["NET_SCORE"] = net_score(metrics);
-    await lic.deleteRepository();
+    await metric.deleteRepository();
 
     return metrics;
 
@@ -115,7 +117,7 @@ export async function evaluate_URL(url: string) {
   }
 }
 
-export async function read_file(url: string) {
+export async function read_file(url: string): Promise<string> {
   /*
   args: string (file path)
   return: string (file content)
@@ -126,7 +128,8 @@ export async function read_file(url: string) {
     const fileContent = await fs.readFile(url, 'utf-8');
     return fileContent;
   } catch (error) {
-    //console.error('Error reading file:', error);
+    console.error('Error reading file:', error);
+    throw error;
     process.exit(1);
   }
 }

@@ -13,7 +13,7 @@ import { get_api_url } from './helper';
 
 */
 
-function getNpmPackageName(npmUrl: string): string | null {
+export function getNpmPackageName(npmUrl: string): string | null {
     try {
         const parts = npmUrl.split('/'); // Split the URL by '/'
         
@@ -39,7 +39,7 @@ function getNpmPackageName(npmUrl: string): string | null {
     }
 }
 
-async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
+export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
   try {
     const packageName = getNpmPackageName(npmUrl);
     const response = await axios.get(`https://registry.npmjs.org/${packageName}`);

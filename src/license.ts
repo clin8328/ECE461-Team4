@@ -3,10 +3,8 @@
   Date edit: 9/7/2023
 */
 
-import * as path from 'path';
-import * as git from 'isomorphic-git';
-import http from 'isomorphic-git/http/node';
 import * as fs from 'fs/promises';
+import { Metric } from './metric';
 /*
 We decided to use the javascript library, isomorphic-git, to help us clone git repository.
 This way we are able to access source codes and check the license the package uses.
@@ -21,12 +19,9 @@ Steps to calculate License metric:
 
   (Example listed in EOF)
 */ 
-export class License {
-  url: string;
-  dirPath: string;
-  constructor(url: string, dirPath: string){
-    this.url = url;
-    this.dirPath = dirPath;
+export class License extends Metric{
+  constructor(url: string){
+    super(url, "License");
   }
 
   /*
@@ -35,45 +30,6 @@ export class License {
   to conduct error handling when an HTTP request error occurs.
 
   */
-  async cloneRepository(){
-    /*
-        args: none
-        return: bool (if cloning was successful or not)
-
-        Description: This function uses the javascript library 'isomorphic-git' to clone
-        a repository on github if the user provides a valid github repository URL.
-    */ 
-    const dir = path.join(process.cwd(), this.dirPath);
-    try {
-        await git.clone({ fs, http, dir, url: this.url });
-        console.log('Repository cloned successfully.');
-        return true;
-    } 
-    catch (error) {
-        console.error('Error cloning repository:', error);
-        return false;
-    }
-  }
-
-  async deleteRepository() {
-    /*
-        args: none
-        return: bool (if deleting was successful or not)
-
-        Description: This function deletes the cloned directory in our system
-    */ 
-    try {
-        //await fs.chmod(this.dirPath, 0o755);
-        //console.log('permissions changed');
-        await fs.rm(this.dirPath, { recursive: true });
-        console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
-        return true;
-    } 
-    catch (error) {
-        console.error(`Error deleting directory '${this.dirPath}':`, error);
-        return false;
-    }
-  }
 
   async Find_And_ReadLicense() {
     /*
@@ -84,7 +40,7 @@ export class License {
         and finds if any files that starts with the word license or licence.
     */ 
     try {
-      const files = await fs.readdir(this.dirPath);
+      const files = await fs.readdir(this.githubRepoUrl);
 
       // 'i' flag makes the search case-insensitive 
       const readme_regex = new RegExp('^readme', 'i'); 
@@ -99,7 +55,7 @@ export class License {
       return 0;
     } 
     catch (error) {
-      console.error(`Error listing files in directory '${this.dirPath}':`, error);
+      console.error(`Error listing files in directory '${this.githubRepoUrl}':`, error);
       return 0;
     }
   }
@@ -120,7 +76,7 @@ export class License {
       const find_license_regex = new RegExp('(apache-2.0)|(bsd-[2-3]-clause)|(MIT)|(lgpl-2.1)|(lgpl-3.0)|(gpl-[2-3].0)','i'); 
 
       //Read the readme.md file
-      const fileContent = await fs.readFile(this.dirPath + "\\" + path, 'utf-8');
+      const fileContent = await fs.readFile(this.githubRepoUrl + "\\" + path, 'utf-8');
       
       //Find the license section 
       const licenseRegex = /(#+)\s*(License|Licence)([\s\S]*)/i;
@@ -147,7 +103,7 @@ export class License {
 
 export async function get_License_Metric(url: string): Promise<number> {
   let metric: number;
-  let lic = new License(url, 'test-clone');
+  let lic = new License(url);
 
   try {
     await lic.cloneRepository();
