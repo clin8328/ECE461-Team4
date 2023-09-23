@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { subMonths, isAfter, differenceInDays } from "date-fns";
-import { Metric} from "./metric"
+import { Metric } from "./metric"
 
 export class Responsiveness extends Metric{
     constructor(url: string){
@@ -107,7 +107,7 @@ export class Responsiveness extends Metric{
 
         try {
             let data = await this.getCompletedIssues(this.githubRepoUrl);
-            const score = await this.calculateScore(data);
+            const score = await this.calculateScore(data, maxBenchmarkDays);
             return score;
         } catch (error) {
             console.error(error);

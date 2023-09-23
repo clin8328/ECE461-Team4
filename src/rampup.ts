@@ -7,6 +7,7 @@ export class RampUp extends Metric {
     constructor(url: string) {
         super(url, "RampUp");
     }
+    
     async countLinesInDir(directory: string, extension: string): Promise<number> {
         let totalLines = 0;
     
