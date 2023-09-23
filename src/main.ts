@@ -3,8 +3,8 @@ import { get_api_url, read_file, evaluate_URL } from './helper';
 
 
 async function main() {
-  const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
 
+  const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
   const fileContent = await read_file(url_file_path);
   const fileList = fileContent.split('\n');
 
