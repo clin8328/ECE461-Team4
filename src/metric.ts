@@ -3,9 +3,11 @@ import { Octokit } from '@octokit/rest';
 import * as path from 'path';
 import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
 import {logProvider} from "./logConfig";
-
 import * as links from "./check_links";
 import * as npmLink from "./npmlink";
+import * as git from 'isomorphic-git';
+import http from 'isomorphic-git/http/node';
+import * as fs from 'fs/promises';
 
 require('dotenv').config();
 
@@ -22,6 +24,7 @@ export class Metric {
     repoPath: string;
     githubToken: string; 
     logger: Logger;
+    api_call_remaining: number;
 
     constructor(Url: string, metricName: string) {
         this.githubRepoUrl = ""; //Set in getGitHubRepoUrl
@@ -30,6 +33,7 @@ export class Metric {
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
         this.repoPath = path.join(process.cwd(), this.repoName);
         this.logger = logProvider.getLogger(metricName);
+        this.api_call_remaining = 0;
 
         this.getGitHubRepoUrl(Url);
     }
@@ -122,9 +126,9 @@ export class Metric {
           Description: This function uses the javascript library 'isomorphic-git' to clone
           a repository on github if the user provides a valid github repository URL.
       */ 
-      const dir = path.join(process.cwd(), this.dirPath);
+      const dir = path.join(process.cwd(), this.repoPath);
       try {
-          await git.clone({ fs, http, dir, url: this.url });
+          await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           console.log('Repository cloned successfully.');
           return true;
       } 
@@ -144,12 +148,12 @@ export class Metric {
       try {
           //await fs.chmod(this.dirPath, 0o755);
           //console.log('permissions changed');
-          await fs.rm(this.dirPath, { recursive: true });
-          console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
+          await fs.rm(this.repoPath, { recursive: true });
+          console.log(`Directory '${this.repoPath}' and its contents deleted successfully.`);
           return true;
       } 
       catch (error) {
-          console.error(`Error deleting directory '${this.dirPath}':`, error);
+          console.error(`Error deleting directory '${this.repoPath}':`, error);
           return false;
       }
     }

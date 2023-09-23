@@ -31,7 +31,7 @@ describe('License Class', () => {
 
     it('Cloning Success and Delete success', async () => {
         const dirPath = 'test-dir'
-        const license = new License('https://github.com/nullivex/nodist', dirPath);
+        const license = new License('https://github.com/nullivex/nodist');
 
         path.join = jest.fn((baseDir, dirPath) => {
             return "";
@@ -57,7 +57,7 @@ describe('License Class', () => {
 
     it('Cloning Fail and Delete fail', async () => {
         const dirPath = 'test-dir';
-        const license = new License('https://github.com/invalid/invalid', dirPath);
+        const license = new License('https://github.com/invalid/invalid');
     
         // Mock the path.join function
         path.join = jest.fn((baseDir, dirPath) => {
@@ -88,7 +88,7 @@ describe('License Class', () => {
 
     it('Testing fail/success conditions on evaluate license', async () => {
         const dirPath = 'test-dir';
-        const license = new License('https://github.com/mock/mock', dirPath);
+        const license = new License('https://github.com/mock/mock');
         
         //Mock fs.readdir and fs.readFile
         const readDirSpy = jest.spyOn(fsPromises, 'readdir');
