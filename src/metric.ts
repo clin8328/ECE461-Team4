@@ -4,6 +4,9 @@ import * as path from 'path';
 import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
 import {logProvider} from "./logConfig";
 
+import * as links from "./check_links";
+import * as npmLink from "./npmlink";
+
 require('dotenv').config();
 
 //main
@@ -21,18 +24,38 @@ export class Metric {
     logger: Logger;
 
     constructor(Url: string, metricName: string) {
-        this.githubRepoUrl = "";
-        this.repoOwner = "";
-        this.repoName = "";
+        this.githubRepoUrl = ""; //Set in getGitHubRepoUrl
+        this.repoOwner = ""; //Set in get_api_url
+        this.repoName = ""; //Set in get_api_url
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
+        this.repoPath = path.join(process.cwd(), this.repoName);
         this.logger = logProvider.getLogger(metricName);
 
-        // -Determne if its a GitHub URL or a NPM URL
-        // -If NPM URL obtain the github url
-        
-        //this.get_api_url();
+        this.getGitHubRepoUrl(Url);
+    }
 
-        this.repoPath = path.join(process.cwd(), this.repoName);      
+    async getGitHubRepoUrl(Url: string) {
+      try {
+        if (links.isGithubLink(Url) === true) {
+          this.githubRepoUrl = Url;
+          await this.get_api_url(Url);
+        } 
+        else if (links.isNpmLink(Url) === true) {
+          const npmtoGitUrl = await npmLink.npmToGitRepoUrl(Url);
+  
+          if (npmtoGitUrl !== null) {
+            this.githubRepoUrl = npmtoGitUrl;
+            await this.get_api_url(npmtoGitUrl);
+          } else {
+            console.error('Failed to fetch GitHub repository URL for npm link');
+          }
+        } 
+        else {
+          console.error('The URL is not a valid GitHub or npm link');
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
     }
 
     async get_api_url(repositoryUrl: string): Promise<string> {
@@ -48,6 +71,8 @@ export class Metric {
             var urlParts = repositoryUrl.split('/');
             var owner = urlParts[3];
             var repoName = urlParts[4];
+            this.repoOwner = urlParts[3];
+            this.repoName = urlParts[4];
         
             //Check if it ends with .git or and backslashes '\' and remove them
             if(repoName.endsWith('.git\r')){
@@ -88,74 +113,45 @@ export class Metric {
             return "";
           }
         }
-    
-    // Examples:
-    // const scopedUrl = 'https://www.npmjs.com/package/@babel/core';
-    // const versionedUrl = 'https://www.npmjs.com/package/lodash/v/4.17.21';
 
-    // console.log(getNpmPackageName(scopedUrl)); // Outputs "@babel/core"
-    // console.log(getNpmPackageName(versionedUrl)); // Outputs "lodash"
-
-    async getNpmPackageName(npmUrl: string): Promise<string | null> {
-        try {
-            const parts = npmUrl.split('/'); // Split the URL by '/'
-            
-            // Find the index of "package" in the URL
-            const packageIndex = parts.indexOf('package');
-            
-            if (packageIndex !== -1) {
-        
-                // Check if the next item is a scope (starts with '@') 
-                if (parts[packageIndex + 1]?.startsWith('@')) { 
-                    return `${parts[packageIndex + 1]}/${parts[packageIndex + 2]}`; // Scoped package, so return the next two items
-                } else {
-                    return parts[packageIndex + 1]; // Non-scoped package, so return the next item
-                }
-            }
-            else {
-                throw Error ('Failed to find package in npm url')
-            }
-            
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
+    async cloneRepository(){
+      /*
+          args: none
+          return: bool (if cloning was successful or not)
+  
+          Description: This function uses the javascript library 'isomorphic-git' to clone
+          a repository on github if the user provides a valid github repository URL.
+      */ 
+      const dir = path.join(process.cwd(), this.dirPath);
+      try {
+          await git.clone({ fs, http, dir, url: this.url });
+          console.log('Repository cloned successfully.');
+          return true;
+      } 
+      catch (error) {
+          console.error('Error cloning repository:', error);
+          return false;
+      }
     }
 
-    async npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
-        try {
-            const packageName = this.getNpmPackageName(npmUrl);
-            const response = await axios.get(`https://registry.npmjs.org/${packageName}`);
-            
-            if (response.status === 200) {
-                const packageInfo = response.data;
-                
-                if (packageInfo.repository) { // Check if the package has a repository field
-                    
-                        if(packageInfo.repository.url) {
-                            return this.get_api_url(packageInfo.repository.url);
-                        }      
-                        else {
-                            const parts= (packageInfo.repository).split(":")[1].split("/"); //assuming of format - 'github:user/repo'
-                            const owner = parts[0];
-                            const repo = parts[1];
-                            const url = 'https://github.com/repos/' + owner + '/' + repo;
-                            
-                            return this.get_api_url(packageInfo.repository.url)
-                        }
-                    }
-            }
-            else {
-                throw new Error(`Failed to fetch completed issues. Status code: ${response.status}`);
-            }
-
-            return null;
-
-        } catch (error) {
-            console.error(`Error fetching package info for ${npmUrl}:`);
-            throw error;
-        }
-    
+    async deleteRepository() {
+      /*
+          args: none
+          return: bool (if deleting was successful or not)
+  
+          Description: This function deletes the cloned directory in our system
+      */ 
+      try {
+          //await fs.chmod(this.dirPath, 0o755);
+          //console.log('permissions changed');
+          await fs.rm(this.dirPath, { recursive: true });
+          console.log(`Directory '${this.dirPath}' and its contents deleted successfully.`);
+          return true;
+      } 
+      catch (error) {
+          console.error(`Error deleting directory '${this.dirPath}':`, error);
+          return false;
+      }
     }
 
 }

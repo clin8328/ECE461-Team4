@@ -1,10 +1,10 @@
 import { Octokit } from '@octokit/rest';
 import { subMonths, isBefore } from "date-fns";
+import { Metric} from "./metric"
 
-export class Responsiveness{
-    url: string;
+export class Responsiveness extends Metric{
     constructor(url: string){
-      this.url = url;
+        super(url, "Responsiveness");
     }
 
     async getCompletedIssues(repositoryUrl: string) {
@@ -17,13 +17,11 @@ export class Responsiveness{
         github repository URL.
         */ 
 
-
-        const urlParts = repositoryUrl.split('/');
-        const owner = urlParts[3]; //Obtain owner of repo
-        const repoName = urlParts[4]; //Obtain repo name
+        const owner = this.repoOwner; //Obtain owner of repo
+        const repoName = this.repoName; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: this.githubToken //Insert token
         });
     
         try {
@@ -101,7 +99,7 @@ export class Responsiveness{
 
 
         try {
-            let data = await this.getCompletedIssues(this.url);
+            let data = await this.getCompletedIssues(this.githubRepoUrl);
             const score = await this.calculateScore(data);
             return score;
         } catch (error) {
@@ -120,7 +118,7 @@ export async function getResponsiveness(url: string) {
 }
 
 
-/* Example - Note: This example may have potential issues, requires further testing
+/* Example 
 
 (async () => {
     let test = new Responsiveness('https://github.com/davisjam/safe-regex');
