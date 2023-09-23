@@ -1,10 +1,10 @@
 import { Octokit } from '@octokit/rest';
 import { subMonths, isBefore } from "date-fns";
+import { Metric} from "./metric"
 
-export class Responsiveness{
-    url: string;
+export class Responsiveness extends Metric{
     constructor(url: string){
-      this.url = url;
+        super(url, "Responsiveness");
     }
 
     async getCompletedIssues(repositoryUrl: string) {
@@ -17,13 +17,11 @@ export class Responsiveness{
         github repository URL.
         */ 
 
-
-        const urlParts = repositoryUrl.split('/');
-        const owner = urlParts[3]; //Obtain owner of repo
-        const repoName = urlParts[4]; //Obtain repo name
+        const owner = this.repoOwner; //Obtain owner of repo
+        const repoName = this.repoName; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: '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' //Insert token
+            auth: this.githubToken //Insert token
         });
     
         try {
@@ -41,8 +39,8 @@ export class Responsiveness{
                 const completedWithin3Months = completedIssues.data.filter((issue) => (
                     issue.state === 'closed' && //Filter for closed issues
                     issue.state_reason === 'completed' && //Filter for issues that have been marked as completed
-                    issue.closed_at !== null &&
-                    isBefore(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
+                    issue.closed_at !== null
+                    //isBefore(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
                 ));
 
                 return completedWithin3Months; //Return the data that contiains 
@@ -101,7 +99,7 @@ export class Responsiveness{
 
 
         try {
-            let data = await this.getCompletedIssues(this.url);
+            let data = await this.getCompletedIssues(this.githubRepoUrl);
             const score = await this.calculateScore(data);
             return score;
         } catch (error) {
@@ -120,7 +118,7 @@ export async function getResponsiveness(url: string) {
 }
 
 
-/* Example - Note: This example may have potential issues, requires further testing
+/* Example 
 
 (async () => {
     let test = new Responsiveness('https://github.com/davisjam/safe-regex');

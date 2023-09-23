@@ -5,7 +5,6 @@
   "main": "index.js",
   "dependencies": {
     "@octokit/rest": "^20.0.1",
-    "@types/jest": "^29.5.4",
     "@types/node": "20.5.9",
     "async-lock": "^1.4.0",
     "asynckit": "^0.4.0",
@@ -54,7 +53,7 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "test-json": "jest --coverage > src/testing_custom_output/output.txt 2>&1",
+    "test-json": "jest --coverage > src/testing/output.txt 2>&1",
     "lint": "eslint . --ext .ts"
   },
   "author": "",

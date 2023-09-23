@@ -1,12 +1,19 @@
 /*
   Original Author: Chuhan Lin
-  Date edit: 9/7/2023
+  last Date edit: 9/21/2023
   File description: This file will store all helper functions that we will use to
-  simplify our project
+  simplify our project and functions that is used in main
 */
 
 import axios, { AxiosError } from 'axios';
 import { Octokit } from '@octokit/rest';
+import {License, get_License_Metric} from './license';
+import { getResponsiveness } from './responsiveness';
+import { Bus_Factor } from './busFactor';
+import * as fs from 'fs/promises';
+import { RampUp } from './rampup';
+import { Correctness } from './correctness';
+import { net_score } from './netScore';
 
 export async function get_api_url(repositoryUrl: string): Promise<string> {
 /*
@@ -33,7 +40,7 @@ export async function get_api_url(repositoryUrl: string): Promise<string> {
     }
 
     const octokit = new Octokit({
-      auth: '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' //Insert token
+      auth: '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' //Insert token
     });
 
     var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
@@ -59,6 +66,70 @@ export async function get_api_url(repositoryUrl: string): Promise<string> {
   }
 }
 
+export async function evaluate_URL(url: string) {
+  /*
+    args: string (github repo URL)
+    return: ndjson
+
+    Description: This is the function to call inside main that evaluates a given github url and
+    returns 6 metrics analyzed from the package.
+  */
+  try {
+    const metrics = {
+      "URL" : url,
+      "NET_SCORE": -1,
+      "RAMP_UP_SCORE": -1,
+      "CORRECTNESS_SCORE": -1,
+      "BUS_FACTOR_SCORE": -1,
+      "RESPONSIVE_MAINTAINER_SCORE": -1,
+      "LICENSE_SCORE": -1,
+    };
+
+    let correctness = new Correctness("test-clone");
+    let rampup = new RampUp();
+    let lic = new License(url, "test-clone");
+
+    await lic.cloneRepository();
+    metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
+    metrics["RESPONSIVE_MAINTAINER_SCORE"] = await getResponsiveness(url);
+    metrics["BUS_FACTOR_SCORE"] = await Bus_Factor(url);
+    metrics["RAMP_UP_SCORE"] = await rampup.rampup();
+    metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
+    metrics["NET_SCORE"] = net_score(metrics);
+    await lic.deleteRepository();
+
+    return metrics;
+
+  } catch (error) {
+    console.error(error);
+    return {
+      "URL" : url,
+      "NET_SCORE": -1,
+      "RAMP_UP_SCORE": -1,
+      "CORRECTNESS_SCORE": -1,
+      "BUS_FACTOR_SCORE": -1,
+      "RESPONSIVE_MAINTAINER_SCORE": -1,
+      "LICENSE_SCORE": -1,
+    };
+    process.exit(1);
+  }
+}
+
+export async function read_file(url: string) {
+  /*
+  args: string (file path)
+  return: string (file content)
+
+  Description: The function takes in a path to a file and reads the content of it
+  */
+  try {
+    const fileContent = await fs.readFile(url, 'utf-8');
+    return fileContent;
+  } catch (error) {
+    //console.error('Error reading file:', error);
+    process.exit(1);
+  }
+}
 
 // Example usage
 // const repositoryUrl = 'https://github.com/clin8328/ECE461-Team4'; // Replace with the actual repository URL

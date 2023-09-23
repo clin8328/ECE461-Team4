@@ -5,7 +5,7 @@ export async function Bus_Factor(url: string): Promise<number> {
 
     try {
         const octokit = new Octokit({
-            auth: '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' // Put your GitHub token here
+            auth: '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' // Put your GitHub token here
         });
 
         const urlParts = url.split('/');
