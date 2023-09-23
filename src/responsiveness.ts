@@ -1,9 +1,9 @@
+import { Metric } from "./metric";
 import { Octokit } from '@octokit/rest';
 import { subMonths, isBefore } from "date-fns";
-import { Metric} from "./metric"
 
-export class Responsiveness extends Metric{
-    constructor(url: string){
+export class Responsiveness extends Metric {
+    constructor(url: string) {
         super(url, "Responsiveness");
     }
 
@@ -112,10 +112,10 @@ export class Responsiveness extends Metric{
 /*
 used in main to return an integer representing the score from a string representing the url
 */
-export async function getResponsiveness(url: string) {
-    let test = new Responsiveness(url);
-    return await test.numCollaborators();
-}
+// export async function getResponsiveness(url: string) {
+//     let test = new Responsiveness(url);
+//     return await test.numCollaborators();
+// }
 
 
 /* Example 

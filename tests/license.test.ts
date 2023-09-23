@@ -3,7 +3,8 @@
   Date edit: 9/14/2023
   File description: Testing the License Metric class
 */
-import {License, get_License_Metric} from "../src/license"
+import { License as MyLicense} from "../src/license";
+
 
 const fsPromises = require('fs/promises');
 const git = require('isomorphic-git');
@@ -31,7 +32,7 @@ describe('License Class', () => {
 
     it('Cloning Success and Delete success', async () => {
         const dirPath = 'test-dir'
-        const license = new License('https://github.com/nullivex/nodist');
+        const license = new MyLicense('https://github.com/nullivex/nodist');
 
         path.join = jest.fn((baseDir, dirPath) => {
             return "";
@@ -57,7 +58,7 @@ describe('License Class', () => {
 
     it('Cloning Fail and Delete fail', async () => {
         const dirPath = 'test-dir';
-        const license = new License('https://github.com/invalid/invalid');
+        const license = new MyLicense('https://github.com/invalid/invalid');
     
         // Mock the path.join function
         path.join = jest.fn((baseDir, dirPath) => {
@@ -88,7 +89,7 @@ describe('License Class', () => {
 
     it('Testing fail/success conditions on evaluate license', async () => {
         const dirPath = 'test-dir';
-        const license = new License('https://github.com/mock/mock');
+        const license = new MyLicense('https://github.com/mock/mock');
         
         //Mock fs.readdir and fs.readFile
         const readDirSpy = jest.spyOn(fsPromises, 'readdir');
@@ -117,14 +118,4 @@ describe('License Class', () => {
         readDirSpy.mockRestore();
         readFileSpy.mockRestore();
     },20000);
-
-    it('Test integration function', async() => {
-        const cloneSpy = jest.spyOn(git, 'clone');
-        const rmSpy = jest.spyOn(fsPromises, 'rm');
-
-        await get_License_Metric("url");
-        
-        cloneSpy.mockRestore();
-        rmSpy.mockRestore();
-    });
 });

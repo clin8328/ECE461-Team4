@@ -1,10 +1,11 @@
-import axios, { AxiosError } from 'axios';
 import { Octokit } from '@octokit/rest';
 import * as path from 'path';
 import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
 import {logProvider} from "./logConfig";
+
 import * as links from "./check_links";
-import * as npmLink from "./npmlink";
+import { npmToGitRepoUrl } from "./npmlink";
+
 import * as git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import * as fs from 'fs/promises';
@@ -45,7 +46,7 @@ export class Metric {
           await this.get_api_url(Url);
         } 
         else if (links.isNpmLink(Url) === true) {
-          const npmtoGitUrl = await npmLink.npmToGitRepoUrl(Url);
+          const npmtoGitUrl = await npmToGitRepoUrl(Url);
   
           if (npmtoGitUrl !== null) {
             this.githubRepoUrl = npmtoGitUrl;
