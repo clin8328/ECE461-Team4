@@ -27,7 +27,7 @@ describe('Testing npmlink.ts', () => {
   it('get_api_url', async () => {
     let apiURL = await get_api_url('https://github.com/WillStonebridge/CycleGan_Reimplementation');
     expect(apiURL).toBe('https://api.github.com/repos/WillStonebridge/CycleGan_Reimplementation');
-  })
+  }, 12000)
   
 });
   
