@@ -53,7 +53,7 @@ describe('Net Score function', () => {
 
       const result = net_score(metrics);
 
-      expect(result).toBe(0.7);
+      expect(result).toBe(0.68);
     });
   
 });

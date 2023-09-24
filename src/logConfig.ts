@@ -30,11 +30,7 @@ else if(Number(process.env.LOG_LEVEL) == 1) {
 }
 else{
     logLvl = LogLevel.Off
-}
-
-  //create the filestream to write the log to
-logStream = fs.createWriteStream(String(logPath)+'/log.txt')
-
+  }
 
 //createFileProvider method
 //input: none
@@ -48,7 +44,12 @@ export const logProvider = Log4TSProvider.createProvider("fileProvider", {
   level: logLvl ,
   channel: {
     type: "LogChannel",
-    write: logMessage => logStream.write(`${logMessage.message}\n`),
+    write: logMessage => 
+    fs.appendFile(logPath+'/log.txt', logMessage.message + '\n', (err) => {
+      if (err) {
+        console.error('Error appending data to log file:', err);
+      } 
+    }),
   }
 });
 

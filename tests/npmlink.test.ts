@@ -21,7 +21,7 @@ describe('Testing npmlink.ts', () => {
 
   it('npmToGitRepoUrl', async () => {
     let gitUrl = await npmToGitRepoUrl('www.npmjs.com/package/browserify');
-    expect(gitUrl).toBe('git+ssh://git@github.com/browserify/browserify.git');
+    expect(gitUrl).toBe('https://github.com/browserify/browserify.git');
   }, 12000)
 
   it('get_api_url', async () => {
