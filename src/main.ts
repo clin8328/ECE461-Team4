@@ -84,8 +84,8 @@ export async function read_file(url: string): Promise<string> {
     const fileContent = await fs.readFile(url, 'utf-8');
     return fileContent;
   } catch (error) {
-    console.error('Error reading file:', error);
-    throw error;
+    // console.error('Error reading file:', error);
+    // throw error;
     process.exit(1);
   }
 }
@@ -100,14 +100,24 @@ async function main() {
   const fileList = fileContent.split('\n');
   
   for (let link of fileList) {
+    if(link == ""){
+      continue;
+    }
+
     const status = await check_api_limit();
     if(!status){
-      await delay(1000);
+      await delay(60000);
     }
-    const output = await evaluate_URL(link.substring(0,link.length-1));
-    console.log(output);
 
-    break;
+    var url_link = link.length;
+    if(link.endsWith("\n") || link.endsWith("\r")){
+      url_link = link.length-1;
+    }
+
+    const output = await evaluate_URL(link.substring(0,url_link));
+    console.log(output);
+    await delay(500);
+
   }
   process.exit(0);
 }
