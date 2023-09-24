@@ -31,7 +31,7 @@ describe('Testing Correctness', () => {
     });
   });
   
-  it('Lint Failure on non-ts/js files', async () => {
+  it('Lint Failure on non-code files', async () => {
     await expect(lintFile('src/testing/unlintable.txt')).rejects.toThrow();
   });
 
@@ -49,13 +49,12 @@ describe('Testing Correctness', () => {
   // });
 
   it('Evaluate Metric (git url)', async () => {
-    let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/');
-    await metric.getGitHubRepoUrl('https://github.com/KillianLucas/open-interpreter/');
+    let metric = new Correctness('https://www.npmjs.com/package/form-data');
+    await metric.getGitHubRepoUrl('https://www.npmjs.com/package/form-data');
     await metric.cloneRepository();
     let value = await metric.getMetric();
     await metric.deleteRepository();
-    expect(value).toBeLessThanOrEqual(1);
-    expect(value).toBeGreaterThanOrEqual(0);
+    expect(value).toBe(0.95);
   }, 200000);
 });
   
