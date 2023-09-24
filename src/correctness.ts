@@ -43,6 +43,7 @@ export class Correctness extends Metric {
       lines += await countLinesInFile(file);
     }
 
+
     //console.log(jsts_files);
     this.logger.info("errors: ", errors, " | lines: ", lines);
     this.logger.info("metric: ", 1 - errors/lines);
@@ -51,6 +52,7 @@ export class Correctness extends Metric {
     } else {
       return Math.round((1 - errors / lines)*100) / 100;
     }
+
   }
 
   getAlltsjsFiles(filepath: string): string[] {

@@ -55,6 +55,12 @@ def run_urlfile() -> int:
     is_valid_output: bool
     total_correct = 0
 
+<<<<<<< HEAD
+=======
+    print(url_file_rc)
+    print(output)
+
+>>>>>>> 177ddc4902cca502e62e49ea741d342e6b0cf23b
     if url_file_rc is True:
         total_correct += 1
         print(f"{GREEN}> URL_FILE command exited successfully.{RESET}")
