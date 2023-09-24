@@ -103,17 +103,21 @@ async function main() {
     if(link == ""){
       continue;
     }
+
     const status = await check_api_limit();
     if(!status){
       await delay(60000);
     }
+
     var url_link = link.length;
     if(link.endsWith("\n") || link.endsWith("\r")){
       url_link = link.length-1;
     }
+
     const output = await evaluate_URL(link.substring(0,url_link));
     console.log(output);
-    await delay(1000);
+    await delay(500);
+
   }
   process.exit(0);
 }

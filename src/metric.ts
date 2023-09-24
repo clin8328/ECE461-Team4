@@ -150,7 +150,7 @@ export class Metric {
           //await fs.chmod(this.dirPath, 0o755);
           //console.log('permissions changed');
           await fs.rm(this.repoPath, { recursive: true });
-          console.log(`Directory '${this.repoPath}' and its contents deleted successfully.`);
+          //console.log(`Directory '${this.repoPath}' and its contents deleted successfully.`);
           return true;
       } 
       catch (error) {
