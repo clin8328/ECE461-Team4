@@ -1,2 +1,17 @@
 2023-09-24 16:35:42,152 INFO  [Correctness] Repository athttps://github.com/form-data/form-data.gitcloned successfully.
 2023-09-24 16:35:42,488 INFO  [Correctness] Directory '/home/shay/a/jwstoneb/SWE/ECE461-Team4/clone-path' and its contents deleted successfully.
+2023-09-24 19:16:02,291 INFO  [License] Repository atcloned successfully.
+2023-09-24 19:16:02,292 INFO  [License] Directory '/home/shay/a/jwstoneb/SWE/ECE461-Team4/clone-path' and its contents deleted successfully.
+2023-09-24 19:16:02,295 INFO  [License] License: license found for
+2023-09-24 19:16:02,760 INFO  [RampUp] Repository athttps://github.com/thockin/testcloned successfully.
+2023-09-24 19:16:02,767 INFO  [RampUp] countLinesInReadme: path = clone-path/README.md, lines = 10
+2023-09-24 19:16:02,774 INFO  [RampUp] Directory '/home/shay/a/jwstoneb/SWE/ECE461-Team4/clone-path' and its contents deleted successfully.
+2023-09-24 19:16:03,17 INFO  [RampUp] README not found in the repository for repo Fake
+2023-09-24 19:16:03,17 INFO  [RampUp] Directory '/home/shay/a/jwstoneb/SWE/ECE461-Team4/clone-path' and its contents deleted successfully.
+2023-09-24 19:16:04,993 INFO  [RampUp] Repository athttps://github.com/Nijikokun/generate-schema.gitcloned successfully.
+2023-09-24 19:16:05,28 INFO  [RampUp] countLinesInReadme: path = clone-path/readme.md, lines = 244
+2023-09-24 19:16:05,40 INFO  [RampUp] Directory '/home/shay/a/jwstoneb/SWE/ECE461-Team4/clone-path' and its contents deleted successfully.
+2023-09-24 19:16:06,163 INFO  [Correctness] Repository athttps://github.com/form-data/form-data.gitcloned successfully.
+2023-09-24 19:16:06,491 INFO  [Correctness] errors:  [56, " | lines: ", 1121]
+2023-09-24 19:16:06,491 INFO  [Correctness] metric:  [0.9500446030330062]
+2023-09-24 19:16:06,514 INFO  [Correctness] Directory '/home/shay/a/jwstoneb/SWE/ECE461-Team4/clone-path' and its contents deleted successfully.
