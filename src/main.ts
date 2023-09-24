@@ -7,7 +7,7 @@ import { Correctness } from './correctness';
 import { net_score } from './netScore';
 import { Responsiveness } from './responsiveness';
 import { Metric } from './metric';
-
+import { check_api_limit } from './api_limit';
 export async function evaluate_URL(url: string) {
   /*
     args: string (github repo URL)
@@ -31,23 +31,23 @@ export async function evaluate_URL(url: string) {
     
     let metric = new Metric(url,"test-clone");
     let correctness = new Correctness(url);
-    let rampup = new RampUp(url);
-    let lic = new License(url);
-    let responsiveness = new Responsiveness(url);
-    console.log(metric.githubRepoUrl);
-    console.log(metric.repoOwner);
-    console.log(metric.repoName);
-    console.log(metric.status);
-    console.log(metric.githubToken);
+    //let rampup = new RampUp(url);
+    //let lic = new License(url);
+    //let responsiveness = new Responsiveness(url);
+    // console.log(metric.githubRepoUrl);
+    // console.log(metric.repoOwner);
+    // console.log(metric.repoName);
+    // console.log(metric.status);
+    // console.log(metric.githubToken);
 
-    await metric.cloneRepository();
-    metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
-    metrics["RESPONSIVE_MAINTAINER_SCORE"] = await responsiveness.numCollaborators();
-    metrics["BUS_FACTOR_SCORE"] = await bus.Bus_Factor();
-    metrics["RAMP_UP_SCORE"] = await rampup.rampup();
-    metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
-    metrics["NET_SCORE"] = net_score(metrics);
-    await metric.deleteRepository();
+    //await metric.cloneRepository();
+    //metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
+    //metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 10) / 10;
+    // metrics["BUS_FACTOR_SCORE"] = await bus.Bus_Factor();
+    // metrics["RAMP_UP_SCORE"] = await rampup.rampup();
+    // metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
+    // metrics["NET_SCORE"] = net_score(metrics);
+    //await metric.deleteRepository();
 
     return metrics;
 
@@ -90,7 +90,7 @@ async function main() {
   for (let link of fileList) {
     const output = await evaluate_URL(link.substring(0,link.length-1));
     console.log(output);
-    break;
+    await check_api_limit();
   }
   process.exit(0);
 }

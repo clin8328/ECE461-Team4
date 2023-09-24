@@ -6,15 +6,15 @@
 */
 
 import axios from 'axios';
-
-const accessToken = "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";
+require('dotenv').config();
+const accessToken = process.env.GITHUB_TOKEN;
 const apiUrl = 'https://api.github.com/repos/clin8328/ECE461-Team4';
 
 const headers = {
   Authorization: `token ${accessToken}`,
 };
 
-export function check_api_limit(){
+export async function check_api_limit(){
     axios.get(apiUrl, { headers })
     .then((response) => {
         const rateLimitRemaining = response.headers['x-ratelimit-remaining']

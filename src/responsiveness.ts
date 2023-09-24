@@ -21,7 +21,7 @@ export class Responsiveness extends Metric {
         const repoName = this.repoName; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: "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" //Insert token
+            auth: this.githubToken //Insert token
         });
         
         try {
