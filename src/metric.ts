@@ -46,6 +46,8 @@ export class Metric {
           await this.get_api_url(Url);
         } else if (links.isNpmLink(Url) === true) {
           const npmtoGitUrl = await npmToGitRepoUrl(Url);
+          console.log("----------------------------------------------------------------------------------------");
+          console.log(npmtoGitUrl);
           if (npmtoGitUrl !== null) {
             this.githubRepoUrl = npmtoGitUrl;
             await this.get_api_url(npmtoGitUrl);
@@ -80,7 +82,10 @@ export class Metric {
             if(repoName.endsWith('.git\r')){
               repoName = repoName.substring(0,repoName.length-5)
             }
-        
+            if(repoName.endsWith('.git')){
+              repoName = repoName.substring(0,repoName.length-3)
+            }
+            
             const regex = /[\\]*\r$/;
             if(regex.test(repoName)){
               repoName = repoName.replace(regex,'');
@@ -129,8 +134,6 @@ export class Metric {
       */ 
       const dir = this.repoPath;
       try {
-        console.log("----------------------")
-          console.log(this.githubRepoUrl);
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           return true;
       } 

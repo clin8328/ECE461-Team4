@@ -51,8 +51,11 @@ export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
         if (data.repository) { // Check if the package has a repository field
   
               if(data.repository.url) {
-                  console.log(data.repository.url)
-                  return data.repository.url;
+                var output = data.repository.url
+                  if(data.repository.url.startsWith("git://")){
+                    output = "https://" + data.repository.url.substring(6,data.repository.url.length)
+                  }
+                  return output;
               }  
             else {
                 const parts= (data.repository).split(":")[1].split("/"); //assuming of format - 'github:user/repo'
