@@ -1,3 +1,15 @@
+//Logger Use:
+//Use in classes that extend metric
+//1) Use this.logger.(info/debug)("message");
+//Use outside of metric classes
+//1) Use the imports for Log4TS and the logProvider 
+//  -import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
+//  -import {logProvider} from "./logConfig";
+//2) get a logger instance:
+//  -logger = logProvider.getLogger(metricName);
+//3) call the logger similarly to how it is called in the metrics, but using "logger" instead of "this.logger"
+//  -logger.(debug/info)("message");
+
 /*--- config/LogConfig.ts ---*/
 import {LogLevel, createLogProvider} from "typescript-logging";
 import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
