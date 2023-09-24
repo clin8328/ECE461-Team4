@@ -43,17 +43,17 @@ export class Responsiveness extends Metric {
                     isAfter(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
                 ));
                     
-                // console.log(completedWithin3Months)
-                // console.log(new Date('2023-08-30T21:31:09Z'));
-                // console.log(threeMonthsAgo);
-                // console.log(isAfter(new Date('2023-08-30T21:31:09Z'), threeMonthsAgo));
+                // this.logger.info(completedWithin3Months)
+                // this.logger.info(new Date('2023-08-30T21:31:09Z'));
+                // this.logger.info(threeMonthsAgo);
+                // this.logger.info(isAfter(new Date('2023-08-30T21:31:09Z'), threeMonthsAgo));
 
                 return completedWithin3Months; //Return the data that contiains 
             } else {
                 throw new Error(`Failed to fetch completed issues. Status code: ${completedIssues.status}`);
             }
-        } catch (error) {
-            console.error(error);
+        } catch (error:any) {
+            this.logger.debug("getCompletedIssues: Error: " + error.message);
             throw error;
         }
     }
@@ -87,7 +87,7 @@ export class Responsiveness extends Metric {
         else {
             const averageDaysOpen = totalDaysOpen / numIssuesClosed;        
         
-            // console.log(`Average time to close an issue: ${averageDaysOpen} days, number of issues closed: ${numIssuesClosed}`);
+            // this.logger.info(`Average time to close an issue: ${averageDaysOpen} days, number of issues closed: ${numIssuesClosed}`);
         
             score = Math.max(0, (maxBenchmarkDays - averageDaysOpen) / maxBenchmarkDays);
         }
@@ -109,8 +109,8 @@ export class Responsiveness extends Metric {
             let data = await this.getCompletedIssues(this.githubRepoUrl);
             const score = await this.calculateScore(data, maxBenchmarkDays);
             return score;
-        } catch (error) {
-            console.error(error);
+        } catch (error:any) {
+            this.logger.debug("numCollaborators: Error: " + error.message);
             return -1; // Return a default score or handle the error as needed
         }
     }
@@ -130,7 +130,7 @@ used in main to return an integer representing the score from a string represent
 (async () => {
     let test = new Responsiveness('https://github.com/clin8328/ECE461-Team4'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
     const score = await test.numCollaborators();
-    console.log(`Score: ${score}`);
+    this.logger.info(`Score: ${score}`);
 })();
 
 */
@@ -138,5 +138,5 @@ used in main to return an integer representing the score from a string represent
 // (async () => {
 //     let test = new Responsiveness('https://github.com/davisjam/safe-regex'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
 //     const score = await test.numCollaborators();
-//     console.log(`Score: ${score}`);
+//     this.logger.info(`Score: ${score}`);
 // })();
