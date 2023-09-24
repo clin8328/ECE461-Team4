@@ -71,7 +71,7 @@ export class RampUp extends Metric {
     }
     
     async rampup():Promise <number> {
-        const repoDirectory = this.repoPath; // Replace with the path to your cloned repository directory
+        const repoDirectory = this.clone_path; // Replace with the path to your cloned repository directory
         const extension = '.js'; // Change the file extension as needed
         const scale = 10; //How many lines of code in files to one line in the Readme
         let linesInFiles = 0; //LinesInFiles
