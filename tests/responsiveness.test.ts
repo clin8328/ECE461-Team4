@@ -215,12 +215,19 @@ const malformedJSON = {
 let url:string = "https://github.com/JDCambridge/test"
 
 describe('Responsiveness class', () => {
-  beforeAll(() => {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
 
+  beforeEach(() => {
+      console.log = jest.fn();
+      console.error = jest.fn();
   });
+
   afterEach(() => {
-
+      console.log = originalConsoleLog;
+      console.error = originalConsoleError;
   });
+
   //test cases for the getCompleted issues method
   describe('getCompletedIssues', () => {
     //test that the github API is getting called correctly
