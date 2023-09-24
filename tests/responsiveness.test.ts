@@ -235,6 +235,7 @@ describe('Responsiveness class', () => {
 
       mockRequest = jest.fn(() => {return Promise.resolve(mockJson)});
       const responsiveness = new Responsiveness(url);      
+      await responsiveness.getGitHubRepoUrl(url);
       let completedIssues = await responsiveness.getCompletedIssues(url);
 
 
@@ -252,6 +253,7 @@ describe('Responsiveness class', () => {
     it('should error on bad data correctly', async () => {
       mockRequest.mockImplementation(() => Promise.reject(new Error("bad call")));
       const responsiveness = new Responsiveness(url);   
+      await responsiveness.getGitHubRepoUrl(url);
       const asyncCall = () => responsiveness.getCompletedIssues(url)
       await expect(asyncCall).rejects.toThrow();
 
@@ -263,6 +265,7 @@ describe('Responsiveness class', () => {
       mockRequest = jest.fn(() => {return Promise.resolve(mockJson)});
       
       let responsiveness = new Responsiveness(url);
+      await responsiveness.getGitHubRepoUrl(url);
       const score = await responsiveness.numCollaborators();
 
       console.log(score);
@@ -276,6 +279,7 @@ describe('Responsiveness class', () => {
       mockRequest = jest.fn(() =>  Promise.reject(new Error("bad call")));
       
       let responsiveness = new Responsiveness(url);
+      await responsiveness.getGitHubRepoUrl(url);
 
       try{
         responsiveness.numCollaborators()
