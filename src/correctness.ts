@@ -26,7 +26,7 @@ export class Correctness extends Metric {
           this.directory_path = directRepoPath;
       } else {
           // Handle the case when metricName is not provided
-          this.directory_path = this.repoPath;
+          this.directory_path = this.clone_path;
       }
 
       this.blacklist = ['test', 'module', 'dist', '@', '.bin']; //list of names that should not be counted as source files
@@ -34,7 +34,7 @@ export class Correctness extends Metric {
 
   // Method
   async getMetric(): Promise<number> {
-    let jsts_files: string[] = this.getAlltsjsFiles(this.repoPath);
+    let jsts_files: string[] = this.getAlltsjsFiles(this.clone_path);
 
     let errors: number = 0;
     let lines: number = 0;
