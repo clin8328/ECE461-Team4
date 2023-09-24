@@ -30,7 +30,7 @@ export class Metric {
     constructor(Url: string, metricName: string) {
         this.githubRepoUrl = ""; //Set in getGitHubRepoUrl
         this.repoOwner = ""; //Set in get_api_url
-        this.repoName = ""; //Set in get_api_url
+        this.repoName = "clone-path"; //Set in get_api_url
         this.status = 0;
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
         
@@ -76,7 +76,7 @@ export class Metric {
             var owner = urlParts[3];
             var repoName = urlParts[4];
             this.repoOwner = urlParts[3];
-            this.repoName = urlParts[4];
+            //this.repoName = urlParts[4];
 
             //Check if it ends with .git or and backslashes '\' and remove them
             if(repoName.endsWith('.git\r')){
@@ -104,7 +104,7 @@ export class Metric {
 
             if (response.status === 200) {
               this.repoOwner = owner;
-              this.repoName = repoName;
+              //this.repoName = repoName;
               this.repoPath = path.join(process.cwd(), this.repoName);
               this.status = response.status;
 
