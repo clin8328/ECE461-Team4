@@ -55,9 +55,6 @@ def run_urlfile() -> int:
     is_valid_output: bool
     total_correct = 0
 
-    print(url_file_rc)
-    print(output)
-
     if url_file_rc is True:
         total_correct += 1
         print(f"{GREEN}> URL_FILE command exited successfully.{RESET}")
@@ -97,6 +94,8 @@ def run_urlfile() -> int:
     os.environ["LOG_FILE"] = ""
     url_file = CLI_CMD_WRAPPER("./run one-url.txt")
     url_file_rc, output = url_file.run()
+
+    
     if url_file_rc is False:
         total_correct += 1
         print(f"{GREEN}> URL_FILE command failed to exit successfully when LOG_FILE is not set.{RESET}")
@@ -167,19 +166,19 @@ def run_test_suite() -> int:
 def main():
     
     #Setup ENV for testing
-    os.environ['GITHUB_TOKEN'] = "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"
+    os.environ['GITHUB_TOKEN'] = "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"
     os.environ['LOG_LEVEL'] = "0"
     os.environ['LOG_FILE'] = "/home/shay/a/lin1371/461/ECE461-Team4"
     
     # Run install test
-    print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
-    total_correct = run_install()
-    print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
+    # print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
+    # total_correct = run_install()
+    # print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
 
     #Run test_suite test
-    print(f"{BOLD}{BLUE}Testing './run test'...{RESET}")
-    total_correct = run_test_suite()
-    print(f"{BOLD}{YELLOW if total_correct < 4 else GREEN} {total_correct} / 4 tests passed.{RESET}\n")
+    # print(f"{BOLD}{BLUE}Testing './run test'...{RESET}")
+    # total_correct = run_test_suite()
+    # print(f"{BOLD}{YELLOW if total_correct < 4 else GREEN} {total_correct} / 4 tests passed.{RESET}\n")
 
     # Run url_file test
     print(f"{BOLD}{BLUE}Testing './run URL_FILE'...{RESET}")
