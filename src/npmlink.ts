@@ -42,7 +42,7 @@ export function getNpmPackageName(npmUrl: string): string | null {
 export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
     try {
       const packageName = getNpmPackageName(npmUrl);
-      console.log(packageName);
+
       const response = await fetch(`https://skimdb.npmjs.com/registry/${packageName}`);
       const data = await response.json();
   

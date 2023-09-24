@@ -1,4 +1,2 @@
 https://www.npmjs.com/package/safe-regex
 https://github.com/octokit/fixtures
-https://github.com/KillianLucas/open-interpreter/
-https://github.com/WillStonebridge/CycleGan_Reimplementation\

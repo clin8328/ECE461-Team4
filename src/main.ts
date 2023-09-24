@@ -100,14 +100,20 @@ async function main() {
   const fileList = fileContent.split('\n');
   
   for (let link of fileList) {
+    if(link == ""){
+      continue;
+    }
     const status = await check_api_limit();
     if(!status){
-      await delay(1000);
+      await delay(60000);
     }
-    const output = await evaluate_URL(link.substring(0,link.length-1));
+    var url_link = link.length;
+    if(link.endsWith("\n") || link.endsWith("\r")){
+      url_link = link.length-1;
+    }
+    const output = await evaluate_URL(link.substring(0,url_link));
     console.log(output);
-
-    break;
+    await delay(1000);
   }
   process.exit(0);
 }
