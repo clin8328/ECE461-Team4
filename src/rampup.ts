@@ -66,6 +66,8 @@ export class RampUp extends Metric {
         } catch(error) {
             throw error;
         }
+        this.logger.info("countLinesInReadme: path = " + path+", lines = " + lines)
+
         return lines;
     }
     

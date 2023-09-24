@@ -10,6 +10,8 @@ import { Metric } from './metric';
 import { check_api_limit } from './api_limit';
 import { stat } from 'fs';
 
+require('dotenv').config();
+
 
 export async function evaluate_URL(url: string) {
   /*
@@ -94,6 +96,29 @@ export async function read_file(url: string): Promise<string> {
   }
 }
 
+require('dotenv').config();
+
+async function checkEnvironment() {
+    try {
+        // console.log(process.env.GITHUB_TOKEN)
+        // console.log(process.env.LOG_FILE)
+        // console.log(process.env.LOG_LEVEL)
+
+        if(process.env.GITHUB_TOKEN === undefined) {
+            throw new Error('GITHUB_TOKEN is not defined');
+        }
+        else if (process.env.LOG_FILE === undefined) {
+            throw new Error('LOG_FILE is not defined')
+        }
+        else if(process.env.LOG_LEVEL === undefined) {
+            process.env.LOG_LEVEL = '0';
+        }
+    } catch (error) {
+        console.error(error)
+        process.exit(1);
+    }
+}
+
 async function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -103,6 +128,9 @@ async function main() {
   const fileContent = await read_file(url_file_path);
   const fileList = fileContent.split('\n');
 
+  
+  checkEnvironment();
+  
   for (let link of fileList) {
     if(link == ""){
       continue;

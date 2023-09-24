@@ -29,7 +29,7 @@ export class Correctness extends Metric {
           this.directory_path = this.clone_path;
       }
 
-      this.blacklist = ['test', 'module', 'dist', '@', '.bin']; //list of names that should not be counted as source files
+      this.blacklist = ['test', 'module', 'dist', '@', '.bin', '.git']; //list of names that should not be counted as source files
     }
 
   // Method
@@ -43,10 +43,16 @@ export class Correctness extends Metric {
       lines += await countLinesInFile(file);
     }
 
-    // console.log(jsts_files);
-    // console.log("errors: ", errors, " | lines: ", lines);
-    // console.log("metric: ", 1 - errors/lines);
-    return Math.round((1 - errors / lines)*100000) / 100000;
+
+    //console.log(jsts_files);
+    this.logger.info("errors: ", errors, " | lines: ", lines);
+    this.logger.info("metric: ", 1 - errors/lines);
+    if (lines == 0) {
+      return 0;
+    } else {
+      return Math.round((1 - errors / lines)*100) / 100;
+    }
+
   }
 
   getAlltsjsFiles(filepath: string): string[] {
@@ -57,13 +63,13 @@ export class Correctness extends Metric {
 
   fileRecurser(filepath: string, files: string[]) {
     if (!fs.statSync(filepath).isDirectory()) {
-      //console.log("file: ", filepath);
+      //this.logger.info("file: ", filepath);
       
       if (filepath.slice(-3) != 'txt') {
         if (filepath.includes('eslintrc')) {
           fs.unlink(filepath, (err) => {
             if (err) {
-              console.error(`Error deleting file: ${err}`);
+              this.logger.debug(`fileRecursor: Error deleting file: ${err}`);
             }});
         } else {
           files.push(filepath);
@@ -71,8 +77,8 @@ export class Correctness extends Metric {
       }
     } else if (!setIncludes(filepath, this.blacklist)) {
       const dirfiles = fs.readdirSync(filepath); // Read the directory synchronously
-      //console.log("\n\nDirectory: ", filepath);
-      //console.log(files);
+      //this.logger.info("\n\nDirectory: ", filepath);
+      //this.logger.info(files);
       for (const file of dirfiles) {
         const absolutePath = path.join(filepath, file); // Construct absolute path
         this.fileRecurser(absolutePath, files);
@@ -142,7 +148,7 @@ export function setIncludes(str: string, list: string[]): boolean {
 
 // countLinesInFile(filePath)
 //   .then((lineCount) => {
-//     console.log(`Number of lines in ${filePath}: ${lineCount}`);
+//     this.logger.info(`Number of lines in ${filePath}: ${lineCount}`);
 //   })
 //   .catch((error) => {
 //     console.error(`Error reading file: ${error.message}`);
@@ -151,5 +157,5 @@ export function setIncludes(str: string, list: string[]): boolean {
 
 
 // lintFile('/home/shay/a/jwstoneb/SWE/ECE461-Team4/src/testing/example.ts').then((data) => {
-//   console.log(data);
+//   this.logger.info(data);
 // });
