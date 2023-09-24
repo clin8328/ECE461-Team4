@@ -9,9 +9,6 @@ import { get_api_url } from './helper';
 // console.log(getNpmPackageName(scopedUrl)); // Outputs "@babel/core"
 // console.log(getNpmPackageName(versionedUrl)); // Outputs "lodash"
 
-/*
-
-*/
 
 export function getNpmPackageName(npmUrl: string): string | null {
     try {
@@ -30,11 +27,11 @@ export function getNpmPackageName(npmUrl: string): string | null {
             }
         }
         else {
-            throw Error ('Failed to find package in npm url')
+            throw Error('Failed to find package in npm url')
         }
         
     } catch (error) {
-        console.log(error);
+        //console.log(error);
         throw error;
     }
 }
@@ -42,7 +39,7 @@ export function getNpmPackageName(npmUrl: string): string | null {
 export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
     try {
       const packageName = getNpmPackageName(npmUrl);
-      console.log(packageName);
+      //console.log(packageName);
       const response = await fetch(`https://skimdb.npmjs.com/registry/${packageName}`);
       const data = await response.json();
   

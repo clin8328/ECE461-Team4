@@ -58,8 +58,16 @@ export class Correctness extends Metric {
   fileRecurser(filepath: string, files: string[]) {
     if (!fs.statSync(filepath).isDirectory()) {
       //console.log("file: ", filepath);
+      
       if (filepath.slice(-3) != 'txt') {
-        files.push(filepath);
+        if (filepath.includes('eslintrc')) {
+          fs.unlink(filepath, (err) => {
+            if (err) {
+              console.error(`Error deleting file: ${err}`);
+            }});
+        } else {
+          files.push(filepath);
+        }
       }
     } else if (!setIncludes(filepath, this.blacklist)) {
       const dirfiles = fs.readdirSync(filepath); // Read the directory synchronously
