@@ -23,7 +23,7 @@ export class Responsiveness extends Metric {
         const octokit = new Octokit({
             auth: this.githubToken //Insert token
         });
-    
+        
         try {
             const completedIssues = await octokit.request('GET /repos/{owner}/{repo}/issues', {
                 owner: owner, //Test values: 'octokit',

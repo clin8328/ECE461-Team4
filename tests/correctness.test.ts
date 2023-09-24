@@ -9,14 +9,6 @@ import { Correctness, lintFile, setIncludes} from "../src/correctness"
 //import { License } from "../src/license";
 import { Octokit } from "octokit";
 
-require('dotenv').config();
-const repoName = 'for-testing'; //the name of the repository that testing will occur on
-const repoLink = 'https://github.com/date-fns/date-fns.git' //the link to the rep that testing will occur on
-
-const octokit = new Octokit({
-  auth: process.env.TOKEN, // Replace with your authentication token
-});
-
 describe('Testing Correctness', () => {
 
   // beforeAll(async () => {
@@ -48,11 +40,22 @@ describe('Testing Correctness', () => {
     expect(setIncludes("12312345678765434567654", ['9', '91'])).toBe(false)
   });
 
-  it('Evaluate Metric', async () => {
-    let metric = new Correctness('../');
+  // it('Evaluate Metric (curr Repo)', async () => {
+  //   let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/', '../');
+  //   metric.getGitHubRepoUrl('https://github.com/KillianLucas/open-interpreter/');
+  //   let value = await metric.getMetric();
+  //   expect(value).toBeLessThanOrEqual(1);
+  //   expect(value).toBeGreaterThanOrEqual(0);
+  // });
+
+  it('Evaluate Metric (git url)', async () => {
+    let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/');
+    await metric.getGitHubRepoUrl('https://github.com/KillianLucas/open-interpreter/');
+    await metric.cloneRepository();
     let value = await metric.getMetric();
+    await metric.deleteRepository();
     expect(value).toBeLessThanOrEqual(1);
     expect(value).toBeGreaterThanOrEqual(0);
-  });
+  }, 200000);
 });
   
