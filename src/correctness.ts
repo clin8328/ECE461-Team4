@@ -29,7 +29,7 @@ export class Correctness extends Metric {
           this.directory_path = this.clone_path;
       }
 
-      this.blacklist = ['test', 'module', 'dist', '@', '.bin']; //list of names that should not be counted as source files
+      this.blacklist = ['test', 'module', 'dist', '@', '.bin', '.git']; //list of names that should not be counted as source files
     }
 
   // Method
@@ -37,15 +37,15 @@ export class Correctness extends Metric {
     let jsts_files: string[] = this.getAlltsjsFiles(this.clone_path);
 
     let errors: number = 0;
-    let lines: number = 0;
+    let lines: number = 1;
     for (let file of jsts_files) {
       errors += await lintFile(file);
       lines += await countLinesInFile(file);
     }
 
-    // console.log(jsts_files);
-    // console.log("errors: ", errors, " | lines: ", lines);
-    // console.log("metric: ", 1 - errors/lines);
+    console.log(jsts_files);
+    console.log("errors: ", errors, " | lines: ", lines);
+    console.log("metric: ", 1 - errors/lines);
     return Math.round((1 - errors / lines)*10) / 10;
   }
 

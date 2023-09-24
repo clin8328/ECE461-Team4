@@ -132,7 +132,7 @@ export class Metric {
           a repository on github if the user provides a valid github repository URL.
       */ 
       const dir = this.repoPath;
-      console.log(dir);
+      //console.log(dir);
       try {
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           this.logger.info('Repository at'+ this.githubRepoUrl +'cloned successfully.');

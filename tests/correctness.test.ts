@@ -31,7 +31,7 @@ describe('Testing Correctness', () => {
     });
   });
   
-  it('Lint Failure on non-ts/js files', async () => {
+  it('Lint Failure on non-code files', async () => {
     await expect(lintFile('src/testing/unlintable.txt')).rejects.toThrow();
   });
 

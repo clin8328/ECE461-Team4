@@ -66,7 +66,7 @@ export class RampUp extends Metric {
         } catch(error) {
             throw error;
         }
-        console.log(path, lines)
+        //console.log(path, lines)
         return lines;
     }
     
