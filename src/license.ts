@@ -76,10 +76,9 @@ export class License extends Metric{
       const find_license_regex = new RegExp('(apache-2.0)|(bsd-[2-3]-clause)|(MIT)|(lgpl-2.1)|(lgpl-3.0)|(gpl-[2-3].0)','i'); 
 
       //Read the readme.md file
-      const fileContent = await fs.readFile(this.clone_path + "\\" + path, 'utf-8');
-      
+      const fileContent = await fs.readFile(this.clone_path + "/" + path, 'utf-8');
       //Find the license section 
-      const licenseRegex = /(#+)\s*(License|Licence)([\s\S]*)/i;
+      const licenseRegex = /(#+)\s*(License|Licence|legal)([\s\S]*)/i;
 
       const licenseMatch = fileContent.match(licenseRegex);
       if(licenseMatch){

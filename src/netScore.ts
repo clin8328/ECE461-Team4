@@ -33,6 +33,8 @@ export function net_score(metrics: { [key: string]: any }): number {
     if(typeof metrics["LICENSE_SCORE"] == 'number'){
         net_score *= metrics["LICENSE_SCORE"];
     }
-    return Math.round(net_score * 1000) / 1000;
+
+    return Math.round(net_score * 100000) / 100000;
+
 
 }

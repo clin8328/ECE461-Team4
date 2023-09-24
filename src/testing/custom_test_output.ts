@@ -27,9 +27,9 @@ function print_test_results() {
         if(!testsPassed){
             testsPassed = testsFailed;
         }
-        console.log(`Total: ${testsTotal}`);
-        console.log(`Passed: ${testsPassed}`);
-        console.log(`Coverage: ${Math.round(parseFloat(lines))}%`);
+        //console.log(`Total: ${testsTotal}`);
+        //console.log(`Passed: ${testsPassed}`);
+        //console.log(`Coverage: ${Math.round(parseFloat(lines))}%`);
         console.log(`${testsPassed}/${testsTotal} test cases passed. ${Math.round(parseFloat(lines))}% line coverage achieved.`)
     } else {
         //Exit on error if there are no regex matched expression

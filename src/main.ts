@@ -22,7 +22,7 @@ export async function evaluate_URL(url: string) {
     returns 6 metrics analyzed from the package.
   */
   try {
-    const metrics = {
+    var metrics = {
       "URL" : url,
       "NET_SCORE": -1,
       "RAMP_UP_SCORE": -1,
@@ -50,9 +50,13 @@ export async function evaluate_URL(url: string) {
     let metric = new Metric(url,"test-clone");
     await metric.getGitHubRepoUrl(url);
 
+    if(metric.status != 200){
+      throw new Error();
+    }
+
     await metric.cloneRepository();
     metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
-    metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 10) / 10;
+    metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 100000) / 100000;
     metrics["BUS_FACTOR_SCORE"] = await bus.Bus_Factor(url);
     metrics["RAMP_UP_SCORE"] = await rampup.rampup();
     metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
@@ -123,6 +127,7 @@ async function main() {
   const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
   const fileContent = await read_file(url_file_path);
   const fileList = fileContent.split('\n');
+
   
   checkEnvironment();
   
@@ -142,7 +147,9 @@ async function main() {
     }
 
     const output = await evaluate_URL(link.substring(0,url_link));
-    console.log(output);
+    const jsonString = JSON.stringify(output);
+    console.log(`${jsonString}`);
+
     await delay(500);
 
   }
