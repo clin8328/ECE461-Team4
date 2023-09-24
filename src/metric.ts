@@ -44,8 +44,7 @@ export class Metric {
         if (links.isGithubLink(Url) === true) {
           this.githubRepoUrl = Url;
           await this.get_api_url(Url);
-        } 
-        else if (links.isNpmLink(Url) === true) {
+        } else if (links.isNpmLink(Url) === true) {
           const npmtoGitUrl = await npmToGitRepoUrl(Url);
           if (npmtoGitUrl !== null) {
             this.githubRepoUrl = npmtoGitUrl;
@@ -53,8 +52,7 @@ export class Metric {
           } else {
             console.error('Failed to fetch GitHub repository URL for npm link');
           }
-        } 
-        else {
+        } else {
           console.error('The URL is not a valid GitHub or npm link');
         }
       } catch (error) {

@@ -42,8 +42,9 @@ export class Correctness extends Metric {
       lines += await countLinesInFile(file);
     }
 
-    //console.log("errors: ", errors, " | lines: ", lines);
-    //console.log("metric: ", 1 - errors/lines);
+    // console.log(jsts_files);
+    // console.log("errors: ", errors, " | lines: ", lines);
+    // console.log("metric: ", 1 - errors/lines);
     return Math.round((1 - errors / lines)*10) / 10;
   }
 
@@ -56,7 +57,7 @@ export class Correctness extends Metric {
   fileRecurser(filepath: string, files: string[]) {
     if (!fs.statSync(filepath).isDirectory()) {
       //console.log("file: ", filepath);
-      if (filepath.slice(-2) == 'js' || filepath.slice(-2) == 'ts') {
+      if (filepath.slice(-3) != 'txt') {
         files.push(filepath);
       }
     } else if (!setIncludes(filepath, this.blacklist)) {
@@ -76,8 +77,8 @@ export async function lintFile(filePath: string): Promise<number> {
   const eslint = new ESLint();
   
   // Lint the specified file
-  if (!setIncludes(filePath, ['.js', '.ts'])) {
-    throw new Error("File must be of type js or ts");
+  if (setIncludes(filePath, ['.txt'])) {
+    throw new Error("File must contain code");
   }
   const results = await eslint.lintFiles([filePath]);
 
@@ -113,6 +114,14 @@ export function setIncludes(str: string, list: string[]): boolean {
   }
   return false;
 }
+
+// async function gitTest() {
+//   let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/');
+//   //await metric.cloneRepository();
+//   let value = await metric.getMetric();
+//   //await metric.deleteRepository();
+// }
+// gitTest();
 
 // let metric = new Correctness('/home/shay/a/jwstoneb/SWE/ECE461-Team4');
 // metric.getMetric();
