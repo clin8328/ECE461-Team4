@@ -41,8 +41,8 @@ export class Bus extends Metric {
                     res = Math.round(good / total * 10) / 10;
                 }
             }
-        } catch (error) {
-            
+        } catch (error:any) {
+            this.logger.debug("busFactor: Error: " + error.message)
             return -1;
         }
 

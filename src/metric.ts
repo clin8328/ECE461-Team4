@@ -52,14 +52,14 @@ export class Metric {
             this.githubRepoUrl = npmtoGitUrl;
             await this.get_api_url(npmtoGitUrl);
           } else {
-            console.error('Failed to fetch GitHub repository URL for npm link');
+            this.logger.debug('getGithubRepoUrl: Failed to fetch GitHub repository URL for npm link for ' + Url);
           }
         } 
         else {
-          console.error('The URL is not a valid GitHub or npm link');
+          this.logger.debug('getGithubRepoUrl: The URL is not a valid GitHub or npm link for ' + Url);
         }
-      } catch (error) {
-        console.error('An error occurred:', error);
+      } catch (error:any) {
+        this.logger.debug('getGithubRepoUrl: An error occurred:'+ error.message);
       }
     }
 
@@ -107,14 +107,14 @@ export class Metric {
               return cleanedURL;
             } 
             else{
-              console.error(cleanedURL + ' is not a valid github API');
+              this.logger.debug('get_api_url' + cleanedURL + ' is not a valid github API');
               return "";
             }
           } 
           catch (error) {
             // Use type assertion to specify the type of the error object
             // const axiosError = error as AxiosError;
-            // console.error('Error fetching repository information:', axiosError.message);
+            // this.logger.debug('Error fetching repository information:' + axiosError.message);
             return "";
           }
         }
@@ -130,11 +130,11 @@ export class Metric {
       const dir = path.join(process.cwd(), this.repoPath);
       try {
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
-          console.log('Repository cloned successfully.');
+          this.logger.info('Repository at'+ this.githubRepoUrl +'cloned successfully.');
           return true;
       } 
       catch (error) {
-          console.error('Error cloning repository:', error);
+          this.logger.debug('Error cloning repository at'+ this.githubRepoUrl +':', error);
           return false;
       }
     }
@@ -148,13 +148,13 @@ export class Metric {
       */ 
       try {
           //await fs.chmod(this.dirPath, 0o755);
-          //console.log('permissions changed');
+          //this.logger.info('permissions changed');
           await fs.rm(this.repoPath, { recursive: true });
-          console.log(`Directory '${this.repoPath}' and its contents deleted successfully.`);
+          this.logger.info(`Directory '${this.repoPath}' and its contents deleted successfully.`);
           return true;
       } 
-      catch (error) {
-          console.error(`Error deleting directory '${this.repoPath}':`, error);
+      catch (error:any) {
+          this.logger.debug(`Error deleting directory '${this.repoPath}':`, error.message);
           return false;
       }
     }

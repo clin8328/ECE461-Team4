@@ -84,18 +84,18 @@ export class RampUp extends Metric {
     
             if (readmePath) {
                 const linesInReadme = await this.countLinesInReadme(readmePath);
-                //console.log(`Total lines in TypeScript files: ${linesInFiles}`);
-                //console.log(`Total lines in README: ${linesInReadme}`);
+                //this.logger.info(`Total lines in TypeScript files: ${linesInFiles}`);
+                //this.logger.info(`Total lines in README: ${linesInReadme}`);
     
                 score = Math.min(linesInFiles / (linesInReadme * scale ), 1);
     
             } else {
-                console.log('README not found in the repository.');
+                this.logger.info('README not found in the repository for repo ' + this.repoName);
                 score = 0;
             }
             
-        } catch (error) {
-            console.error('An error occurred:', error);
+        } catch (error:any) {
+            this.logger.debug('rampup: Error: ' + error.message);
             score = -1;
         }
     
@@ -171,8 +171,8 @@ export class RampUp extends Metric {
     
 //       processFilesInDirectory(srcDir);
     
-//       console.log('Total Lines of Code:', totalCodeLines);
-//       console.log('Total Lines of Comments:', totalCommentLines);
+//       this.logger.info('Total Lines of Code:', totalCodeLines);
+//       this.logger.info('Total Lines of Comments:', totalCommentLines);
 //     }
     
 //     main();
