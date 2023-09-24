@@ -7,7 +7,7 @@
 
 import axios from 'axios';
 
-const accessToken = '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';
+const accessToken = "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";
 const apiUrl = 'https://api.github.com/repos/clin8328/ECE461-Team4';
 
 const headers = {

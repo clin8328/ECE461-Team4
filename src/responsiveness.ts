@@ -1,6 +1,6 @@
 import { Metric } from "./metric";
 import { Octokit } from '@octokit/rest';
-import { subMonths, isBefore } from "date-fns";
+import { subMonths, isAfter, differenceInDays } from "date-fns";
 
 export class Responsiveness extends Metric {
     constructor(url: string) {
@@ -21,9 +21,9 @@ export class Responsiveness extends Metric {
         const repoName = this.repoName; //Obtain repo name
 
         const octokit = new Octokit({
-            auth: this.githubToken //Insert token
+            auth: "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" //Insert token
         });
-    
+        
         try {
             const completedIssues = await octokit.request('GET /repos/{owner}/{repo}/issues', {
                 owner: owner, //Test values: 'octokit',
@@ -34,14 +34,19 @@ export class Responsiveness extends Metric {
     
             if (completedIssues.status === 200) {
                 const threeMonthsAgo = subMonths(new Date(), 3);
-    
+
                 //Filter for issues that have been completed within 3 months
                 const completedWithin3Months = completedIssues.data.filter((issue) => (
                     issue.state === 'closed' && //Filter for closed issues
                     issue.state_reason === 'completed' && //Filter for issues that have been marked as completed
-                    issue.closed_at !== null
-                    //isBefore(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
+                    issue.closed_at !== null &&
+                    isAfter(new Date(issue.closed_at), threeMonthsAgo) === true //Filter for issues that have been closed within the 3 months
                 ));
+                    
+                // console.log(completedWithin3Months)
+                // console.log(new Date('2023-08-30T21:31:09Z'));
+                // console.log(threeMonthsAgo);
+                // console.log(isAfter(new Date('2023-08-30T21:31:09Z'), threeMonthsAgo));
 
                 return completedWithin3Months; //Return the data that contiains 
             } else {
@@ -53,7 +58,7 @@ export class Responsiveness extends Metric {
         }
     }
     
-    async calculateScore(completedWithin3Months: any) {
+    async calculateScore(completedWithin3Months: any, maxBenchmarkDays: number) {
         /*
         args: any (Data contains issues that have been completed within 3 months)
         return: const (Metric score between [0, 1])
@@ -63,27 +68,29 @@ export class Responsiveness extends Metric {
         3 months. It then converts the time to a metric score.
         */ 
 
-
         let numIssuesClosed = 0; //Number of issues closed within 3 months
-        let totalTimeOpen = 0; //Total time open for issues
+        var totalDaysOpen = 0; //Total time open for issues
+        var score = 0;
     
         for (const issue of completedWithin3Months) {
             if (issue.closed_at !== null) {
                 const create_date = new Date(issue.created_at);
                 const closed_date = new Date(issue.closed_at);
-    
-                totalTimeOpen += closed_date.getTime() - create_date.getTime();
+                totalDaysOpen += differenceInDays(closed_date, create_date);
                 numIssuesClosed++;
             }
         }
-    
-        const averageTimeOpen = totalTimeOpen / numIssuesClosed;          
-        const averageDaysOpen = Math.floor(averageTimeOpen / 1000 / 60 / 60 / 24);
-    
-        // console.log(`Average time to close an issue: ${averageDaysOpen} days, number of issues closed: ${numIssuesClosed}`);
-    
-        const maxBenchmarkDays = 30;
-        const score = Math.max(0, (maxBenchmarkDays - averageDaysOpen) / maxBenchmarkDays);
+
+        if(numIssuesClosed === 0 ) {
+            score = 0;
+        }
+        else {
+            const averageDaysOpen = totalDaysOpen / numIssuesClosed;        
+        
+            // console.log(`Average time to close an issue: ${averageDaysOpen} days, number of issues closed: ${numIssuesClosed}`);
+        
+            score = Math.max(0, (maxBenchmarkDays - averageDaysOpen) / maxBenchmarkDays);
+        }
     
         return score;
     }
@@ -96,11 +103,11 @@ export class Responsiveness extends Metric {
         Description: This function calls the necessary functions to
         calculate the metric score
         */ 
-
+        const maxBenchmarkDays = 30;
 
         try {
             let data = await this.getCompletedIssues(this.githubRepoUrl);
-            const score = await this.calculateScore(data);
+            const score = await this.calculateScore(data, maxBenchmarkDays);
             return score;
         } catch (error) {
             console.error(error);
@@ -121,10 +128,15 @@ used in main to return an integer representing the score from a string represent
 /* Example 
 
 (async () => {
-    let test = new Responsiveness('https://github.com/davisjam/safe-regex');
+    let test = new Responsiveness('https://github.com/clin8328/ECE461-Team4'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
     const score = await test.numCollaborators();
-    // console.log(`Score: ${score}`);
+    console.log(`Score: ${score}`);
 })();
 
 */
 
+// (async () => {
+//     let test = new Responsiveness('https://github.com/davisjam/safe-regex'); //https://github.com/clin8328/ECE461-Team4 https://github.com/davisjam/safe-regex
+//     const score = await test.numCollaborators();
+//     console.log(`Score: ${score}`);
+// })();

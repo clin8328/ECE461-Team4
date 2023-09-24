@@ -10,17 +10,27 @@ import { type } from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import {Metric} from './metric';
 
-export class Correctness {
+
+export class Correctness extends Metric {
   // Properties
   directory_path: string; //the absolute path to the repository
   blacklist: string[]; 
   
   // Constructor
-  constructor(directory_path: string) {
-    this.directory_path = directory_path;
-    this.blacklist = ['test', 'module', 'dist', '@', '.bin']; //list of names that should not be counted as source files
-  }
+  constructor(url: string, directRepoPath?: string) {
+      super(url, "Correctness");
+
+      if (directRepoPath) {
+          this.directory_path = directRepoPath;
+      } else {
+          // Handle the case when metricName is not provided
+          this.directory_path = this.repoPath;
+      }
+
+      this.blacklist = ['test', 'module', 'dist', '@', '.bin']; //list of names that should not be counted as source files
+    }
 
   // Method
   async getMetric(): Promise<number> {

@@ -1,7 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
-export class RampUp {
+import {Metric} from './metric';
+
+export class RampUp extends Metric {
+    constructor(url: string) {
+        super(url, "RampUp");
+    }
+    
     async countLinesInDir(directory: string, extension: string): Promise<number> {
         let totalLines = 0;
     
@@ -65,12 +71,12 @@ export class RampUp {
     }
     
     async rampup():Promise <number> {
-        const repoDirectory = 'test-clone'; // Replace with the path to your cloned repository directory
+        const repoDirectory = this.repoPath; // Replace with the path to your cloned repository directory
         const extension = '.js'; // Change the file extension as needed
         const scale = 10; //How many lines of code in files to one line in the Readme
         let linesInFiles = 0; //LinesInFiles
         let linesInReadme = 0; //Lines in README
-        let metric: number;
+        let score: number;
     
         try {
             linesInFiles = await this.countLinesInDir(repoDirectory, extension);
@@ -81,19 +87,19 @@ export class RampUp {
                 //console.log(`Total lines in TypeScript files: ${linesInFiles}`);
                 //console.log(`Total lines in README: ${linesInReadme}`);
     
-                metric = Math.min(linesInFiles / (linesInReadme * scale ), 1);
+                score = Math.min(linesInFiles / (linesInReadme * scale ), 1);
     
             } else {
                 console.log('README not found in the repository.');
-                metric = 0;
+                score = 0;
             }
             
         } catch (error) {
             console.error('An error occurred:', error);
-            metric = -1;
+            score = -1;
         }
     
-        return Math.round(metric * 10) / 10;
+        return Math.round(score * 10) / 10;
     }
     
 }

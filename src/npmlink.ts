@@ -40,30 +40,32 @@ export function getNpmPackageName(npmUrl: string): string | null {
 }
 
 export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
-  try {
-    const packageName = getNpmPackageName(npmUrl);
-    const response = await axios.get(`https://registry.npmjs.org/${packageName}`);
-    
-    if (response.status === 200) {
-      const packageInfo = response.data;
-      
-      if (packageInfo.repository) { // Check if the package has a repository field
-        
-            if(packageInfo.repository.url) {
-                return get_api_url(packageInfo.repository.url);
-            }      
+    try {
+      const packageName = getNpmPackageName(npmUrl);
+      console.log(packageName);
+      const response = await fetch(`https://skimdb.npmjs.com/registry/${packageName}`);
+      const data = await response.json();
+  
+      if (response !== undefined) {
+  
+        if (data.repository) { // Check if the package has a repository field
+  
+              if(data.repository.url) {
+                  console.log(data.repository.url)
+                  return data.repository.url;
+              }  
             else {
-                const parts= (packageInfo.repository).split(":")[1].split("/"); //assuming of format - 'github:user/repo'
+                const parts= (data.repository).split(":")[1].split("/"); //assuming of format - 'github:user/repo'
                 const owner = parts[0];
                 const repo = parts[1];
                 const url = 'https://github.com/repos/' + owner + '/' + repo;
                 
-                return get_api_url(packageInfo.repository.url)
+                return get_api_url(data.repository.url)
             }
         }
     }
     else {
-        throw new Error(`Failed to fetch completed issues. Status code: ${response.status}`);
+        throw new Error(`Failed to fetch completed issues. Status code: ${response}`);
     }
 
     return null;
