@@ -120,7 +120,7 @@ async function main() {
 
     const output = await evaluate_URL(link.substring(0,url_link));
     const jsonString = JSON.stringify(output);
-    console.log(jsonString);
+    console.log(`${jsonString}`);
 
     await delay(500);
 

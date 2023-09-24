@@ -1,2 +1,0 @@
-2023-09-24 18:40:55,268 INFO  [test-clone] Repository athttps://github.com/cloudinary/cloudinary_npmcloned successfully.
-2023-09-24 18:41:00,84 INFO  [test-clone] Directory '/home/shay/a/lin1371/461/ECE461-Team4/clone-path' and its contents deleted successfully.

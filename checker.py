@@ -124,7 +124,7 @@ def run_urlfile() -> int:
 def run_test_suite() -> int:
     test_suite = CLI_CMD_WRAPPER("./run test")
     test_suite_rc, output = test_suite.run()
-    print(output)
+
     if test_suite_rc is False:
         print(f"{RED}Test suite failed to run.{RESET}")
         return 0
@@ -167,9 +167,9 @@ def run_test_suite() -> int:
 def main():
     
     #Setup ENV for testing
-    os.environ['GITHUB_TOKEN'] = "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"
+    os.environ['GITHUB_TOKEN'] = "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"
     os.environ['LOG_LEVEL'] = "0"
-    os.environ['LOG_FILE'] = "/tmp/log"
+    os.environ['LOG_FILE'] = "/home/shay/a/lin1371/461/ECE461-Team4"
     
     # Run install test
     # print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")

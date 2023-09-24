@@ -17,6 +17,7 @@ class CLI_CMD_WRAPPER:
     def run(self) -> (bool, str):
         try:
             result = sp.run(self.command, shell=True, check=True, capture_output=True, env=os.environ)
+            print(result)
             if result.returncode == 0:
                 return True, result.stdout.decode('utf-8')
             else:
