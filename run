@@ -6,21 +6,19 @@
 # ./run URL_FILE - Evaluates a file containing github and npm links
 # ./run test - runs a test suite on our repository
 
-if [ "$1" == "install" ]; then
+if [ "$1" = "install" ]; then
     npm install > /dev/null 2>&1 #TODO: NEEDS A FAILURE CONDITION
     num_dependencies=$(npm ls --depth=0 | wc -l)
     echo -n "$num_dependencies dependencies installed..."
-    echo "we hit install"
     exit 0
-elif [ "$1" == "test" ]; then 
+elif [ "$1" = "test" ]; then 
     npm run test-json > /dev/null 2>&1
     node dist/src/testing/custom_test_output.js
-    echo "we hit test"
     exit 0
 elif [ -e $1 ]; then # is the argument an existing file?
     clear
-    npx tsc && node dist/src/main.js $1
-    echo "we hit urlfile"
+    npx tsc  
+    node dist/src/main.js $1
     exit 0
 else #If an invalid argument is provided, fail
     echo "INVALID ARGUMENT. Valid arguments include:"

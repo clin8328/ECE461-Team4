@@ -77,9 +77,8 @@ export class License extends Metric{
 
       //Read the readme.md file
       const fileContent = await fs.readFile(this.clone_path + "/" + path, 'utf-8');
-      
       //Find the license section 
-      const licenseRegex = /(#+)\s*(License|Licence)([\s\S]*)/i;
+      const licenseRegex = /(#+)\s*(License|Licence|legal)([\s\S]*)/i;
 
       const licenseMatch = fileContent.match(licenseRegex);
       if(licenseMatch){

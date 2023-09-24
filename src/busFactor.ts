@@ -38,7 +38,7 @@ export class Bus extends Metric {
                 if (total === 0) {
                     res = 0;
                 } else {
-                    res = Math.round(good / total * 10) / 10;
+                    res = Math.round(good / total * 100000) / 100000;
                 }
             }
         } catch (error:any) {

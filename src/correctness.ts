@@ -46,7 +46,7 @@ export class Correctness extends Metric {
     // console.log(jsts_files);
     // console.log("errors: ", errors, " | lines: ", lines);
     // console.log("metric: ", 1 - errors/lines);
-    return Math.round((1 - errors / lines)*10) / 10;
+    return Math.round((1 - errors / lines)*100000) / 100000;
   }
 
   getAlltsjsFiles(filepath: string): string[] {

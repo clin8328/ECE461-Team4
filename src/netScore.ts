@@ -20,6 +20,6 @@ export function net_score(metrics: { [key: string]: any }): number {
         net_score *= metrics["LICENSE_SCORE"];
     }
 
-    return Math.round(net_score * 10) / 10;
+    return Math.round(net_score * 100000) / 100000;
 
 }

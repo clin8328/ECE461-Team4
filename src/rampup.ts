@@ -66,7 +66,6 @@ export class RampUp extends Metric {
         } catch(error) {
             throw error;
         }
-        console.log(path, lines)
         return lines;
     }
     
@@ -99,7 +98,7 @@ export class RampUp extends Metric {
             score = -1;
         }
     
-        return Math.round(score * 10) / 10;
+        return Math.round(score * 10000) / 10000;
     }
     
 }
