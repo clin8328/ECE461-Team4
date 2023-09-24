@@ -14,16 +14,20 @@ const headers = {
   Authorization: `token ${accessToken}`,
 };
 
-export async function check_api_limit(){
-    axios.get(apiUrl, { headers })
-    .then((response) => {
-        const rateLimitRemaining = response.headers['x-ratelimit-remaining']
+
+export async function check_api_limit(): Promise<boolean> {
+  try {
+        const response = await axios.get(apiUrl, { headers });
+        const rateLimitRemaining = response.headers['x-ratelimit-remaining'];
+        if(rateLimitRemaining > 5000){
+          return true;
+        }
         const boldYellow = "\x1b[1;33m"; // 1 stands for bold, 33 is yellow text
         const reset = "\x1b[0m"; // Reset styles to default
         console.log(`${boldYellow}Warning:${reset} You have${boldYellow} ${rateLimitRemaining} ${reset}GitHub API calls remaining`)
         console.log(`To prevent from making API calls over the limit.`)
 
-        console.log(`The rest of the packages will be evaluated once every${boldYellow} 10 ${reset}seconds.`)
+        console.log(`The rest of the packages will be evaluated once every${boldYellow} 60 ${reset}seconds.`)
         //Github API reset time
         const date = new Date(response.headers['x-ratelimit-reset'] * 1000);
         const year = date.getFullYear();
@@ -55,13 +59,12 @@ export async function check_api_limit(){
 
         //stdout
         console.log("Time remaining:", remaining_minutes,"m",remaining_seconds,"s");
-        console.log("Please try again at: ", git_api_reset);
+        console.log("Please try again at: ", git_api_reset, "for normal speed");
 
         return false;
-    })
-    .catch((error) => {
+    }
+    catch (error) {
         console.error('Error fetching rate limit:', error);
-    });
+        return false;
+    };
 }
-
-check_api_limit();

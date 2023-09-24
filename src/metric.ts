@@ -35,7 +35,7 @@ export class Metric {
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
         
         this.logger = logProvider.getLogger(metricName);
-        this.getGitHubRepoUrl(Url);
+        //this.getGitHubRepoUrl(Url);
         this.repoPath = path.join(process.cwd(), this.repoName);
     }
 
@@ -127,7 +127,7 @@ export class Metric {
           Description: This function uses the javascript library 'isomorphic-git' to clone
           a repository on github if the user provides a valid github repository URL.
       */ 
-      const dir = path.join(this.repoPath);
+      const dir = this.repoPath;
       try {
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           return true;

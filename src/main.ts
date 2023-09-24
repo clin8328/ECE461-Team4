@@ -8,6 +8,9 @@ import { net_score } from './netScore';
 import { Responsiveness } from './responsiveness';
 import { Metric } from './metric';
 import { check_api_limit } from './api_limit';
+import { stat } from 'fs';
+
+
 export async function evaluate_URL(url: string) {
   /*
     args: string (github repo URL)
@@ -28,26 +31,37 @@ export async function evaluate_URL(url: string) {
     };
 
     let bus = new Bus(url);
-    
-    let metric = new Metric(url,"test-clone");
-    let correctness = new Correctness(url);
-    //let rampup = new RampUp(url);
-    //let lic = new License(url);
-    //let responsiveness = new Responsiveness(url);
-    // console.log(metric.githubRepoUrl);
-    // console.log(metric.repoOwner);
-    // console.log(metric.repoName);
-    // console.log(metric.status);
-    // console.log(metric.githubToken);
+    await bus.getGitHubRepoUrl(url);
 
-    //await metric.cloneRepository();
-    //metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
-    //metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 10) / 10;
+    let correctness = new Correctness(url);
+    await correctness.getGitHubRepoUrl(url);
+
+    let rampup = new RampUp(url);
+    await rampup.getGitHubRepoUrl(url);
+
+    let lic = new License(url);
+    await lic.getGitHubRepoUrl(url);
+
+    let responsiveness = new Responsiveness(url);
+    await responsiveness.getGitHubRepoUrl(url);
+
+    let metric = new Metric(url,"test-clone");
+    await metric.getGitHubRepoUrl(url);
+
+    console.log(metric.githubRepoUrl);
+    console.log(metric.repoOwner);
+    console.log(metric.repoName);
+    console.log(metric.status);
+    console.log(metric.githubToken);
+
+    await metric.cloneRepository();
+    // metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
+    // metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 10) / 10;
     // metrics["BUS_FACTOR_SCORE"] = await bus.Bus_Factor();
     // metrics["RAMP_UP_SCORE"] = await rampup.rampup();
     // metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
-    // metrics["NET_SCORE"] = net_score(metrics);
-    //await metric.deleteRepository();
+    // metrics["NET_SCORE"] = await net_score(metrics);
+    // await metric.deleteRepository();
 
     return metrics;
 
@@ -82,15 +96,24 @@ export async function read_file(url: string): Promise<string> {
   }
 }
 
+async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function main() {
   const url_file_path: string = process.argv[2]; //get the URL_FILE argument from the command line
   const fileContent = await read_file(url_file_path);
   const fileList = fileContent.split('\n');
   
   for (let link of fileList) {
+    const status = await check_api_limit();
+    if(!status){
+      await delay(1000);
+    }
     const output = await evaluate_URL(link.substring(0,link.length-1));
     console.log(output);
-    await check_api_limit();
+
+    break;
   }
   process.exit(0);
 }
