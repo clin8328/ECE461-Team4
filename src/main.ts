@@ -84,8 +84,8 @@ export async function read_file(url: string): Promise<string> {
     const fileContent = await fs.readFile(url, 'utf-8');
     return fileContent;
   } catch (error) {
-    console.error('Error reading file:', error);
-    throw error;
+    // console.error('Error reading file:', error);
+    // throw error;
     process.exit(1);
   }
 }

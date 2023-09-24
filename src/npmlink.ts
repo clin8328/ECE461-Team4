@@ -52,13 +52,17 @@ export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
   
               if(data.repository.url) {
                 var output = data.repository.url
-                  if(data.repository.url.startsWith("git://")){
-                    output = data.repository.url.substring(6,data.repository.url.length)
-                  }
-                  if(data.repository.url.startsWith("git+")){
-                    output = data.repository.url.substring(4,data.repository.url.length)
-                  }
-                  return output;
+                const regex = /.*github.com/;
+                if(regex.test(output)){
+                  output = "https://" + output.replace(regex,"github.com");
+                }
+                  // if(data.repository.url.startsWith("git://")){
+                  //   output = "https://" + data.repository.url.substring(6,data.repository.url.length)
+                  // }
+                  // if(data.repository.url.startsWith("git+")){
+                  //   output = data.repository.url.substring(4,data.repository.url.length)
+                  // }
+                return output;
               }  
             else {
                 const parts= (data.repository).split(":")[1].split("/"); //assuming of format - 'github:user/repo'

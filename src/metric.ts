@@ -89,7 +89,7 @@ export class Metric {
             if(regex.test(repoName)){
               this.repoName = repoName.replace(regex,'');
             }
-
+            
             const octokit = new Octokit({
               auth: this.githubToken
             });

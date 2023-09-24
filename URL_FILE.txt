@@ -2,4 +2,3 @@ https://www.npmjs.com/package/express
 https://github.com/nullivex/nodist
 https://www.npmjs.com/package/safe-regex
 https://github.com/octokit/fixtures
-
