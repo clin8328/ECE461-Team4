@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { Octokit } from '@octokit/rest';
-
+import {Log4TSProvider, Logger} from "typescript-logging-log4ts-style";
+import {logProvider} from "./logConfig";
+let logger = logProvider.getLogger("npmlink");
 
 
 // Examples:
@@ -79,8 +81,8 @@ export async function npmToGitRepoUrl(npmUrl: string): Promise<string | null> {
     return null;
 
   } catch (error) {
-    console.error(`Error fetching package info for ${npmUrl}:`);
-    throw error;
+      logger.debug(`Error fetching package info for ${npmUrl}:`);
+      throw error;
   }
 }
 
@@ -123,14 +125,14 @@ export async function get_api_url(repositoryUrl: string): Promise<string> {
           return cleanedURL;
         } 
         else{
-          console.error(cleanedURL + ' is not a valid github API');
+          logger.debug(cleanedURL + ' is not a valid github API');
           return "";
         }
       } 
       catch (error) {
         // Use type assertion to specify the type of the error object
         const axiosError = error as AxiosError;
-        console.error('Error fetching repository information:', axiosError.message);
+        logger.debug('Error fetching repository information:', axiosError.message);
         return "";
       }
     }
@@ -145,5 +147,5 @@ export async function get_api_url(repositoryUrl: string): Promise<string> {
 //     }
 //   })
 //   .catch((error) => {
-//     console.error('Error:', error);
+//     logger.debug('Error:', error);
 //   });
