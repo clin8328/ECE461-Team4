@@ -54,8 +54,8 @@ export class License extends Metric{
       }
       return 0;
     } 
-    catch (error) {
-      console.error(`Error listing files in directory '${this.githubRepoUrl}':`, error);
+    catch (error:any) {
+      console.error(`Find_and_Read_License: Error listing files in directory '${this.githubRepoUrl}':`+ error.message);
       return 0;
     }
   }
@@ -83,7 +83,7 @@ export class License extends Metric{
 
       const licenseMatch = fileContent.match(licenseRegex);
       if(licenseMatch){
-        //console.log(`File content for "${path}":\n${licenseMatch[0]}`);
+        //this.logger.info(`File content for "${path}":\n${licenseMatch[0]}`);
 
         //Find if there are valid licenses
         if(find_license_regex.test(licenseMatch[0])){
@@ -92,8 +92,8 @@ export class License extends Metric{
       }
       return 0;
     } 
-    catch (error) {
-        console.error(`Error reading file "${path}":`, error);
+    catch (error:any) {
+        console.error(`evaluate_License: Error reading file "${path}":`+ error.message);
         return 0;
     }
   }
