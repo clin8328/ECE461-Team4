@@ -48,8 +48,6 @@ export class Metric {
           await this.get_api_url(Url);
         } else if (links.isNpmLink(Url) === true) {
           const npmtoGitUrl = await npmToGitRepoUrl(Url);
-          console.log("----------------------------------------------------------------------------------------");
-          console.log(npmtoGitUrl);
           if (npmtoGitUrl !== null) {
             this.githubRepoUrl = npmtoGitUrl;
             await this.get_api_url(npmtoGitUrl);
@@ -75,36 +73,33 @@ export class Metric {
             var urlParts = repositoryUrl.split('/');
             var owner = urlParts[3];
             var repoName = urlParts[4];
-            this.repoOwner = urlParts[3];
-            this.repoName = urlParts[4];
+            this.repoOwner = owner;
+            this.repoName = repoName;
 
             //Check if it ends with .git or and backslashes '\' and remove them
             if(repoName.endsWith('.git\r')){
-              repoName = repoName.substring(0,repoName.length-5)
+              this.repoName = repoName.substring(0,repoName.length-5)
             }
-            if(repoName.endsWith('.git')){
-              repoName = repoName.substring(0,repoName.length-3)
+            else if(repoName.endsWith('.git')){
+              this.repoName = repoName.substring(0,repoName.length-4)
             }
-            
             const regex = /[\\]*\r$/;
             if(regex.test(repoName)){
-              repoName = repoName.replace(regex,'');
+              this.repoName = repoName.replace(regex,'');
             }
-        
+            
             const octokit = new Octokit({
               auth: this.githubToken
             });
         
-            var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
+            var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + this.repoName;
 
             const response = await octokit.request(cleanedURL, {
               owner: owner,
-              repo: repoName,
+              repo: this.repoName,
             });
 
             if (response.status === 200) {
-              this.repoOwner = owner;
-              this.repoName = repoName;
               this.status = response.status;
 
               return cleanedURL;
@@ -132,7 +127,6 @@ export class Metric {
           a repository on github if the user provides a valid github repository URL.
       */ 
       const dir = this.repoPath;
-      console.log(dir);
       try {
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           this.logger.info('Repository at'+ this.githubRepoUrl +'cloned successfully.');

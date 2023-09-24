@@ -19,7 +19,11 @@ export async function check_api_limit(): Promise<boolean> {
   try {
         const response = await axios.get(apiUrl, { headers });
         const rateLimitRemaining = response.headers['x-ratelimit-remaining'];
-        if(rateLimitRemaining > 5000){
+        if(response.headers['x-ratelimit-limit'] == 60){
+          process.exit(1);
+        }
+
+        if(rateLimitRemaining > 500){
           return true;
         }
         const boldYellow = "\x1b[1;33m"; // 1 stands for bold, 33 is yellow text
