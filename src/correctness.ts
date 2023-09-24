@@ -34,7 +34,8 @@ export class Correctness extends Metric {
 
   // Method
   async getMetric(): Promise<number> {
-    let jsts_files: string[] = this.getAlltsjsFiles(this.directory_path);
+    let jsts_files: string[] = this.getAlltsjsFiles(this.repoPath);
+
     let errors: number = 0;
     let lines: number = 0;
     for (let file of jsts_files) {

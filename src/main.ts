@@ -48,20 +48,14 @@ export async function evaluate_URL(url: string) {
     let metric = new Metric(url,"test-clone");
     await metric.getGitHubRepoUrl(url);
 
-    console.log(metric.githubRepoUrl);
-    console.log(metric.repoOwner);
-    console.log(metric.repoName);
-    console.log(metric.status);
-    console.log(metric.githubToken);
-
     await metric.cloneRepository();
-    // metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
-    // metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 10) / 10;
-    // metrics["BUS_FACTOR_SCORE"] = await bus.Bus_Factor();
-    // metrics["RAMP_UP_SCORE"] = await rampup.rampup();
-    // metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
-    // metrics["NET_SCORE"] = await net_score(metrics);
-    // await metric.deleteRepository();
+    metrics["LICENSE_SCORE"] = await lic.Find_And_ReadLicense();
+    metrics["RESPONSIVE_MAINTAINER_SCORE"] = Math.floor(await responsiveness.numCollaborators() * 10) / 10;
+    metrics["BUS_FACTOR_SCORE"] = await bus.Bus_Factor(url);
+    metrics["RAMP_UP_SCORE"] = await rampup.rampup();
+    metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
+    metrics["NET_SCORE"] = await net_score(metrics);
+    await metric.deleteRepository();
 
     return metrics;
 

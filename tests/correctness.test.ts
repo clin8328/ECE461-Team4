@@ -40,11 +40,28 @@ describe('Testing Correctness', () => {
     expect(setIncludes("12312345678765434567654", ['9', '91'])).toBe(false)
   });
 
+<<<<<<< HEAD
   it('Evaluate Metric (curr Repo)', async () => {
     let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/', '../');
+=======
+  // it('Evaluate Metric (curr Repo)', async () => {
+  //   let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/', '../');
+  //   metric.getGitHubRepoUrl('https://github.com/KillianLucas/open-interpreter/');
+  //   let value = await metric.getMetric();
+  //   expect(value).toBeLessThanOrEqual(1);
+  //   expect(value).toBeGreaterThanOrEqual(0);
+  // });
+
+  it('Evaluate Metric (git url)', async () => {
+    let metric = new Correctness('https://github.com/KillianLucas/open-interpreter/');
+    await metric.getGitHubRepoUrl('https://github.com/KillianLucas/open-interpreter/');
+    await metric.cloneRepository();
+>>>>>>> main
     let value = await metric.getMetric();
+    await metric.deleteRepository();
     expect(value).toBeLessThanOrEqual(1);
     expect(value).toBeGreaterThanOrEqual(0);
+<<<<<<< HEAD
   });
 
   it('Evaluate Metric (git url)', async () => {
@@ -54,6 +71,8 @@ describe('Testing Correctness', () => {
     await metric.deleteRepository();
     expect(value).toBeLessThanOrEqual(1);
     expect(value).toBeGreaterThanOrEqual(0);
+=======
+>>>>>>> main
   }, 200000);
 });
   

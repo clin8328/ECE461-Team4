@@ -36,7 +36,7 @@ export class Metric {
         
         this.logger = logProvider.getLogger(metricName);
         //this.getGitHubRepoUrl(Url);
-        this.repoPath = path.join(process.cwd(), this.repoName);
+        this.repoPath = "";
     }
 
     async getGitHubRepoUrl(Url: string) {
@@ -100,7 +100,7 @@ export class Metric {
             if (response.status === 200) {
               this.repoOwner = owner;
               this.repoName = repoName;
-              this.githubRepoUrl = cleanedURL;
+              this.repoPath = path.join(process.cwd(), this.repoName);
               this.status = response.status;
 
               return cleanedURL;
@@ -129,6 +129,8 @@ export class Metric {
       */ 
       const dir = this.repoPath;
       try {
+        console.log("----------------------")
+          console.log(this.githubRepoUrl);
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           return true;
       } 

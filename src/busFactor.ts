@@ -6,7 +6,7 @@ export class Bus extends Metric {
         super(url, "Busfactor");
     }
 
-    async Bus_Factor(): Promise<number> {
+    async Bus_Factor(url: string): Promise<number> {
         let res: number = -1; // Initialize res with a default value in case of an error
 
         try {
@@ -14,8 +14,10 @@ export class Bus extends Metric {
                 auth: this.githubToken // Put your GitHub token here
             });
 
+            const urlParts = url.split('/');
             const _owner = this.repoOwner; // Obtain the owner of the repo
             const _repo = this.repoName;// Obtain the repo name
+
             const response = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
                 owner: _owner,
                 repo: _repo,
