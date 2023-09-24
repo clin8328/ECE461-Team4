@@ -87,6 +87,7 @@ export class License extends Metric{
 
         //Find if there are valid licenses
         if(find_license_regex.test(licenseMatch[0])){
+          this.logger.info("License: license found for" + this.repoName)
           return 1;
         }
       }
