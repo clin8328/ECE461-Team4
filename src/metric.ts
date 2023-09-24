@@ -24,19 +24,21 @@ export class Metric {
     repoName: string;
     repoPath: string;
     githubToken: string; 
+    clone_path: string;
     logger: Logger;
     status: number;
 
     constructor(Url: string, metricName: string) {
         this.githubRepoUrl = ""; //Set in getGitHubRepoUrl
         this.repoOwner = ""; //Set in get_api_url
-        this.repoName = "clone-path"; //Set in get_api_url
+        this.repoName = ""; //Set in get_api_url
+        this.clone_path = "clone-path";
         this.status = 0;
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
         
         this.logger = logProvider.getLogger(metricName);
         //this.getGitHubRepoUrl(Url);
-        this.repoPath = "";
+        this.repoPath = path.join(process.cwd(), this.clone_path);
     }
 
     async getGitHubRepoUrl(Url: string) {
@@ -76,7 +78,7 @@ export class Metric {
             var owner = urlParts[3];
             var repoName = urlParts[4];
             this.repoOwner = urlParts[3];
-            //this.repoName = urlParts[4];
+            this.repoName = urlParts[4];
 
             //Check if it ends with .git or and backslashes '\' and remove them
             if(repoName.endsWith('.git\r')){
@@ -104,8 +106,7 @@ export class Metric {
 
             if (response.status === 200) {
               this.repoOwner = owner;
-              //this.repoName = repoName;
-              this.repoPath = path.join(process.cwd(), this.repoName);
+              this.repoName = repoName;
               this.status = response.status;
 
               return cleanedURL;
@@ -133,6 +134,7 @@ export class Metric {
           a repository on github if the user provides a valid github repository URL.
       */ 
       const dir = this.repoPath;
+      console.log(dir);
       try {
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
           return true;
