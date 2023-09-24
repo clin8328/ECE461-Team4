@@ -55,9 +55,12 @@ def run_urlfile() -> int:
     is_valid_output: bool
     total_correct = 0
 
+<<<<<<< HEAD
+=======
     print(url_file_rc)
     print(output)
 
+>>>>>>> 177ddc4902cca502e62e49ea741d342e6b0cf23b
     if url_file_rc is True:
         total_correct += 1
         print(f"{GREEN}> URL_FILE command exited successfully.{RESET}")
@@ -167,16 +170,16 @@ def run_test_suite() -> int:
 def main():
     
     #Setup ENV for testing
-    os.environ['GITHUB_TOKEN'] = "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"
+    os.environ['GITHUB_TOKEN'] = "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"
     os.environ['LOG_LEVEL'] = "0"
-    os.environ['LOG_FILE'] = "/home/shay/a/lin1371/461/ECE461-Team4"
+    os.environ['LOG_FILE'] = "/tmp/log"
     
     # Run install test
     print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
     total_correct = run_install()
     print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
 
-    #Run test_suite test
+    # Run test_suite test
     print(f"{BOLD}{BLUE}Testing './run test'...{RESET}")
     total_correct = run_test_suite()
     print(f"{BOLD}{YELLOW if total_correct < 4 else GREEN} {total_correct} / 4 tests passed.{RESET}\n")
