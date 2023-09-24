@@ -37,7 +37,7 @@ export class Correctness extends Metric {
     let jsts_files: string[] = this.getAlltsjsFiles(this.clone_path);
 
     let errors: number = 0;
-    let lines: number = 1;
+    let lines: number = 0;
     for (let file of jsts_files) {
       errors += await lintFile(file);
       lines += await countLinesInFile(file);
@@ -46,7 +46,11 @@ export class Correctness extends Metric {
     console.log(jsts_files);
     console.log("errors: ", errors, " | lines: ", lines);
     console.log("metric: ", 1 - errors/lines);
-    return Math.round((1 - errors / lines)*10) / 10;
+    if (lines == 0) {
+      return 0;
+    } else {
+      return Math.round((1 - errors / lines)*100) / 100;
+    }
   }
 
   getAlltsjsFiles(filepath: string): string[] {
