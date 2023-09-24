@@ -25,18 +25,18 @@ export class Metric {
     repoPath: string;
     githubToken: string; 
     logger: Logger;
-    api_call_remaining: number;
+    status: number;
 
     constructor(Url: string, metricName: string) {
         this.githubRepoUrl = ""; //Set in getGitHubRepoUrl
         this.repoOwner = ""; //Set in get_api_url
         this.repoName = ""; //Set in get_api_url
+        this.status = 0;
         this.githubToken = process.env.GITHUB_TOKEN ?? "";
-        this.repoPath = path.join(process.cwd(), this.repoName);
+        
         this.logger = logProvider.getLogger(metricName);
-        this.api_call_remaining = 0;
-
-        this.getGitHubRepoUrl(Url);
+        //this.getGitHubRepoUrl(Url);
+        this.repoPath = "";
     }
 
     async getGitHubRepoUrl(Url: string) {
@@ -44,18 +44,15 @@ export class Metric {
         if (links.isGithubLink(Url) === true) {
           this.githubRepoUrl = Url;
           await this.get_api_url(Url);
-        } 
-        else if (links.isNpmLink(Url) === true) {
+        } else if (links.isNpmLink(Url) === true) {
           const npmtoGitUrl = await npmToGitRepoUrl(Url);
-  
           if (npmtoGitUrl !== null) {
             this.githubRepoUrl = npmtoGitUrl;
             await this.get_api_url(npmtoGitUrl);
           } else {
             console.error('Failed to fetch GitHub repository URL for npm link');
           }
-        } 
-        else {
+        } else {
           console.error('The URL is not a valid GitHub or npm link');
         }
       } catch (error) {
@@ -78,7 +75,7 @@ export class Metric {
             var repoName = urlParts[4];
             this.repoOwner = urlParts[3];
             this.repoName = urlParts[4];
-        
+
             //Check if it ends with .git or and backslashes '\' and remove them
             if(repoName.endsWith('.git\r')){
               repoName = repoName.substring(0,repoName.length-5)
@@ -94,20 +91,23 @@ export class Metric {
             });
         
             var cleanedURL = 'https://api.github.com/repos/' + owner + '/' + repoName;
-        
+
             const response = await octokit.request(cleanedURL, {
               owner: owner,
               repo: repoName,
             });
-        
+
             if (response.status === 200) {
-                this.repoOwner = owner;
-                this.repoName = repoName;
-                this.githubRepoUrl = cleanedURL;
+              this.repoOwner = owner;
+              this.repoName = repoName;
+              this.repoPath = path.join(process.cwd(), this.repoName);
+              this.status = response.status;
+
               return cleanedURL;
             } 
             else{
               console.error(cleanedURL + ' is not a valid github API');
+
               return "";
             }
           } 
@@ -127,10 +127,12 @@ export class Metric {
           Description: This function uses the javascript library 'isomorphic-git' to clone
           a repository on github if the user provides a valid github repository URL.
       */ 
-      const dir = path.join(process.cwd(), this.repoPath);
+      const dir = this.repoPath;
+
       try {
+        console.log("----------------------")
+          console.log(this.githubRepoUrl);
           await git.clone({ fs, http, dir, url: this.githubRepoUrl });
-          console.log('Repository cloned successfully.');
           return true;
       } 
       catch (error) {
