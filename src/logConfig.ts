@@ -22,14 +22,14 @@ let logLvl: LogLevel  //loglevel that should be allowed in the log file
 let logStream: fs.WriteStream //filestream for the logfile
 
 logPath = String(process.env.LOG_FILE)
-if(Number(process.env.LOG_LEVEL) == 0) {
-    logLvl = LogLevel.Off
+if(Number(process.env.LOG_LEVEL) == 2) {
+  logLvl = LogLevel.Debug
 }
 else if(Number(process.env.LOG_LEVEL) == 1) {
     logLvl = LogLevel.Info
 }
 else{
-    logLvl = LogLevel.Debug
+    logLvl = LogLevel.Off
 }
 
   //create the filestream to write the log to
