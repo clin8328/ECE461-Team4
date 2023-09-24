@@ -19,7 +19,6 @@ export class Responsiveness extends Metric {
 
         const owner = this.repoOwner; //Obtain owner of repo
         const repoName = this.repoName; //Obtain repo name
-
         const octokit = new Octokit({
             auth: this.githubToken //Insert token
         });
