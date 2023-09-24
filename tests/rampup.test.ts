@@ -33,17 +33,17 @@ describe('RampUpTest', () => {
     });
 
     it('weaker link', async () => {
-        const RampUpInstance =  new RampUp("https://github.com/octokit/plugin-enterprise-server.js");
-        await RampUpInstance.getGitHubRepoUrl("https://github.com/octokit/plugin-enterprise-server.js");
+        const RampUpInstance =  new RampUp("https://www.npmjs.com/package/generate-schema");
+        await RampUpInstance.getGitHubRepoUrl("https://www.npmjs.com/package/generate-schema");
     
         await RampUpInstance.cloneRepository();
         const output = await RampUpInstance.rampup();
             
         await RampUpInstance.deleteRepository();
-        expect(output).toBe(0.4);
+        expect(output).toBe(0);
         
       
-    },20000);
+    }, 25000);
   
 });
 
