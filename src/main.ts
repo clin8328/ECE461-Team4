@@ -103,18 +103,18 @@ async function checkEnvironment() {
         // console.log(process.env.GITHUB_TOKEN)
         // console.log(process.env.LOG_FILE)
         // console.log(process.env.LOG_LEVEL)
-
-        if(process.env.GITHUB_TOKEN === undefined) {
-            throw new Error('GITHUB_TOKEN is not defined');
+        if(process.env.GITHUB_TOKEN === undefined || process.env.GITHUB_TOKEN === "\n") {
+            throw new Error();
         }
-        else if (process.env.LOG_FILE === undefined) {
-            throw new Error('LOG_FILE is not defined')
+        else if (process.env.LOG_FILE === undefined || process.env.LOG_FILE === "\n") {
+            throw new Error()
         }
-        else if(process.env.LOG_LEVEL === undefined) {
+        else if(process.env.LOG_LEVEL === undefined || process.env.LOG_LEVEL === "\n") {
             process.env.LOG_LEVEL = '0';
         }
     } catch (error) {
-        console.error(error)
+        //console.error(error)
+        console.log(process.env.LOG_FILE);
         process.exit(1);
     }
 }
@@ -129,7 +129,7 @@ async function main() {
   const fileList = fileContent.split('\n');
 
   
-  checkEnvironment();
+  await checkEnvironment();
   
   for (let link of fileList) {
     if(link == ""){

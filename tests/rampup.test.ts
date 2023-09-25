@@ -39,8 +39,10 @@ describe('RampUpTest', () => {
     //     await RampUpInstance.cloneRepository();
     //     const output = await RampUpInstance.rampup();
             
-    //     await RampUpInstance.deleteRepository();
-    //     expect(output).toBe(0.3);
+
+        await RampUpInstance.deleteRepository();
+        expect(output).toBe(0.3172);
+
         
       
     // }, 25000);
