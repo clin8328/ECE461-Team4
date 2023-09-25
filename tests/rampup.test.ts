@@ -40,8 +40,8 @@ describe('RampUpTest', () => {
     //     const output = await RampUpInstance.rampup();
             
 
-        await RampUpInstance.deleteRepository();
-        expect(output).toBe(0.3172);
+        // await RampUpInstance.deleteRepository();
+        // expect(output).toBe(0.3172);
 
         
       

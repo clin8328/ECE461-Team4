@@ -17,12 +17,12 @@ describe('Testing npmlink.ts', () => {
   it('npmToGitRepoUrl', async () => {
     let gitUrl = await npmToGitRepoUrl('https://www.npmjs.com/package/rc-menu');
     expect(gitUrl).toBe('https://github.com/react-component/menu.git');
-  }, 10000)
+  }, 15000)
 
   it('npmToGitRepoUrl', async () => {
     let gitUrl = await npmToGitRepoUrl('www.npmjs.com/package/browserify');
     expect(gitUrl).toBe('https://github.com/browserify/browserify.git');
-  }, 12000)
+  }, 15000)
 
   // it('get_api_url', async () => {
   //   let apiURL = await get_api_url('https://github.com/WillStonebridge/CycleGan_Reimplementation');

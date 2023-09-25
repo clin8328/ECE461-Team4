@@ -172,9 +172,9 @@ def main():
     os.environ['LOG_FILE'] = "/tmp/log"
     
     # Run install test
-    # print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
-    # total_correct = run_install()
-    # print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
+    print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
+    total_correct = run_install()
+    print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
 
 
     # Run test_suite test
