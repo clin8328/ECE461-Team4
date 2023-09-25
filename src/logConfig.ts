@@ -45,9 +45,9 @@ export const logProvider = Log4TSProvider.createProvider("fileProvider", {
   channel: {
     type: "LogChannel",
     write: logMessage => 
-    fs.appendFile(logPath+'/log.txt', logMessage.message + '\n', (err) => {
+    fs.appendFile(logPath, logMessage.message + '\n', (err) => {
       if (err) {
-        console.error('Error appending data to log file:', err);
+        console.error('Error appending data to log file. Maybe directory does not exist:', err);
       } 
     }),
   }

@@ -133,7 +133,7 @@ export class Metric {
           return true;
       } 
       catch (error) {
-          this.logger.debug('Error cloning repository at'+ this.githubRepoUrl +':', error);
+          this.logger.debug('Error cloning repository at '+ this.githubRepoUrl +':', error);
           return false;
       }
     }
