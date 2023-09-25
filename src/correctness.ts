@@ -39,7 +39,13 @@ export class Correctness extends Metric {
     let errors: number = 0;
     let lines: number = 0;
     for (let file of jsts_files) {
+      try{
       errors += await lintFile(file);
+      }
+      catch(error:any){
+        this.logger.debug('getMetric: Error: ' + error.message);
+        return -1;
+      }
       lines += await countLinesInFile(file);
     }
 
