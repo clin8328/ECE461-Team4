@@ -1,0 +1,54 @@
+2023-09-25 22:18:43,474 INFO  [test-clone] Repository athttps://github.com/nullivex/nodistcloned successfully.
+2023-09-25 22:18:43,477 INFO  [License] License: license found for nodist
+2023-09-25 22:18:44,701 INFO  [RampUp] countLinesInReadme: path = clone-path\README.md, lines = 494
+2023-09-25 22:18:45,738 INFO  [Correctness] errors:  [223, " | lines: ", 4235]
+2023-09-25 22:18:45,739 INFO  [Correctness] metric:  [0.9473435655253837]
+2023-09-25 22:18:45,752 INFO  [test-clone] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:20:21,683 INFO  [test-clone] Repository athttps://github.com/nullivex/nodistcloned successfully.
+2023-09-25 22:20:21,685 INFO  [License] License: license found fornodist
+2023-09-25 22:20:22,959 INFO  [RampUp] countLinesInReadme: path = clone-path\README.md, lines = 494
+2023-09-25 22:20:23,956 INFO  [Correctness] errors:  [223, " | lines: ", 4235]
+2023-09-25 22:20:23,957 INFO  [Correctness] metric:  [0.9473435655253837]
+2023-09-25 22:20:23,978 INFO  [test-clone] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:20:34,522 INFO  [test-clone] Repository athttps://github.com/davisjam/safe-regex.gitcloned successfully.
+2023-09-25 22:20:34,522 INFO  [License] License: license found forsafe-regex
+2023-09-25 22:20:35,99 INFO  [RampUp] countLinesInReadme: path = clone-path\README.md, lines = 97
+2023-09-25 22:20:35,190 INFO  [Correctness] errors:  [44, " | lines: ", 529]
+2023-09-25 22:20:35,190 INFO  [Correctness] metric:  [0.9168241965973535]
+2023-09-25 22:20:35,194 INFO  [test-clone] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:20:53,477 INFO  [License] Repository atcloned successfully.
+2023-09-25 22:20:53,478 INFO  [License] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:20:53,481 INFO  [License] License: license found for
+2023-09-25 22:20:54,147 INFO  [RampUp] Repository athttps://github.com/thockin/testcloned successfully.
+2023-09-25 22:20:54,156 INFO  [RampUp] countLinesInReadme: path = clone-path\README.md, lines = 10
+2023-09-25 22:20:54,161 INFO  [RampUp] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:20:54,379 INFO  [RampUp] README not found in the repository for repo Fake
+2023-09-25 22:20:54,379 INFO  [RampUp] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:21:03,547 INFO  [Correctness] Repository athttps://github.com/form-data/form-data.gitcloned successfully.
+2023-09-25 22:21:03,796 INFO  [Correctness] metric:  [0.9500446030330062]
+2023-09-25 22:21:03,796 INFO  [Correctness] errors:  [56, " | lines: ", 1121]
+2023-09-25 22:21:03,804 INFO  [Correctness] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:21:29,35 INFO  [License] Repository atcloned successfully.
+2023-09-25 22:21:29,40 INFO  [License] License: license found for
+2023-09-25 22:21:29,36 INFO  [License] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:21:29,655 INFO  [RampUp] Repository athttps://github.com/thockin/testcloned successfully.
+2023-09-25 22:21:29,662 INFO  [RampUp] countLinesInReadme: path = clone-path\README.md, lines = 10
+2023-09-25 22:21:29,665 INFO  [RampUp] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:21:29,866 INFO  [RampUp] README not found in the repository for repo Fake
+2023-09-25 22:21:29,866 INFO  [RampUp] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:21:33,316 INFO  [Correctness] Repository athttps://github.com/form-data/form-data.gitcloned successfully.
+2023-09-25 22:21:33,546 INFO  [Correctness] errors:  [56, " | lines: ", 1121]
+2023-09-25 22:21:33,546 INFO  [Correctness] metric:  [0.9500446030330062]
+2023-09-25 22:21:33,555 INFO  [Correctness] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:57:30,104 INFO  [License] Repository atcloned successfully.
+2023-09-25 22:57:30,104 INFO  [License] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:57:30,108 INFO  [License] License: license found for
+2023-09-25 22:57:44,229 INFO  [License] Repository atcloned successfully.
+2023-09-25 22:57:44,230 INFO  [License] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:57:44,233 INFO  [License] License: license found for
+2023-09-25 22:57:52,377 INFO  [License] Repository atcloned successfully.
+2023-09-25 22:57:52,378 INFO  [License] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:57:52,383 INFO  [License] License: license found for
+2023-09-25 22:58:41,532 INFO  [License] Repository atcloned successfully.
+2023-09-25 22:58:41,533 INFO  [License] Directory 'C:\Users\lolch\OneDrive\Desktop\ECE-46100\ECE461-Team4\clone-path' and its contents deleted successfully.
+2023-09-25 22:58:41,536 INFO  [License] License: license found for
