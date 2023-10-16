@@ -8,6 +8,7 @@ import { net_score } from './netScore';
 import { Responsiveness } from './responsiveness';
 import { Metric } from './metric';
 import { PR_Stats } from './pr_stat';
+import { Depend_Score } from './dependRate';
 import { check_api_limit } from './api_limit';
 import { stat } from 'fs';
 
@@ -32,6 +33,7 @@ export async function evaluate_URL(url: string) {
       "RESPONSIVE_MAINTAINER_SCORE": -1,
       "LICENSE_SCORE": -1,
       "PR_STATS": -1,
+      "Depend_Score": -1,
     };
 
     let bus = new Bus(url);
@@ -51,6 +53,9 @@ export async function evaluate_URL(url: string) {
 
     let pr_stat = new PR_Stats(url);
     await pr_stat.getGitHubRepoUrl(url);
+    
+    let depend = new Depend_Score(url);
+    await depend.getGitHubRepoUrl(url);
 
     let metric = new Metric(url,"test-clone");
     await metric.getGitHubRepoUrl(url);
@@ -69,6 +74,7 @@ export async function evaluate_URL(url: string) {
     metrics["CORRECTNESS_SCORE"] = await correctness.getMetric();
     metrics["NET_SCORE"] = await net_score(metrics);
     metrics["PR_STATS"] = await pr_stat.PR_Stats(url);
+    metrics["Depend_Score"] = await depend.calculateDependScore();
     await metric.deleteRepository();
 
     return metrics;
