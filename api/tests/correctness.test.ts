@@ -5,12 +5,11 @@
 */
 
 import exp from "constants";
-import { Correctness, lintFile, setIncludes} from "../src/correctness"
+import { Correctness, lintFile, setIncludes } from "./correctness";
 //import { License } from "../src/license";
 import { Octokit } from "octokit";
 
-describe('Testing Correctness', () => {
-
+describe("Testing Correctness", () => {
   // beforeAll(async () => {
   //   // Code to run before all test cases start
   //   // For example, you can set up test data, initialize resources, or perform setup tasks
@@ -24,20 +23,20 @@ describe('Testing Correctness', () => {
   //   await repoHandler.deleteRepository();
   // });
 
-  it('Lints Correctly', () => {
+  it("Lints Correctly", () => {
     const expected_errors = 6;
-    lintFile('src/testing/custom_test_output.ts').then((observed_errors) => {
+    lintFile("src/testing/custom_test_output.ts").then((observed_errors) => {
       expect(observed_errors).toBe(expected_errors);
     });
   });
-  
-  it('Lint Failure on non-code files', async () => {
-    await expect(lintFile('src/testing/unlintable.txt')).rejects.toThrow();
+
+  it("Lint Failure on non-code files", async () => {
+    await expect(lintFile("src/testing/unlintable.txt")).rejects.toThrow();
   });
 
-  it('Evaluate setIncludes', async () => {
-    expect(setIncludes("12312345678765434567654", ['12'])).toBe(true);
-    expect(setIncludes("12312345678765434567654", ['9', '91'])).toBe(false)
+  it("Evaluate setIncludes", async () => {
+    expect(setIncludes("12312345678765434567654", ["12"])).toBe(true);
+    expect(setIncludes("12312345678765434567654", ["9", "91"])).toBe(false);
   });
 
   // it('Evaluate Metric (curr Repo)', async () => {
@@ -48,13 +47,12 @@ describe('Testing Correctness', () => {
   //   expect(value).toBeGreaterThanOrEqual(0);
   // });
 
-  it('Evaluate Metric (git url)', async () => {
-    let metric = new Correctness('https://www.npmjs.com/package/form-data');
-    await metric.getGitHubRepoUrl('https://www.npmjs.com/package/form-data');
+  it("Evaluate Metric (git url)", async () => {
+    let metric = new Correctness("https://www.npmjs.com/package/form-data");
+    await metric.getGitHubRepoUrl("https://www.npmjs.com/package/form-data");
     await metric.cloneRepository();
     let value = await metric.getMetric();
     await metric.deleteRepository();
     expect(value).toBe(0.95);
   }, 200000);
 });
-  
