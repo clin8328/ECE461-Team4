@@ -1,4 +1,4 @@
-name: CD Workflow
+name: EC2 Deployment
 
 on:
   push:
@@ -13,17 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
+    - name: Install SSH key
+      run: echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build and deploy
+    - name: Deploy to EC2
       run: |
-        cd ./
-        git pull
-        npm install
-        tsc
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "cd ./ && npm install && tsc"
