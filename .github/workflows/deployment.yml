@@ -27,4 +27,3 @@ jobs:
         git pull
         npm install
         tsc
-        node ./dist/github.js
