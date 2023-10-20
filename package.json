@@ -60,7 +60,8 @@
     "test": "jest --coverage",
     "test-json": "jest --coverage > src/testing/output.txt 2>&1",
     "lint": "eslint **/*.ts",
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "build": "run npm build"
   },
   "author": "",
   "license": "ISC",
