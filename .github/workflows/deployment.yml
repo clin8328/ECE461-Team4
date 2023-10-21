@@ -13,6 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Update known_hosts
+        run: |
+          ssh-keyscan 18.227.26.233 >> ~/.ssh/known_hosts
+
       - name: Deploy code to EC2
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d | ssh -i /dev/stdin ec2-user@18.227.26.233 "cd ./ && git pull && npm install && tsc"
