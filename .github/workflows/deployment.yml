@@ -23,4 +23,4 @@ jobs:
 
       - name: SSH into EC2
         run: |
-          ssh -i ~/.ssh/ec2_ssh_key ec2-user@18.227.26.233
+          sudo ssh -i ~/.ssh/ec2_ssh_key ec2-user@18.227.26.233
