@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set permissions for SSH key and known_hosts
+        run: |
+          chmod 644 ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/ec2_ssh_key
+
       - name: Deploy code to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i /dev/stdin ec2-user@18.227.26.233 "cd ./ && git pull && npm install and tsc"
