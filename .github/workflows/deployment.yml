@@ -1,4 +1,4 @@
-name: Print Secret
+name: SSH into EC2
 
 on:
   push:
@@ -6,10 +6,17 @@ on:
       - main
 
 jobs:
-  print-secret:
+  ssh-into-ec2:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print Secret
+      - name: Set up SSH key
         run: |
-          echo "My secret is: ${{ secrets.EC2_SSH_KEY }}"
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_ssh_key
+          chmod 600 ~/.ssh/ec2_ssh_key
+          ssh-keyscan 18.227.26.233 >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: SSH into EC2
+        run: |
+          ssh -i ~/.ssh/ec2_ssh_key ec2-user@18.227.26.233
