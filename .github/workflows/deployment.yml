@@ -13,14 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH key
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_ssh_key_base64.txt
-          base64 -d -i ~/.ssh/ec2_ssh_key_base64.txt -o ~/.ssh/ec2_ssh_key
-          chmod 600 ~/.ssh/ec2_ssh_key
-          ssh-keyscan 18.227.26.233 >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
       - name: Deploy code to EC2
         run: |
-          ssh -i ~/.ssh/ec2_ssh_key ec2-user@18.227.26.233 "cd ./ && git pull && npm install && tsc"
+          echo -n "${{ secrets.EC2_SSH_KEY }}" | base64 -d | \
+          ssh -i - ec2-user@18.227.26.233 "cd ./ && git pull && npm install && tsc"
