@@ -15,4 +15,22 @@ jobs:
 
       - name: Deploy code to EC2
         run: |
-          ssh -i <(echo "${{ secrets.EC2_SSH_KEY }}") ec2-user@18.227.26.233 "cd ./ && git pull && npm install && tsc"
+        name: Simple Deployment to EC2
+
+        on:
+          push:
+            branches:
+              - main
+        
+        jobs:
+          deploy:
+            runs-on: ubuntu-latest
+        
+            steps:
+              - name: Checkout code
+                uses: actions/checkout@v2
+        
+              - name: Deploy code to EC2
+                run: |
+                  echo "${{ secrets.EC2_SSH_KEY }}" | ssh -i /dev/stdin ec2-user@18.227.26.233 "cd ./ && git pull && npm install && tsc"
+        
