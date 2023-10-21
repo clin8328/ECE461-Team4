@@ -18,6 +18,9 @@ jobs:
           ssh-keyscan 18.227.26.233 >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
+      - name: Set SSH Key Permissions
+        run: chmod 600 ~/.ssh/ec2_ssh_key
+
       - name: SSH into EC2
         run: |
           ssh -i ~/.ssh/ec2_ssh_key ec2-user@18.227.26.233
