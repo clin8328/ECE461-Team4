@@ -1,4 +1,4 @@
-name: Write Secret to File
+name: SSH into EC2 Instance
 
 on:
   push:
@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH into EC2 Instance
-        run: |
-          sudo ssh -i "./461Key.pem" ec2-user@18.227.26.233.us-east-2.compute.amazonaws.com
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
+    - name: SSH into EC2 Instance
+      run: |
+        ssh -i "461Key.pem" ec2-user@18.227.26.233.us-east-2.compute.amazonaws.com
