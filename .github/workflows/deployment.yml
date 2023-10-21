@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Set up SSH key
         run: |
+          mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_ssh_key
           chmod 600 ~/.ssh/ec2_ssh_key
           ssh-keyscan 18.227.26.233 >> ~/.ssh/known_hosts
