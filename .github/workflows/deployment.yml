@@ -10,17 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_ssh_key
-          chmod 600 ~/.ssh/ec2_ssh_key
-          ssh-keyscan 18.227.26.233 >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
-      - name: Set SSH Key Permissions
-        run: chmod 600 ~/.ssh/ec2_ssh_key
-
       - name: SSH into EC2
         run: |
-          sudo ssh -i ~/.ssh/ec2_ssh_key ec2-user@18.227.26.233
+          sudo ssh -i "461Key.pem" ec2-user@ec2-18-227-26-233.us-east-2.compute.amazonaws.com
