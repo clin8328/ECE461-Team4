@@ -1,4 +1,4 @@
-name: Simple Deployment to EC2
+name: SSH into EC2 and Setup
 
 on:
   push:
@@ -13,11 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set permissions for SSH key and known_hosts
+      - name: Set up SSH key
         run: |
-          chmod 644 ~/.ssh/known_hosts
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ~/.ssh/ec2_ssh_key
           chmod 600 ~/.ssh/ec2_ssh_key
+          ssh-keyscan YOUR_EC2_PUBLIC_IP >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-      - name: Deploy code to EC2
+      - name: SSH into EC2 and Run Commands
         run: |
-          ssh -o StrictHostKeyChecking=no -i /dev/stdin ec2-user@18.227.26.233 "cd ./ && git pull && npm install and tsc"
+          ssh -i ~/.ssh/ec2_ssh_key ec2-user@YOUR_EC2_PUBLIC_IP "cd /path/to/your/project && git pull && npm install && tsc"
