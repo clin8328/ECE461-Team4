@@ -15,4 +15,4 @@ jobs:
 
       - name: Deploy code to EC2
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" | ssh -i /dev/stdin ec2-user@18.227.26.233 "cd ./ && git pull && npm install && tsc"
+          ssh -o StrictHostKeyChecking=no -i /dev/stdin ec2-user@18.227.26.233 "cd ./ && git pull && npm install and tsc"
