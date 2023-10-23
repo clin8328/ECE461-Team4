@@ -17,6 +17,4 @@ jobs:
       run: |
         mkdir -p $HOME/.ssh
         touch $HOME/.ssh/known_hosts
-        sudo ssh -o StrictHostKeyChecking=no -i ./461Key.pem 
-        ec2-user@18.227.26.233 "cd ./ECE461_Phase2 && git pull 
-        && npm install"
+        sudo ssh -o StrictHostKeyChecking=no -i ./461Key.pem ec2-user@18.227.26.233 "cd ./ECE461_Phase2 && git pull && npm install"
