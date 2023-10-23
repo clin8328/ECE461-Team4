@@ -1,5 +1,5 @@
-import { Bus } from "./busFactor";
-import { Metric } from "./metric";
+import { Bus } from "../src/busFactor";
+import { Metric } from "../src/metric";
 
 test("test_1 Bus Factor", async () => {
   let url = "https://github.com/davisjam/safe-regex";

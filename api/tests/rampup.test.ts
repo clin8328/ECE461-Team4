@@ -1,5 +1,5 @@
-import { RampUp } from "./rampup";
-import { Metric } from "./metric";
+import { RampUp } from "../src/rampup";
+import { Metric } from "../src/metric";
 
 describe("RampUpTest", () => {
   // Test case 1

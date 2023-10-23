@@ -5,7 +5,7 @@
 */
 
 import exp from "constants";
-import { Correctness, lintFile, setIncludes } from "./correctness";
+import { Correctness, lintFile, setIncludes } from "../src/correctness";
 //import { License } from "../src/license";
 import { Octokit } from "octokit";
 

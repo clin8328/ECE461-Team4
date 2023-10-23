@@ -1,4 +1,4 @@
-import { getNpmPackageName, npmToGitRepoUrl, get_api_url } from "./npmlink";
+import { getNpmPackageName, npmToGitRepoUrl, get_api_url } from "../src/npmlink";
 
 /*
   Original Author: Will Stonebridge

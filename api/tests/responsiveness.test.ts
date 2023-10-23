@@ -18,7 +18,7 @@ jest.mock("@octokit/rest", () => {
 });
 
 //The imports are down here because the octokit mock didn't want to work when done after the import
-import { Responsiveness } from "./responsiveness";
+import { Responsiveness } from "../src/responsiveness";
 import { Octokit } from "@octokit/rest";
 import * as fs from "fs";
 

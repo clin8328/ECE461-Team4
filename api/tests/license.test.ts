@@ -3,7 +3,7 @@
   Date edit: 9/14/2023
   File description: Testing the License Metric class
 */
-import { License as MyLicense } from "./license";
+import { License as MyLicense } from "../src/license";
 
 const fsPromises = require("fs/promises");
 const git = require("isomorphic-git");

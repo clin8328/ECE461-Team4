@@ -4,7 +4,7 @@
   File description: Test netScore function
 */
 
-import { net_score } from "./netScore";
+import { net_score } from "../src/netScore";
 
 describe("Net Score function", () => {
   // Test case 1
