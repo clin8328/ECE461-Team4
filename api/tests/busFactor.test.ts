@@ -1,4 +1,4 @@
-import { Bus } from "../src/busFactor";
+import { Bus } from "../src/busFactor"; 
 import { Metric } from "../src/metric";
 
 test("test_1 Bus Factor", async () => {
