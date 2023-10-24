@@ -37,6 +37,3 @@
 
 3: Type 'npm test'
     - This will run all the test files within the 'test' folder
-
-4: Connecting To EC2 Instance
-    - run: sudo ssh -i "461Key.pem" ec2-user@ec2-18-227-26-233.us-east-2.compute.amazonaws.com
