@@ -2,8 +2,8 @@
   "name": "ece461-team4",
   "version": "1.0.0",
   "description": "ECE 461 team 4\r chuhan- Dummy commit\r junpei - Dummy Commit\r 1: Chuhan Lin\r 2: Pranav Sankar\r 3. Junpei\r 4: Justin Cambridge",
-  "main": "index.js",
-  "type": "module",
+  "main": "app.js",
+  "type": "commonjs",
   "dependencies": {
     "@octokit/rest": "^20.0.1",
     "@types/express": "^4.17.19",
@@ -60,7 +60,7 @@
     "test": "jest --coverage",
     "test-json": "jest --coverage > src/testing/output.txt 2>&1",
     "lint": "eslint . --fix",
-    "start": "ts-node index.ts"
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
