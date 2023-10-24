@@ -27,6 +27,9 @@ package-lock.json
 *.tar
 *.zip
 
+# Removing JS Files
+*.js
+
 # Logs and databases #
 ######################
 *.env
