@@ -1,4 +1,4 @@
-name: SSH into EC2 Instance and Deploy
+name: Deploy to EC2
 
 on:
   push:
@@ -10,11 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: SSH into EC2 and Deploy
+    - name: Set up SSH Key
+      run: echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+      env:
+        EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      shell: bash
+
+    - name: SSH into EC2
       run: |
-        mkdir -p $HOME/.ssh
-        touch $HOME/.ssh/known_hosts
-        sudo ssh -o StrictHostKeyChecking=no -i ./461Key.pem ec2-user@18.227.26.233 "cd ./ECE461_Phase2 && git pull && npm install && tsc"
+        ssh -i ~/.ssh/id_rsa ec2-user@18.227.26.233
+# Add your commands for deploying or running tasks on the EC2 instance here
