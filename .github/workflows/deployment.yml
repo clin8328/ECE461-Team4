@@ -13,13 +13,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Create SSH directory
+      run: mkdir -p ~/.ssh
+      shell: bash
+
     - name: Set up SSH Key
       run: echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
       env:
         EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
       shell: bash
 
+    - name: Set permissions for SSH key
+      run: chmod 600 ~/.ssh/id_rsa
+      shell: bash
+
     - name: SSH into EC2
       run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@18.227.26.233
+        ssh -i ~/.ssh/id_rsa ec2-user@your-ec2-instance-ip
 # Add your commands for deploying or running tasks on the EC2 instance here
