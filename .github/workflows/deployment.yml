@@ -29,6 +29,10 @@ jobs:
 
     - name: SSH into EC2
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 
+        cd /ECE461_Phase2
+        git pull
+        npm install
+        tsc
 
 # Add your commands for deploying or running tasks on the EC2 instance here
