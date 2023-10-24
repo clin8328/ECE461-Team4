@@ -29,5 +29,5 @@ jobs:
 
     - name: SSH into EC2
       run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@your-ec2-instance-ip
+        ssh -i ~/.ssh/id_rsa ec2-user@18.227.26.233
 # Add your commands for deploying or running tasks on the EC2 instance here
