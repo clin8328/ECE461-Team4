@@ -5,8 +5,6 @@
                 It will stop the program if the limit is close to capacity
 */
 
-// Test
-
 import axios from 'axios';
 require('dotenv').config();
 const accessToken = process.env.GITHUB_TOKEN;
