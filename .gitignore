@@ -30,6 +30,9 @@ package-lock.json
 # Removing JS Files
 *.js
 
+# Excluding tsconfig.json
+tsconfig.json
+
 # Logs and databases #
 ######################
 *.env
