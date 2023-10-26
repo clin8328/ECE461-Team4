@@ -1,4 +1,4 @@
-//Logger Use:
+//Logger Use: 
 //Use in classes that extend metric
 //1) Use this.logger.(info/debug)("message");
 //Use outside of metric classes

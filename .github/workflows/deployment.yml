@@ -16,12 +16,12 @@ jobs:
     - name: Create SSH directory
       run: mkdir -p ~/.ssh
       shell: bash
-
+ 
     - name: Set up SSH Key
       run: echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
       env:
         EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-      shell: bash
+      shell: bash 
 
     - name: Set permissions for SSH key
       run: chmod 600 ~/.ssh/id_rsa
