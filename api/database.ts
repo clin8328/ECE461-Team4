@@ -3,7 +3,7 @@ import fs from 'fs';
 const pool = new Pool({
     host:'database-1.czbaseadhhdu.us-east-1.rds.amazonaws.com',
     port: 5432,
-    database: 'TESTING',
+    database: '461Phase2',
     user: 'davidasousa',
     password: 'SandalGum17#',
     ssl: {
