@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import { query } from "../database";
 import jwt from "jsonwebtoken";
-import { de } from "date-fns/locale";
 const tokenKey: string = "461_secret_key";
 const defalutUsername = 'ece30861defaultadminuser';
 function ResetRegistry(req: Request, res: Response) {
