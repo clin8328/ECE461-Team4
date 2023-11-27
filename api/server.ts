@@ -3,13 +3,13 @@ import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
 import { query } from "./database";
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 //endpoints
 import ResetRegistry from "./endpoints/resetregistry";
 import authenticate from "./endpoints/authenticate";
 import packages from "./endpoints/getAllPkg";
 import packageById from "./endpoints/getPkgById";
-import updatePkgById from "./endpoints/updatepkgById";
+import updatePkgById from "./endpoints/updatePkgById";
 import deletePkgById from "./endpoints/deletePkgById";
 import uploadPackage from "./endpoints/uploadPkg";
 import ratePkgById from "./endpoints/ratePkgById";
@@ -30,7 +30,11 @@ app.delete('/package/byName/:name', deletePkgByName);
 app.post('/package/byRegex', getPackageByRegex);
 
 
-
+app.get('/', async (req, res) => {
+  const result = await query("SELECT * FROM users;");
+  console.log(result.rows);
+  res.send(result.rows);
+})
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
