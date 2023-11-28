@@ -19,13 +19,12 @@ export async function ResetRegistry(req: Request, res: Response) {
       }
       const username = (value as any).username;
       const User = await query("SELECT * FROM users WHERE user_name = $1", [username]);
-      console.log(User.rows[0])
       if (User.rows.length === 0 || ! User.rows[0].is_admin) {
         return res.sendStatus(401);
       } else {
         await query("DELETE FROM users WHERE user_name != $1;", [defaultUsername]);
-        await query("DELETE FROM packages;");
         await query("DELETE FROM packagehistory;")
+        await query("DELETE FROM packages;");
         return res.sendStatus(200);
       }
     })
