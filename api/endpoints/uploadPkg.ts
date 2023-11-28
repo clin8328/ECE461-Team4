@@ -111,7 +111,7 @@ async function uploadPackage(req: Request, res: Response) {
     if (!packageJsonFilePath) return res.sendStatus(400);
     const pkgInfo = parsePackageJson(packageJsonFilePath);
     const pkg = await query('SELECT * FROM packages WHERE package_id = $1', [pkgInfo.id]);
-    if (pkg.rowCount > 0) {
+    if (pkg.rowCount && pkg.rowCount > 0) {
       cleanUp();
       return res.sendStatus(409);
     }
