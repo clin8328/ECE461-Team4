@@ -132,6 +132,7 @@ function getPayload(pkgInfo: any, jsprogram: string) : any {
 }
 
 function cleanUp() {
+  fs.unlinkSync('debloat.zip');
   fs.unlinkSync('upload.zip');
   fs.rmSync('uploads', { recursive: true });
   fs.mkdirSync('uploads');
