@@ -35,7 +35,7 @@ app.get('/', async (req, res) => {
   console.log(result.rows);
   res.send(result.rows);
 })
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(2000, () => {
+  console.log("Server running on port 2000");
 });
 
