@@ -10,11 +10,12 @@ import terser, {} from "terser";
 import {exec} from 'child_process';
 import { rimrafSync } from 'rimraf';
 const jsonminify = require('jsonminify')
+const rootPath = path.join(__dirname, '..');
 async function uploadPackage(req: Request, res: Response) {
   const request = req.body;
   const token = req.headers['x-authorization'] as string;
+  const enable_debloat = req.query['debloat-enabled'] === 'true' || false;
   const jsprogram = req.body.JSProgram || null;
-  //const debloatEnabled = req.headers['x-debloat-enabled'] === 'true' || false;
   //if the token is not valid, return 400
   let decoded = null;
   try {
@@ -32,35 +33,44 @@ async function uploadPackage(req: Request, res: Response) {
     const username = decoded[1].username;
     //handle the file
     const buffer = Buffer.from(request.Content, "base64");
-    fs.writeFileSync('upload.zip', buffer);
+    fs.writeFileSync(path.join(rootPath, 'upload.zip'), buffer);
     try {
-      await unzipFile('upload.zip', 'uploads');
+      await unzipFile(path.join(rootPath, 'upload.zip'), path.join(rootPath, 'uploads'));
     } catch (err) {
       console.error(err);
       cleanUp();
       return res.sendStatus(400);
     }
-    const packageJsonFilePath = getPackageJsonFilePathRecursive('uploads');
+    const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
     if (!packageJsonFilePath) return res.sendStatus(400);
     const pkgInfo = parsePackageJson(packageJsonFilePath);
     //check if the package is already in the database
     const pkg = await query('SELECT * FROM Packages WHERE package_id = $1', [pkgInfo.id]);
     //return 409 if the package is already in the database
-    if (pkg.rowCount > 0) {
+    if (pkg.rowCount && pkg.rowCount > 0) {
       cleanUp();
       return res.sendStatus(409);
     }
     //debloat feature
-    await processFolder('uploads');
-    const encodezip = await zipAndEncodeFolder('uploads');
-    const debloatbuffer = Buffer.from(encodezip, 'base64');
-    //insert the package into the database
-    const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
-    const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
-    cleanUp();
-    const payload = getPayload(pkgInfo, jsprogram);
-    payload.data.Content = encodezip.toString();
-    return res.status(201).json(payload);
+    if (enable_debloat){
+      await processFolder(path.join(rootPath, 'uploads'));
+      const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
+      const debloatbuffer = Buffer.from(encodezip, 'base64');
+      //insert the package into the database
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
+      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      debloatCleanUp();
+      const payload = getPayload(pkgInfo, jsprogram);
+      payload.data.Content = encodezip.toString();
+      return res.status(201).json(payload);
+    } else {
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, buffer]);
+      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      cleanUp();
+      const payload = getPayload(pkgInfo, jsprogram);
+      payload.data.Content = request.Content;
+      return res.status(201).json(payload);
+    }
   } else if (request.URL) {
     /* rating feature for ingestion
     fs.writeFileSync(`${__dirname}/../one-url.txt`, request.URL);
@@ -89,15 +99,15 @@ async function uploadPackage(req: Request, res: Response) {
     }
     if (!response.data) return res.sendStatus(400);
     const bytea = response.data;
-    fs.writeFileSync('upload.zip', response.data);
+    fs.writeFileSync(path.join(rootPath, 'upload.zip'), response.data);
     try {
-      await unzipFile('upload.zip', 'uploads');
+      await unzipFile(path.join(rootPath, 'upload.zip'), path.join(rootPath, 'uploads'));
     } catch (err) {
       console.error(err);
       cleanUp();
       return res.sendStatus(400);
     }
-    const packageJsonFilePath = getPackageJsonFilePathRecursive('uploads');
+    const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
     if (!packageJsonFilePath) return res.sendStatus(400);
     const pkgInfo = parsePackageJson(packageJsonFilePath);
     const pkg = await query('SELECT * FROM packages WHERE package_id = $1', [pkgInfo.id]);
@@ -106,15 +116,25 @@ async function uploadPackage(req: Request, res: Response) {
       return res.sendStatus(409);
     }
     //debloat feature
-    await processFolder('uploads');
-    const encodezip = await zipAndEncodeFolder('uploads');
-    const debloatbuffer = Buffer.from(encodezip, 'base64');
-    const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
-    const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
-    cleanUp();
-    const payload = getPayload(pkgInfo, jsprogram);
-    payload.data.Content = encodezip.toString();
-    res.status(201).json(payload);
+    if (enable_debloat) {
+      await processFolder(path.join(rootPath, 'uploads'));
+      const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
+      const debloatbuffer = Buffer.from(encodezip, 'base64');
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
+      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      debloatCleanUp();
+      const payload = getPayload(pkgInfo, jsprogram);
+      payload.data.Content = encodezip.toString();
+      res.status(201).json(payload);
+    } else {
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, bytea]);
+      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      cleanUp();
+      const payload = getPayload(pkgInfo, jsprogram);
+      payload.data.Content = bytea.toString();
+      res.status(201).json(payload);
+    }
+    
   }
 }
 
@@ -130,12 +150,24 @@ function getPayload(pkgInfo: any, jsprogram: string) : any {
     }
   }
 }
-
+function debloatCleanUp() {
+  try {
+    fs.unlinkSync(path.join(rootPath, 'debloat.zip'));
+    fs.unlinkSync(path.join(rootPath, 'upload.zip'));
+    fs.rmSync(path.join(rootPath, 'uploads'), { recursive: true });
+    fs.mkdirSync(path.join(rootPath, 'uploads'));
+  } catch (err) {
+    console.error(err);
+  }
+}
 function cleanUp() {
-  fs.unlinkSync('debloat.zip');
-  fs.unlinkSync('upload.zip');
-  fs.rmSync('uploads', { recursive: true });
-  fs.mkdirSync('uploads');
+  try {
+    fs.unlinkSync(path.join(rootPath, 'upload.zip'));
+    fs.rmSync(path.join(rootPath, 'uploads'), { recursive: true });
+    fs.mkdirSync(path.join(rootPath, 'uploads'));
+  } catch (err) {
+    console.error(err);
+  }
 }
 function parseUrl(url: string): string[] {
   const endpoint1 = url + '/archive/master.zip'
