@@ -58,14 +58,14 @@ async function uploadPackage(req: Request, res: Response) {
       const debloatbuffer = Buffer.from(encodezip, 'base64');
       //insert the package into the database
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       debloatCleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = encodezip.toString();
       return res.status(201).json(payload);
     } else {
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, buffer]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       cleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = request.Content;
@@ -121,17 +121,17 @@ async function uploadPackage(req: Request, res: Response) {
       const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
       const debloatbuffer = Buffer.from(encodezip, 'base64');
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       debloatCleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = encodezip.toString();
       res.status(201).json(payload);
     } else {
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, bytea]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       cleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
-      payload.data.Content = bytea.toString();
+      payload.data.Content = bytea.toString('base64');
       res.status(201).json(payload);
     }
     
@@ -238,10 +238,16 @@ function parsePackageJson(path: string): { name: string; version: string; url: s
   const content = fs.readFileSync(path, 'utf8');
   const packageJson = JSON.parse(content);
   const pkg_id = getPackageId(packageJson.name, packageJson.version);
-  const pkg_name = packageJson.name.charAt(0).toUpperCase() + packageJson.name.slice(1);
+  let pkg_name = null
+  if (packageJson.name.includes('/')) {
+    const parts = packageJson.name.split('/');
+    pkg_name = parts[parts.length - 1];
+  } else {
+    pkg_name = packageJson.name
+  }
   const pkg_version = packageJson.version;
   let pkg_url = packageJson.repository.url;
-  if (packageJson.repository.type == 'git') pkg_url = pkg_url.replace('git://', 'http://')
+  if (!pkg_url.startsWith('https://')) pkg_url = 'https://' + pkg_url.split('://')[1]
   return { name: pkg_name, version: pkg_version, url: pkg_url, id: pkg_id};
 }
 function getPackageId(name: string, version: string): string {
@@ -254,7 +260,7 @@ function isValidBase64(str: string): boolean {
   return base64Regex.test(str);
 }
 
-function runTsc(): Promise<string> {
+async function runTsc(): Promise<string> {
   return new Promise((resolve, reject) => {
     const rootPath = path.join(__dirname, '..', '..');
     const command = 'tsc && node ./dist/src/main.js ./api/one-url.txt';
