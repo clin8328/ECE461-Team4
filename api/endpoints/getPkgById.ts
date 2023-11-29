@@ -6,10 +6,11 @@ async function packageById(req: Request, res: Response) {
     const token = req.headers['x-authorization'] as string;
     const packageId = req.params.id;
     if (!packageId) return res.sendStatus(400);
+    let decoded = null
     // Verify the JWT.
     try {
-        const user = await verifyToken(token);
-        if (!user) {
+        decoded = await verifyToken(token);
+        if (!decoded) {
             return res.sendStatus(400);
         }
     } catch (err) {
@@ -35,6 +36,7 @@ async function packageById(req: Request, res: Response) {
         data: data,
       }
       // Send the package data as a JSON response.
+      await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [result.rows[0].package_name, decoded[1].username, 'DOWNLOAD', result.rows[0].package_id])
       return res.status(200).json(response);
     } catch (error) {
       // Handle any potential errors during the database query.
@@ -42,5 +44,4 @@ async function packageById(req: Request, res: Response) {
       return res.status(500).send("Internal Server Error");
     }
   }
-
 export default packageById;

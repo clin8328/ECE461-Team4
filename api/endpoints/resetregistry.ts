@@ -9,7 +9,6 @@ export async function ResetRegistry(req: Request, res: Response) {
   if (!req.headers['x-authorization']) {
     return res.sendStatus(400);
   }
-
   const token = req.headers['x-authorization'] as string;
   verifyToken(token)
     .then(async ([isVerified, value]) => {
