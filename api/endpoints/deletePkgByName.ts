@@ -1,24 +1,28 @@
 import express, { Request, Response } from "express";
 import { query } from "../database";
-import jwt from "jsonwebtoken";
-import { get } from "http";
+import { verifyToken } from "../common";
+
 async function deletePkgByName(req: Request, res: Response) {
-    const packageName = req.params.byName;
-
+    const token = req.headers['x-authorization'] as string;
+    if (!token) return res.sendStatus(400)
+    const name = req.params.name;
+    if (!name) return res.sendStatus(400);
+    let decoded = null
     try {
-        const result = await query("DELETE FROM packages WHERE name = $1 RETURNING *", [packageName]);
-
-        if (result.rowCount === 0) {
-            // No package found with the provided name.
-            return res.status(404).send("Package not found");
-        }
-
-        // Send the deleted package data as a JSON response.
-        return res.status(200).json(result.rows[0]);
+        decoded = await verifyToken(token);
+    } catch (err) {
+        return res.sendStatus(400);
+    }
+    const pkg = await query("SELECT * FROM packages WHERE package_name = $1;", [name]);
+    if (pkg.rowCount == 0 ) return res.sendStatus(404);
+    //delete pkg
+    try {
+        await query("DELETE FROM packagehistory WHERE package_name = $1;", [name]);
+        await query("DELETE FROM packages WHERE package_name = $1;", [name]);
+        return res.sendStatus(200);
     } catch (error) {
-        // Handle any potential errors during the database query.
-        console.error("Error deleting package by name: ", error);
-        return res.status(500).send("Internal Server Error");
+        console.error("Error deleting package by ID: ", error)
+        return res.sendStatus(500)
     }
 }
 
