@@ -1,16 +1,3 @@
-
-REPO_URL="https://github.com/TenGui/ECE461_Phase2.git"
-LOCAL_FOLDER="ECE461_Phase2"
-
-if [ -d "$LOCAL_FOLDER" ]; then
-    echo "Deleting existing folder: $LOCAL_FOLDER"
-    rm -rf "$LOCAL_FOLDER"
-fi
-
-echo "Cloning repository into: $LOCAL_FOLDER"
-git clone "$REPO_URL"
-
-
 # Run the AWS CLI command to get the secret value
 secret_value=$(aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-2:777501491721:secret:EN_content-UcMszU --query SecretString --output text)
 
