@@ -34,5 +34,5 @@ jobs:
 # Add your commands for deploying or running tasks on the EC2 instance here
     - name: Retrieve Secret from AWS Secrets Manager on EC2
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-2:777501491721:secret:EN_content-UcMszU --query SecretString --output text > ./ECE461_Phase2/.env"
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "cd ./ECE461_Phase2 && bash getSecret.sh"
         
