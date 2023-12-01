@@ -6,7 +6,7 @@ GITHUB_TOKEN=$(echo "$secret_value" | sed -n 's/.*"GITHUB_TOKEN": "\(.*\)".*/\1/
 LOG_FILE=$(echo "$secret_value" | sed -n 's/.*"LOG_FILE": "\(.*\)".*/\1/p')
 
 # Create the .env file with the extracted values
-echo "GITHUB_TOKEN='$GITHUB_TOKEN'" > ./ECE461_Phase2/.env
-echo "LOG_FILE='$LOG_FILE'" >> ./ECE461_Phase2/.env
+echo "GITHUB_TOKEN='$GITHUB_TOKEN'" > ./.env
+echo "LOG_FILE='$LOG_FILE'" >> ./.env
 
 exit 0
