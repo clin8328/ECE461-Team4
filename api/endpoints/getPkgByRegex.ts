@@ -1,15 +1,11 @@
 import express, { Request, Response } from "express";
 import { query } from "../database";
 import jwt from "jsonwebtoken";
-import { get } from "http";
-
 async function getPackageByRegEx(req: Request, res: Response) {
     const { pattern } = req.body;
-  
     if (!pattern) {
       return res.status(400).send("Pattern is required");
     }
-  
     try {
       const result = await query("SELECT * FROM packages WHERE name ~ $1", [pattern]);
       
