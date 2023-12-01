@@ -25,12 +25,15 @@ async function uploadPackage(req: Request, res: Response) {
     return res.sendStatus(400);
   }
   if (!decoded) return res.sendStatus(400)
+  const username = decoded[1].username;
   //check the request body, content and url
   if ((request.Content && request.URL) || (!request.Content && !request.URL)) return res.sendStatus(400);
   //upload with encoded content
   if (request.Content) {
-    if (!isValidBase64(request.Content)) return res.sendStatus(400);
-    const username = decoded[1].username;
+    if (!isValidBase64(request.Content)) {
+      console.error('Invalid base64 string');
+      return res.sendStatus(400);
+    }
     //handle the file
     const buffer = Buffer.from(request.Content, "base64");
     fs.writeFileSync(path.join(rootPath, 'upload.zip'), buffer);
@@ -42,14 +45,38 @@ async function uploadPackage(req: Request, res: Response) {
       return res.sendStatus(400);
     }
     const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
-    if (!packageJsonFilePath) return res.sendStatus(400);
+    if (!packageJsonFilePath) {
+      cleanUp();
+      return res.sendStatus(400);
+    }
     const pkgInfo = parsePackageJson(packageJsonFilePath);
+    if (!pkgInfo.url) return res.sendStatus(400);
+    //if the version is not specified, get the latest release
+    if (!pkgInfo.name) {
+      const parts = pkgInfo.url.split('/');
+      const repositoryName = parts[parts.length - 1];
+      pkgInfo.name = repositoryName.replace('.git', '');
+    }
+    if (!pkgInfo.version) {
+      pkgInfo.version = await getLatestReleaseUrl(pkgInfo.url);
+    }
+    if (!pkgInfo.version) {
+      console.error('Invalid github link, cannot get the latest release');
+      return res.sendStatus(400);
+    }
+    if (!pkgInfo.id) {
+      pkgInfo.id = getPackageId(pkgInfo.name, pkgInfo.version);
+    }
+    if (!pkgInfo.id) {
+      console.error('Invalid package name and version');
+      return res.sendStatus(400);
+    }
     //check if the package is already in the database
     const pkg = await query('SELECT * FROM Packages WHERE package_id = $1', [pkgInfo.id]);
     //return 409 if the package is already in the database
     if (pkg.rowCount && pkg.rowCount > 0) {
-      cleanUp();
-      return res.sendStatus(409);
+       cleanUp();
+       return res.sendStatus(409);
     }
     //debloat feature
     if (enable_debloat){
@@ -58,35 +85,165 @@ async function uploadPackage(req: Request, res: Response) {
       const debloatbuffer = Buffer.from(encodezip, 'base64');
       //insert the package into the database
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       debloatCleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = encodezip.toString();
       return res.status(201).json(payload);
     } else {
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, buffer]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       cleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = request.Content;
       return res.status(201).json(payload);
     }
   } else if (request.URL) {
-    /* rating feature for ingestion
-    fs.writeFileSync(`${__dirname}/../one-url.txt`, request.URL);
-    const rate = await runTsc();
-    const jsonrate = JSON.parse(rate);
-    let isIngestable = true
-    Object.entries(jsonrate).forEach(([key, value]) => {
-      if (key != 'URL' && key != 'NET_SCORE') {
-        const score = parseFloat(value as string);
-        if (score < 0.5) isIngestable = false
+    if (request.URL.includes('npmjs.com')) {
+      // it is a npm link
+      // will need to rate the package
+      // fs.writeFileSync(`${__dirname}/../one-url.txt`, request.URL);
+      // const rate = await runTsc();
+      // const jsonrate = JSON.parse(rate);
+      // let isIngestable = true
+      // Object.entries(jsonrate).forEach(([key, value]) => {
+      //   if (key != 'URL' && key != 'NET_SCORE') {
+      //     const score = parseFloat(value as string);
+      //     if (score < 0.5) isIngestable = false
+      //   }
+      // })
+      // if (!isIngestable) return res.sendStatus(424);
+      const packageInfo = extractPackageNameAndVersion(request.URL);
+      let npmPackageInfo = null;
+      if (!packageInfo) {
+        console.error('Invalid npm link');
+        return res.sendStatus(400);
       }
-    })
-    if (!isIngestable) return res.sendStatus(424);
-    */
-    const username = decoded[1].username;
+      try {
+        npmPackageInfo = await axios.get(`https://registry.npmjs.org/${packageInfo.packageName}`);
+      } catch (err) {
+        console.error(err);
+        return res.sendStatus(400);
+      }
+      if (!npmPackageInfo.data) {
+        console.error('Invalid npm link');
+        return res.sendStatus(400);
+      }
+      const repoUrl = npmPackageInfo.data.repository.url;
+      if (!repoUrl) {
+        console.error('Invalid npm link');
+        return res.sendStatus(400);
+      }
+      const ownerRepo = repoUrl.split('github.com/')[1].split('.git')[0];
+      //get the zip file for the version
+      let zipdata = null
+      if (!packageInfo.version) {
+        try {
+          zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/master.zip', { responseType: 'arraybuffer' })
+          if (zipdata.status !== 200) {
+            zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/main.zip', { responseType: 'arraybuffer' })
+          }
+        } catch (err){
+          console.error(err);
+          return res.sendStatus(400);
+        }
+      } else {
+        try {
+          zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${packageInfo.version}.zip`, { responseType: 'arraybuffer' })
+        } catch (err){
+          console.error(err);
+          return res.sendStatus(400);
+        }
+      }
+      if (!zipdata) {
+        console.error('Invalid npm link, cannot get the zip file');
+        return res.sendStatus(400);
+      }
+      if (!zipdata.data) {
+        console.error('Invalid npm link, cannot get the zip file data not present');
+        return res.sendStatus(400);
+      }
+      fs.writeFileSync(path.join(rootPath, 'upload.zip'), zipdata.data);
+      try {
+        await unzipFile(path.join(rootPath, 'upload.zip'), path.join(rootPath, 'uploads'));
+      } catch (err) {
+        console.error(err);
+        cleanUp();
+        return res.sendStatus(400);
+      }
+      let pkgInfo = null;
+      if (packageInfo.version) {
+        const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
+        if (!packageJsonFilePath) return res.sendStatus(400);
+        pkgInfo = parsePackageJson(packageJsonFilePath);
+        if (!pkgInfo.url) return res.sendStatus(400);
+        if (!pkgInfo.version) {
+          pkgInfo.version = packageInfo.version;
+        }
+        if(!pkgInfo.name) {
+          pkgInfo.name = packageInfo.packageName;
+        }
+        if(!pkgInfo.id) {
+          pkgInfo.id = getPackageId(pkgInfo.name, pkgInfo.version);
+        }
+      } else {
+        const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
+        if (!packageJsonFilePath) {
+          cleanUp();
+          return res.sendStatus(400);
+        }
+        pkgInfo = parsePackageJson(packageJsonFilePath);
+        if (!pkgInfo.url) {
+          cleanUp();
+          return res.sendStatus(400);
+        }
+        //if the version is not specified, get the latest release
+        if(!pkgInfo.version) {
+          pkgInfo.version = await getLatestReleaseUrl(pkgInfo.url);
+        }
+        if (!pkgInfo.version) {
+          console.error('Invalid github link, cannot get the latest release');
+          return res.sendStatus(400);
+        }
+        if(!pkgInfo.name) {
+          pkgInfo.name = packageInfo.packageName;
+        }
+        if(!pkgInfo.id) {
+          pkgInfo.id = getPackageId(pkgInfo.name, pkgInfo.version);
+        }
+      }
+      if (!pkgInfo) {
+        cleanUp();
+        return res.sendStatus(400);
+      }
+      const pkg = await query('SELECT * FROM packages WHERE package_id = $1', [pkgInfo.id]);
+      if (pkg.rowCount && pkg.rowCount > 0) {
+        cleanUp();
+        return res.sendStatus(409);
+      }
+      //debloat feature
+      if (enable_debloat) {
+        await processFolder(path.join(rootPath, 'uploads'));
+        const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
+        const debloatbuffer = Buffer.from(encodezip, 'base64');
+        const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
+        const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
+        debloatCleanUp();
+        const payload = getPayload(pkgInfo, jsprogram);
+        payload.data.Content = encodezip.toString();
+        return res.status(201).json(payload);
+      } else {
+        const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, zipdata.data]);
+        const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
+        cleanUp();
+        const payload = getPayload(pkgInfo, jsprogram);
+        payload.data.Content = zipdata.data.toString('base64');
+        return res.status(201).json(payload);
+      }
+    }
+    //it is a github repo
     const urls = parseUrl(request.URL);
+    console.log(urls);
     let response = null
     try {
       response = await axios.get(urls[0], { responseType: 'arraybuffer' })
@@ -108,8 +265,30 @@ async function uploadPackage(req: Request, res: Response) {
       return res.sendStatus(400);
     }
     const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
-    if (!packageJsonFilePath) return res.sendStatus(400);
+    if (!packageJsonFilePath) {
+      cleanUp();
+      return res.sendStatus(400);
+    }
     const pkgInfo = parsePackageJson(packageJsonFilePath);
+    if (!pkgInfo.url) {
+      cleanUp();
+      return res.sendStatus(400);
+    }
+    if (!pkgInfo.name) {
+      const parts = pkgInfo.url.split('/');
+      const repositoryName = parts[parts.length - 1];
+      pkgInfo.name = repositoryName.replace('.git', '');
+    }
+    if (!pkgInfo.version) {
+      pkgInfo.version = await getLatestReleaseUrl(pkgInfo.url);
+    }
+    if (!pkgInfo.version) {
+      console.error('Invalid github link, cannot get the latest release');
+      return res.sendStatus(400);
+    }
+    if (!pkgInfo.id) {
+      pkgInfo.id = getPackageId(pkgInfo.name, pkgInfo.version);
+    }
     const pkg = await query('SELECT * FROM packages WHERE package_id = $1', [pkgInfo.id]);
     if (pkg.rowCount && pkg.rowCount > 0) {
       cleanUp();
@@ -121,21 +300,46 @@ async function uploadPackage(req: Request, res: Response) {
       const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
       const debloatbuffer = Buffer.from(encodezip, 'base64');
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       debloatCleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = encodezip.toString();
       res.status(201).json(payload);
     } else {
       const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, bytea]);
-      const hisInsert = await query('INSERT INTO packageHistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'CREATE', pkgInfo.id]);
+      const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       cleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
-      payload.data.Content = bytea.toString();
+      payload.data.Content = bytea.toString('base64');
       res.status(201).json(payload);
     }
     
   }
+}
+
+async function getLatestReleaseUrl(url: string): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+      let latestReleaseTag = null;
+      try {
+      const parts = url.split('/');
+      const owner = parts[parts.length - 2];
+      const repo = parts[parts.length - 1].replace('.git', '');
+      const releases = await axios.get(`https://api.github.com/repos/${owner}/${repo}/tags`);
+      if (!releases.data) {
+        console.error('Invalid github link, cannot get the releases');
+        reject(null);
+      }
+      if (releases.data.length === 0) {
+        console.error('Invalid github link, cannot get the releases');
+        reject(null);
+      }
+      latestReleaseTag = releases.data[0].name;
+      resolve(latestReleaseTag)
+    } catch (err) {
+      console.error(err);
+      reject(null);
+    }
+    })
 }
 
 function getPayload(pkgInfo: any, jsprogram: string) : any {
@@ -233,18 +437,34 @@ async function zipAndEncodeFolder(folderPath: string): Promise<string> {
   })
 }
 
-
-function parsePackageJson(path: string): { name: string; version: string; url: string; id: string} {
+//all we know is the json file will have the url in it
+//need to consider the case name is not in the json
+//use the github api to get the latest release
+function parsePackageJson(path: string): { name: string | null; version: string | null; url: string; id: string | null} {
   const content = fs.readFileSync(path, 'utf8');
   const packageJson = JSON.parse(content);
+  const pkg_version = packageJson.version ? packageJson.version : null;
+  let pkg_name = packageJson.name ? packageJson.name : null;
   const pkg_id = getPackageId(packageJson.name, packageJson.version);
-  const pkg_name = packageJson.name.charAt(0).toUpperCase() + packageJson.name.slice(1);
-  const pkg_version = packageJson.version;
-  let pkg_url = packageJson.repository.url;
-  if (packageJson.repository.type == 'git') pkg_url = pkg_url.replace('git://', 'http://')
+  if (pkg_name) {
+    if (pkg_name.includes('/')) {
+      const parts = packageJson.name.split('/');
+      pkg_name = parts[parts.length - 1];
+    }
+  }
+  let pkg_url = null;
+  if (packageJson.repository) {
+    if (packageJson.repository.url) {
+      pkg_url = packageJson.repository.url;
+    }
+  }
+  if (pkg_url) {
+    if (!pkg_url.startsWith('https://')) pkg_url = 'https://' + pkg_url.split('://')[1]
+  }
   return { name: pkg_name, version: pkg_version, url: pkg_url, id: pkg_id};
 }
-function getPackageId(name: string, version: string): string {
+function getPackageId(name: string, version: string): string | null {
+  if (!name || !version) return null;
   const hash = crypto.createHash('sha256');
   hash.update(name + version);
   return hash.digest('hex');
@@ -254,7 +474,7 @@ function isValidBase64(str: string): boolean {
   return base64Regex.test(str);
 }
 
-function runTsc(): Promise<string> {
+async function runTsc(): Promise<string> {
   return new Promise((resolve, reject) => {
     const rootPath = path.join(__dirname, '..', '..');
     const command = 'tsc && node ./dist/src/main.js ./api/one-url.txt';
@@ -335,4 +555,33 @@ async function deleteFolder(folderPath: string): Promise<void> {
       resolve();
   });
 }
+
+function extractPackageNameAndVersion(npmLink: string): { packageName: string, version: string | null } | null {
+  // Define the common parts of the URL
+  const baseUrl = 'https://www.npmjs.com/package/';
+  const versionPrefix = '/v/';
+
+  // Check if the URL starts with the base URL
+  if (npmLink.startsWith(baseUrl)) {
+    // Remove the base URL
+    const withoutBaseUrl = npmLink.substring(baseUrl.length);
+
+    // Find the index of the version prefix
+    const versionIndex = withoutBaseUrl.indexOf(versionPrefix);
+
+    if (versionIndex !== -1) {
+      // If version prefix is found, extract the package name and version
+      const packageName = withoutBaseUrl.substring(0, versionIndex);
+      const version = withoutBaseUrl.substring(versionIndex + versionPrefix.length);
+      return { packageName, version };
+    } else {
+      // If version prefix is not found, extract only the package name and set version to null
+      return { packageName: withoutBaseUrl, version: null };
+    }
+  }
+
+  // Return null if the URL format is not as expected
+  return null;
+}
+
 export default uploadPackage;

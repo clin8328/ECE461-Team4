@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
 import { query } from "./database";
 const app = express();
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({limit: '100mb'}));
 //endpoints
 import ResetRegistry from "./endpoints/resetregistry";
 import authenticate from "./endpoints/authenticate";
