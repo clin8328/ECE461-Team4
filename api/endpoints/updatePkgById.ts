@@ -31,7 +31,7 @@ async function updatePkgById(req: Request, res: Response) {
         if (!isValidBase64(data.Content)) return res.sendStatus(400)
         const buffer = Buffer.from(data.Content, "base64");
         await query('UPDATE packages SET package_zip = $1, jsprogram = $2 WHERE package_id = $3 AND package_name = $4 AND package_version = $5', [buffer, jsprogram, pkg_id, pkg_name, pkg_version])
-        await query('INSERT INTO packagehistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'UPDATE', pkg_id]);
+        await query('INSERT INTO packagehistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkg_name, username, 'UPDATE', pkg_id]);
         return res.sendStatus(200);
     } else {
         const endpoints = parseUrl(data.URL)
