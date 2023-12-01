@@ -1,1 +1,1 @@
-https://github.com/samuelmarina/is-even.git
+https://github.com/jashkenas/underscore.git
