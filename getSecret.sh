@@ -1,10 +1,12 @@
-# Extract values from JSON and format them
-SECRET_STRING=$(aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-2:777501491721:secret:EN_content-UcMszU --query SecretString --output text)
-GITHUB_TOKEN=$(echo "$SECRET_STRING" | awk -F'"' '/GITHUB_TOKEN/{print $4}')
-LOG_FILE=$(echo "$SECRET_STRING" | awk -F'"' '/LOG_FILE/{print $4}')
+# Run the AWS CLI command to get the secret value
+secret_value=$(aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-2:777501491721:secret:EN_content-UcMszU --query SecretString --output text)
 
-# Write the formatted values to .env file
-echo "GITHUB_TOKEN='$GITHUB_TOKEN'" > ./.env
-echo "LOG_FILE='$LOG_FILE'" >> ./.env
+# Parse JSON string using bash
+GITHUB_TOKEN=$(echo "$secret_value" | sed -n 's/.*"GITHUB_TOKEN": "\(.*\)".*/\1/p')
+LOG_FILE=$(echo "$secret_value" | sed -n 's/.*"LOG_FILE": "\(.*\)".*/\1/p')
+
+# Create the .env file with the extracted values
+echo "GITHUB_TOKEN='$GITHUB_TOKEN'" > ./ECE461_Phase2/.env
+echo "LOG_FILE='$LOG_FILE'" >> ./ECE461_Phase2/.env
 
 exit 0
