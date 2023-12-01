@@ -29,7 +29,7 @@ jobs:
 
     - name: SSH into EC2
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "rm -rf ./ECE461_Phase2 && && git clone https://github.com/TenGui/ECE461_Phase2.git"
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "rm -rf ./ECE461_Phase2 && git clone https://github.com/TenGui/ECE461_Phase2.git"
 
 # Add your commands for deploying or running tasks on the EC2 instance here
     - name: Retrieve Secret from AWS Secrets Manager on EC2
