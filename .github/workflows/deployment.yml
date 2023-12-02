@@ -35,3 +35,8 @@ jobs:
     - name: Install Dependencies and Compile Server file
       run: |
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "cd ECE461_Phase2 && bash build.sh"
+        
+    - name: Deploy the Code using pm2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "cd ECE461_Phase2 && bash deploy.sh"
+
