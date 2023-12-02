@@ -8,6 +8,3 @@ pm2 start ./api/pm2.config.json
 
 # Save the PM2 process list to restart on server reboot
 pm2 save
-
-# Display logs (optional, useful for debugging)
-pm2 logs 461Server
