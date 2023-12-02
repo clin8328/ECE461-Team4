@@ -32,9 +32,7 @@ app.post('/package/byRegex', getPackageByRegex);
 
 
 app.get('/', async (req, res) => {
-  const result = await query("SELECT * FROM users;");
-  console.log(result.rows);
-  res.send(result.rows);
+  res.status(200).send("Welcome to the ECE461 Phase 2 Team3, still need Frontend ");
 })
 app.listen(2000, () => {
   console.log("Server running on port 2000");
