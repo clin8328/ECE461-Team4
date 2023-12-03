@@ -1,4 +1,3 @@
-# Check if the process is running before attempting to delete
 if pm2 pid 461Server > /dev/null 2>&1; then
     pm2 delete 461Server
 fi

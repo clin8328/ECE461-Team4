@@ -19,7 +19,7 @@ async function authenticate(req: Request, res: Response) {
   }
   const user_credential = {username: username, password: password};
   const token = jwt.sign(user_credential, tokenKey, { expiresIn: '10h' });
-  await query("UPDATE users SET token = $1 WHERE user_name = $2", [token, username]);
-  return res.status(200).json(token);
+  await query("UPDATE users SET token = $1 WHERE user_name = $2", [`bearer ${token}`, username]);
+  return res.status(200).json(`bearer ${token}`);
 }
 export default authenticate;
