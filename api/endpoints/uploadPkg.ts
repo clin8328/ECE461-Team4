@@ -174,9 +174,15 @@ async function uploadPackage(req: Request, res: Response) {
       let pkgInfo = null;
       if (packageInfo.version) {
         const packageJsonFilePath = getPackageJsonFilePathRecursive(path.join(rootPath, 'uploads'));
-        if (!packageJsonFilePath) return res.sendStatus(400);
+        if (!packageJsonFilePath) {
+          console.error('Invalid github link no package.json');
+          cleanUp();
+          return res.sendStatus(400);
+        }
         pkgInfo = parsePackageJson(packageJsonFilePath);
-        if (!pkgInfo.url) return res.sendStatus(400);
+        if (!pkgInfo.url) {
+          pkgInfo.url = repoUrl
+        }
         if (!pkgInfo.version) {
           pkgInfo.version = packageInfo.version;
         }
@@ -194,8 +200,7 @@ async function uploadPackage(req: Request, res: Response) {
         }
         pkgInfo = parsePackageJson(packageJsonFilePath);
         if (!pkgInfo.url) {
-          cleanUp();
-          return res.sendStatus(400);
+          pkgInfo.url = repoUrl
         }
         //if the version is not specified, get the latest release
         if(!pkgInfo.version) {
@@ -203,6 +208,7 @@ async function uploadPackage(req: Request, res: Response) {
         }
         if (!pkgInfo.version) {
           console.error('Invalid github link, cannot get the latest release');
+          cleanUp();
           return res.sendStatus(400);
         }
         if(!pkgInfo.name) {
