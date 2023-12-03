@@ -10,6 +10,9 @@ import terser, {} from "terser";
 import {exec} from 'child_process';
 import { rimrafSync } from 'rimraf';
 const jsonminify = require('jsonminify')
+import dotenv from 'dotenv';
+const dotenvPath = path.join(__dirname, '..','..', '.env');
+dotenv.config({ path: dotenvPath });
 const rootPath = path.join(__dirname, '..');
 async function uploadPackage(req: Request, res: Response) {
   const request = req.body;
@@ -137,12 +140,16 @@ async function uploadPackage(req: Request, res: Response) {
       const ownerRepo = repoUrl.split('github.com/')[1].split('.git')[0];
       //get the zip file for the version
       let zipdata = null
+      // get the default branch
       if (!packageInfo.version) {
         try {
-          zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/master.zip', { responseType: 'arraybuffer' })
-          if (zipdata.status !== 200) {
-            zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/main.zip', { responseType: 'arraybuffer' })
-          }
+          const repoInfo = await axios.get(`https://api.github.com/repos/${ownerRepo}`, {
+            headers:{
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+            }
+          })
+          const defaultBranch = repoInfo.data.default_branch;
+          zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${defaultBranch}.zip`, { responseType: 'arraybuffer' })
         } catch (err){
           console.error(err);
           return res.sendStatus(400);
@@ -150,9 +157,14 @@ async function uploadPackage(req: Request, res: Response) {
       } else {
         try {
           zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${packageInfo.version}.zip`, { responseType: 'arraybuffer' })
+          
         } catch (err){
-          console.error(err);
-          return res.sendStatus(400);
+          try {
+            zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/v${packageInfo.version}.zip`, { responseType: 'arraybuffer' })  
+          } catch (err) {
+            console.error(err);
+            return res.sendStatus(400);
+          }
         }
       }
       if (!zipdata) {
@@ -248,15 +260,17 @@ async function uploadPackage(req: Request, res: Response) {
       }
     }
     //it is a github repo
-    const urls = parseUrl(request.URL);
-    console.log(urls);
+    const ownerRepo = parseUrl(request.URL);
     let response = null
     try {
-      response = await axios.get(urls[0], { responseType: 'arraybuffer' })
-      if (response.status !== 200) {
-        response = await axios.get(urls[1], { responseType: 'arraybuffer' })
-      }
-    } catch (err) {
+      const repoInfo = await axios.get(`https://api.github.com/repos/${ownerRepo}`, {
+        headers:{
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+        }
+      })
+      const defaultBranch = repoInfo.data.default_branch;
+      response = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${defaultBranch}.zip`, { responseType: 'arraybuffer' })
+    } catch (err){
       console.error(err);
       return res.sendStatus(400);
     }
@@ -340,6 +354,7 @@ async function getLatestReleaseUrl(url: string): Promise<any> {
         reject(null);
       }
       latestReleaseTag = releases.data[0].name;
+      console.log('Latest release:',latestReleaseTag);
       resolve(latestReleaseTag)
     } catch (err) {
       console.error(err);
@@ -379,10 +394,9 @@ function cleanUp() {
     console.error(err);
   }
 }
-function parseUrl(url: string): string[] {
-  const endpoint1 = url + '/archive/master.zip'
-  const endpoint2 = url + '/archive/main.zip' 
-  return [endpoint1, endpoint2]
+function parseUrl(url: string): string {
+  const ownerRepo = url.split('github.com/')[1].split('.git')[0];
+  return ownerRepo
 }
 function getPackageJsonFilePathRecursive(folderPath: string): string | null {
   const files = fs.readdirSync(folderPath);

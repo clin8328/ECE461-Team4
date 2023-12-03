@@ -2,8 +2,10 @@ import express, { Request, Response } from "express";
 import { query } from "../database";
 import { verifyToken } from "../common";
 import axios from "axios";
-import { request } from "http";
-
+import path from 'path';
+import dotenv from 'dotenv';
+const dotenvPath = path.join(__dirname, '..','..', '.env');
+dotenv.config({ path: dotenvPath });
 async function updatePkgById(req: Request, res: Response) {
     const token = req.headers['x-authorization'] as string;
     let decoded = null;
@@ -90,22 +92,30 @@ async function updatePkgById(req: Request, res: Response) {
             let zipdata = null
             if (!packageInfo.version) {
                 try {
-                zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/master.zip', { responseType: 'arraybuffer' })
-                if (zipdata.status !== 200) {
-                    zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/main.zip', { responseType: 'arraybuffer' })
-                }
+                  const repoInfo = await axios.get(`https://api.github.com/repos/${ownerRepo}`, {
+                    headers:{
+                      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+                    }
+                  })
+                  const defaultBranch = repoInfo.data.default_branch;
+                  zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${defaultBranch}.zip`, { responseType: 'arraybuffer' })
                 } catch (err){
-                console.error(err);
-                return res.sendStatus(400);
+                  console.error(err);
+                  return res.sendStatus(400);
                 }
-            } else {
+              } else {
                 try {
-                zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${packageInfo.version}.zip`, { responseType: 'arraybuffer' })
+                  zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${packageInfo.version}.zip`, { responseType: 'arraybuffer' })
+                  
                 } catch (err){
-                console.error(err);
-                return res.sendStatus(400);
+                  try {
+                    zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/v${packageInfo.version}.zip`, { responseType: 'arraybuffer' })  
+                  } catch (err) {
+                    console.error(err);
+                    return res.sendStatus(400);
+                  }
                 }
-            }
+              }
             if (!zipdata) {
                 console.error('Invalid npm link, cannot get the zip file');
                 return res.sendStatus(400);
