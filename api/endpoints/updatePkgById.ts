@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { query } from "../database";
 import { verifyToken } from "../common";
 import axios from "axios";
+import { request } from "http";
 
 async function updatePkgById(req: Request, res: Response) {
     const token = req.headers['x-authorization'] as string;
@@ -12,10 +13,22 @@ async function updatePkgById(req: Request, res: Response) {
         console.error(err);
         return res.sendStatus(400);
     }
-    if (!req.body.metadata || !req.body.data) return res.sendStatus(400)
-    if (!req.body.metadata.ID || !req.body.metadata.Name || !req.body.metadata.Version) return res.sendStatus(400)
-    if (req.body.data.Content && req.body.data.URL) return res.sendStatus(400)
-    if (!req.body.data.Content && !req.body.data.URL) return res.sendStatus(400)
+    if (!req.body.metadata || !req.body.data) {
+        console.error('Invalid request body metadata or data');
+        return res.sendStatus(400);
+    } 
+    if (!req.body.metadata.ID || !req.body.metadata.Name || !req.body.metadata.Version) {
+        console.error('Invalid request body in the metadata');
+        return res.sendStatus(400);
+    }
+    if (req.body.data.Content && req.body.data.URL) {
+        console.error('Invalid request body in the data both content and url');
+        return res.sendStatus(400)
+    }
+    if (!req.body.data.Content && !req.body.data.URL) {
+        console.error('Invalid request body in the data no content and url');
+        return res.sendStatus(400)
+    }
     const username = decoded[1].username;
     const metadata = req.body.metadata
     const data = req.body.data
@@ -33,22 +46,80 @@ async function updatePkgById(req: Request, res: Response) {
         await query('INSERT INTO packagehistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkg_name, username, 'UPDATE', pkg_id]);
         return res.sendStatus(200);
     } else {
-        const endpoints = parseUrl(data.URL)
-        let response = null
-        try {
-            response = await axios.get(endpoints[0], { responseType: 'arraybuffer' })
-            if (response.status !== 200) {
-            response = await axios.get(endpoints[1], { responseType: 'arraybuffer' })
+        if (data.URL.includes('github.com')) {
+            const endpoints = parseUrl(data.URL)
+            let response = null
+            try {
+                response = await axios.get(endpoints[0], { responseType: 'arraybuffer' })
+                if (response.status !== 200) {
+                response = await axios.get(endpoints[1], { responseType: 'arraybuffer' })
+                }
+            } catch (err) {
+                console.error(err);
+                return res.sendStatus(400);
             }
-        } catch (err) {
-            console.error(err);
-            return res.sendStatus(400);
+            if (!response.data) return res.sendStatus(400);
+            const bytea = Buffer.from(response.data, 'binary')
+            await query('UPDATE packages SET package_zip = $1, jsprogram = $2 WHERE package_id = $3 AND package_name = $4 AND package_version = $5', [bytea, jsprogram, pkg_id, pkg_name, pkg_version])
+            await query('INSERT INTO packagehistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkg_name, username, 'UPDATE', pkg_id]);
+            return res.sendStatus(200);
+        } else if (data.URL.includes('npmjs.com')) {
+            const packageInfo = extractPackageNameAndVersion(data.URL);
+            let npmPackageInfo = null;
+            if (!packageInfo) {
+              console.error('Invalid npm link');
+              return res.sendStatus(400);
+            }
+            try {
+                npmPackageInfo = await axios.get(`https://registry.npmjs.org/${packageInfo.packageName}`);
+              } catch (err) {
+                console.error(err);
+                return res.sendStatus(400);
+              }
+              if (!npmPackageInfo.data) {
+                console.error('Invalid npm link');
+                return res.sendStatus(400);
+              }
+              const repoUrl = npmPackageInfo.data.repository.url;
+              if (!repoUrl) {
+                console.error('Invalid npm link');
+                return res.sendStatus(400);
+              }
+            const ownerRepo = repoUrl.split('github.com/')[1].split('.git')[0];
+            //get the zip file for the version
+            let zipdata = null
+            if (!packageInfo.version) {
+                try {
+                zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/master.zip', { responseType: 'arraybuffer' })
+                if (zipdata.status !== 200) {
+                    zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + '/archive/main.zip', { responseType: 'arraybuffer' })
+                }
+                } catch (err){
+                console.error(err);
+                return res.sendStatus(400);
+                }
+            } else {
+                try {
+                zipdata = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${packageInfo.version}.zip`, { responseType: 'arraybuffer' })
+                } catch (err){
+                console.error(err);
+                return res.sendStatus(400);
+                }
+            }
+            if (!zipdata) {
+                console.error('Invalid npm link, cannot get the zip file');
+                return res.sendStatus(400);
+            }
+            if (!zipdata.data) {
+                console.error('Invalid npm link, cannot get the zip file data not present');
+                return res.sendStatus(400);
+            }
+            const bytea = Buffer.from(zipdata.data, 'binary')
+            await query('UPDATE packages SET package_zip = $1, jsprogram = $2 WHERE package_id = $3 AND package_name = $4 AND package_version = $5', [bytea, jsprogram, pkg_id, pkg_name, pkg_version])
+            await query('INSERT INTO packagehistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkg_name, username, 'UPDATE', pkg_id]);
+            return res.sendStatus(200);
         }
-        if (!response.data) return res.sendStatus(400);
-        const bytea = Buffer.from(response.data, 'binary')
-        await query('UPDATE packages SET package_zip = $1, jsprogram = $2 WHERE package_id = $3 AND package_name = $4 AND package_version = $5', [bytea, jsprogram, pkg_id, pkg_name, pkg_version])
-        await query('INSERT INTO packagehistory (user_name, user_action, package_id) VALUES($1, $2, $3)', [username, 'UPDATE', pkg_id]);
-        return res.sendStatus(200);
+        
     }
 }
 
@@ -61,6 +132,29 @@ function parseUrl(url: string): string[] {
   const endpoint1 = url + '/archive/master.zip'
   const endpoint2 = url + '/archive/main.zip' 
   return [endpoint1, endpoint2]
+}
+function extractPackageNameAndVersion(npmLink: string): { packageName: string, version: string | null } | null {
+    // Define the common parts of the URL
+    const baseUrl = 'https://www.npmjs.com/package/';
+    const versionPrefix = '/v/';
+    // Check if the URL starts with the base URL
+    if (npmLink.startsWith(baseUrl)) {
+      // Remove the base URL
+      const withoutBaseUrl = npmLink.substring(baseUrl.length);
+      // Find the index of the version prefix
+      const versionIndex = withoutBaseUrl.indexOf(versionPrefix);
+      if (versionIndex !== -1) {
+        // If version prefix is found, extract the package name and version
+        const packageName = withoutBaseUrl.substring(0, versionIndex);
+        const version = withoutBaseUrl.substring(versionIndex + versionPrefix.length);
+        return { packageName, version };
+      } else {
+        // If version prefix is not found, extract only the package name and set version to null
+        return { packageName: withoutBaseUrl, version: null };
+      }
+    }
+    // Return null if the URL format is not as expected
+    return null;
 }
 
 export default updatePkgById;
