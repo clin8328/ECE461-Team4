@@ -1,8 +1,11 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
+import cors from 'cors';
 import { query } from "./database";
 const app = express();
+const path = require('path');
+app.use(cors());
 app.use(bodyParser.json({limit: '100mb'}));
 //endpoints
 import ResetRegistry from "./endpoints/resetregistry";
@@ -32,7 +35,8 @@ app.post('/package/byRegex', getPackageByRegex);
 
 
 app.get('/', async (req, res) => {
-  res.status(200).send("Welcome to the ECE461 Phase 2 Team3, still need Frontend ");
+  const indexPath = path.join(__dirname, '../index.html');
+  res.sendFile(indexPath);
 })
 app.listen(2000, () => {
   console.log("Server running on port 2000");
