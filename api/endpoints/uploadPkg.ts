@@ -3,7 +3,7 @@ import * as crypto from "crypto";
 import { query } from "../database";
 import { verifyToken } from "../common";
 import AdmZip from "adm-zip";
-import fs from "fs";
+import fs, { read } from "fs";
 import path from "path";
 import axios from "axios";
 import terser, {} from "terser";
@@ -81,20 +81,24 @@ async function uploadPackage(req: Request, res: Response) {
        cleanUp();
        return res.sendStatus(409);
     }
+    //GET THE readme file
+    const readmeFilePath = getReadmeFilePathRecursive(path.join(rootPath, 'uploads'));
+    let readmeContent = null;
+    if (readmeFilePath) readmeContent = fs.readFileSync(readmeFilePath, 'utf-8');
     //debloat feature
     if (enable_debloat){
       await processFolder(path.join(rootPath, 'uploads'));
       const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
       const debloatbuffer = Buffer.from(encodezip, 'base64');
       //insert the package into the database
-      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip, package_readme ) VALUES($1, $2, $3, $4, $5, $6, $7)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer, readmeContent]);
       const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       debloatCleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = encodezip.toString();
       return res.status(201).json(payload);
     } else {
-      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, buffer]);
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip, package_readme ) VALUES($1, $2, $3, $4, $5, $6, $7)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, buffer, readmeContent]);
       const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       cleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
@@ -239,19 +243,22 @@ async function uploadPackage(req: Request, res: Response) {
         cleanUp();
         return res.sendStatus(409);
       }
+      const readmeFilePath = getReadmeFilePathRecursive(path.join(rootPath, 'uploads'));
+      let readmeContent = null;
+      if (readmeFilePath) readmeContent = fs.readFileSync(readmeFilePath, 'utf-8');
       //debloat feature
       if (enable_debloat) {
         await processFolder(path.join(rootPath, 'uploads'));
         const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
         const debloatbuffer = Buffer.from(encodezip, 'base64');
-        const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
+        const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip, package_readme) VALUES($1, $2, $3, $4, $5, $6, $7)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer, readmeContent]);
         const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
         debloatCleanUp();
         const payload = getPayload(pkgInfo, jsprogram);
         payload.data.Content = encodezip.toString();
         return res.status(201).json(payload);
       } else {
-        const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, zipdata.data]);
+        const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip, package_readme) VALUES($1, $2, $3, $4, $5, $6, $7)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, zipdata.data, readmeContent]);
         const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
         cleanUp();
         const payload = getPayload(pkgInfo, jsprogram);
@@ -314,19 +321,22 @@ async function uploadPackage(req: Request, res: Response) {
       cleanUp();
       return res.sendStatus(409);
     }
+    const readmeFilePath = getReadmeFilePathRecursive(path.join(rootPath, 'uploads'));
+    let readmeContent = null;
+    if (readmeFilePath) readmeContent = fs.readFileSync(readmeFilePath, 'utf-8');
     //debloat feature
     if (enable_debloat) {
       await processFolder(path.join(rootPath, 'uploads'));
       const encodezip = await zipAndEncodeFolder(path.join(rootPath, 'uploads'));
       const debloatbuffer = Buffer.from(encodezip, 'base64');
-      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer]);
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip, package_readme ) VALUES($1, $2, $3, $4, $5, $6, $7 )', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, debloatbuffer, readmeContent]);
       const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       debloatCleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
       payload.data.Content = encodezip.toString();
       res.status(201).json(payload);
     } else {
-      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip ) VALUES($1, $2, $3, $4, $5, $6)', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, bytea]);
+      const pkgInsert = await query('INSERT INTO packages (package_id, package_version, package_name, package_url, jsprogram, package_zip, package_readme ) VALUES($1, $2, $3, $4, $5, $6, $7 )', [pkgInfo.id, pkgInfo.version, pkgInfo.name, pkgInfo.url, jsprogram, bytea, readmeContent]);
       const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkgInfo.name, username, 'CREATE', pkgInfo.id]);
       cleanUp();
       const payload = getPayload(pkgInfo, jsprogram);
@@ -420,7 +430,28 @@ function getPackageJsonFilePathRecursive(folderPath: string): string | null {
   }
   return null;
 }
+function getReadmeFilePathRecursive(folderPath: string): string | null {
+  const files = fs.readdirSync(folderPath);
 
+  const readmeFile = files.find((file) => file === 'README.md');
+
+  if (readmeFile) {
+    return path.join(folderPath, readmeFile);
+  }
+
+  for (const file of files) {
+    const filePath = path.join(folderPath, file);
+    const isDirectory = fs.statSync(filePath).isDirectory();
+
+    if (isDirectory) {
+      const readmePath = getReadmeFilePathRecursive(filePath);
+      if (readmePath) {
+        return readmePath;
+      }
+    }
+  }
+  return null;
+}
 async function unzipFile(zipFilePath: string, destinationPath: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     try {
