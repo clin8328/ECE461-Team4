@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
+import cors from 'cors';
 import { query } from "./database";
 const app = express();
+app.use(cors());
 app.use(bodyParser.json({limit: '100mb'}));
 //endpoints
 import ResetRegistry from "./endpoints/resetregistry";

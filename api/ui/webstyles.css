@@ -70,14 +70,6 @@
     justify-content: space-between;
   }
   .home-login {
-    border-color: var(--dl-color-primary1-blue100);
-    border-width: 1px;
-    margin-right: var(--dl-space-space-twounits);
-    padding-left: 1.5rem;
-    border-radius: 45px;
-    padding-right: 1.5rem;
-  }
-  .home-register {
     color: var(--dl-color-gray-white);
     transition: 0.3s;
     font-weight: bold;
