@@ -35,7 +35,7 @@ app.post('/package/byRegex', getPackageByRegex);
 
 
 app.get('/', async (req, res) => {
-  const indexPath = path.join(__dirname, '../index.html');
+  const indexPath = path.join(__dirname, './static/index.html');
   res.sendFile(indexPath);
 })
 app.listen(2000, () => {
