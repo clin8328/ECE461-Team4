@@ -14,6 +14,7 @@ async function packageById(req: Request, res: Response) {
             return res.sendStatus(400);
         }
     } catch (err) {
+        console.log(err);
         return res.sendStatus(400)
     }
     try {
