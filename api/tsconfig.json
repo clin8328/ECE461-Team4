@@ -8,6 +8,6 @@
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true
     },
-    "include": ["./*.ts", "./endpoints/*.ts"],
+    "include": ["./*.ts", "./endpoints/*.ts", "./static/*.ts"],
     "exclude": ["node_modules", "src/*.ts"]
   }

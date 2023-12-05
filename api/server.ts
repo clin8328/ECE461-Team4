@@ -1,12 +1,11 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
-import cors from 'cors';
 import { query } from "./database";
 const app = express();
 const path = require('path');
-app.use(cors());
-app.use(bodyParser.json({limit: '100mb'}));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(express.static(path.join(__dirname, 'static')))
 //endpoints
 import ResetRegistry from "./endpoints/resetregistry";
 import authenticate from "./endpoints/authenticate";
@@ -35,8 +34,7 @@ app.post('/package/byRegex', getPackageByRegex);
 
 
 app.get('/', async (req, res) => {
-  const indexPath = path.join(__dirname, '../index.html');
-  res.sendFile(indexPath);
+  res.sendFile('index.html');
 })
 app.listen(2000, () => {
   console.log("Server running on port 2000");
