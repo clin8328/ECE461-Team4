@@ -1,19 +1,19 @@
 import express, { Request, Response } from "express";
 import { query } from "../database";
 import { verifyToken } from "../common";
-
+const defaultUsername = 'ece30861defaultadminuser';
 
 async function getPkgByName(req: Request, res: Response) {
     const token = req.headers['x-authorization'] as string;
     const name = req.params.name;
     if (!name) return res.sendStatus(400);
-    let encoded = null;
-    try {
-        encoded = await verifyToken(token);
-    } catch (error) {
-      console.error("Error verifying token: ", error);
-      return res.status(400).send("Unauthorized");
-    }
+    // let encoded = null;
+    // try {
+    //     encoded = await verifyToken(token);
+    // } catch (error) {
+    //   console.error("Error verifying token: ", error);
+    //   return res.status(400).send("Unauthorized");
+    // }
     try {
       const result = await query("SELECT * FROM packages WHERE package_name = $1", [name]);
       if (result.rowCount == 0) {
