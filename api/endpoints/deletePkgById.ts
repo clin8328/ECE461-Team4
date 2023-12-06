@@ -1,6 +1,6 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { query } from "../database";
-import { verifyToken } from "../common";
+//import { verifyToken } from "../common";
 
 async function deletePkgById(req: Request, res: Response) {
     // const token = req.headers['x-authorization'] as string;

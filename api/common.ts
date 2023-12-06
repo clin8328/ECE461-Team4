@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-import { query } from "./database";
 const tokenKey: string = "461_secret_key";
-
 export async function verifyToken(token: string): Promise<[boolean, any]> {
     return new Promise<[boolean, any]>((resolve, reject) => {
       let _token = token;

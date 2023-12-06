@@ -1,9 +1,9 @@
-import express, { Request, Response } from "express";
-import { query } from "../database";
-import jwt from "jsonwebtoken";
-const tokenKey: string = "461_secret_key";
-const defaultUsername = 'ece30861defaultadminuser';
-const defaultPassword = 'correcthorsebatterystaple123(!__+@**(A\'"`;DROP TABLE packages;';
+import { Request, Response } from "express";
+// import { query } from "../database";
+// import jwt from "jsonwebtoken";
+// const tokenKey: string = "461_secret_key";
+// const defaultUsername = 'ece30861defaultadminuser';
+// const defaultPassword = 'correcthorsebatterystaple123(!__+@**(A\'"`;DROP TABLE packages;';
 async function authenticate(req: Request, res: Response) {
   // const request = req.body;
   // if (request.User === undefined || request.Secret === undefined) {

@@ -52,7 +52,7 @@ app.delete('/package/byName/:name', deletePkgByName);
 app.post('/package/byRegex', getPackageByRegex);
 
 
-app.get('/', async (req, res) => {
+app.get('/', async (req : Request, res : Response) => {
   res.sendFile('index.html');
 })
 app.listen(2000, () => {
