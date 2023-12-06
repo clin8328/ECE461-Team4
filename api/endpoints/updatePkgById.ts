@@ -6,15 +6,16 @@ import path from 'path';
 import dotenv from 'dotenv';
 const dotenvPath = path.join(__dirname, '..','..', '.env');
 dotenv.config({ path: dotenvPath });
+const defaultUsername = 'ece30861defaultadminuser';
 async function updatePkgById(req: Request, res: Response) {
-    const token = req.headers['x-authorization'] as string;
-    let decoded = null;
-    try {
-        decoded = await verifyToken(token);
-    } catch (err) {
-        console.error(err);
-        return res.sendStatus(400);
-    }
+    // const token = req.headers['x-authorization'] as string;
+    // let decoded = null;
+    // try {
+    //     decoded = await verifyToken(token);
+    // } catch (err) {
+    //     console.error(err);
+    //     return res.sendStatus(400);
+    // }
     if (!req.body.metadata || !req.body.data) {
         console.error('Invalid request body metadata or data');
         return res.sendStatus(400);
@@ -31,7 +32,7 @@ async function updatePkgById(req: Request, res: Response) {
         console.error('Invalid request body in the data no content and url');
         return res.sendStatus(400)
     }
-    const username = decoded[1].username;
+    const username = defaultUsername;
     const metadata = req.body.metadata
     const data = req.body.data
     const jsprogram = data.JSProgram || null

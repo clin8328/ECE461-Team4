@@ -1,1 +1,1 @@
-https://github.com/axios/axios.git
+https://github.com/debug-js/debug.git
