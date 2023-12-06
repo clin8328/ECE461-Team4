@@ -4,7 +4,6 @@ import { query } from "../database";
 import { verifyToken } from "../common";
 const tokenKey: string = "461_secret_key";
 const defaultUsername = 'ece30861defaultadminuser';
-
 export async function ResetRegistry(req: Request, res: Response) {
   if (!req.headers['x-authorization']) {
     return res.sendStatus(400);
