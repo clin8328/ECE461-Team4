@@ -18,6 +18,9 @@ jobs:
       uses: actions/setup-node@v3
       with:
           node-version: 16
+    - name: PWD
+      run: |
+        pwd
     - name: Install dependencies
       run: |
         npm install
