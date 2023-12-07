@@ -13,10 +13,10 @@ async function deletePkgById(req: Request, res: Response) {
     // } catch (err) {
     //     return res.sendStatus(400);
     // }
-    const pkg = await query("SELECT * FROM packages WHERE package_id = $1;", [id]);
-    if (pkg.rowCount == 0 ) return res.sendStatus(404);
     //delete pkg
     try {
+        const pkg = await query("SELECT * FROM packages WHERE package_id = $1;", [id]);
+        if (pkg.rowCount == 0 ) return res.sendStatus(404);
         await query("DELETE FROM packagehistory WHERE package_id = $1;", [id]);
         await query("DELETE FROM packages WHERE package_id = $1;", [id]);
         return res.sendStatus(200);
