@@ -80,6 +80,7 @@ export async function evaluate_URL(url: string) {
     return metrics;
 
   } catch (error) {
+    console.log("Error in evaluate_URL");
     console.error(error);
     return {
       "URL" : url,

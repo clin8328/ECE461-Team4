@@ -105,7 +105,9 @@ export class Metric {
               return cleanedURL;
             } 
             else{
+              console.log("Fail response:", response);
               this.logger.debug('get_api_url' + cleanedURL + ' is not a valid github API');
+              console.log('get_api_url' + cleanedURL + ' is not a valid github API');
 
               return "";
             }
