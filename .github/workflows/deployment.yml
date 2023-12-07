@@ -29,14 +29,14 @@ jobs:
 
     - name: Get the Latest Code and Retrieve Secret from AWS Secrets Manager on EC2
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "rm -rf ECE461_Phase2 && git clone https://github.com/TenGui/ECE461_Phase2.git && cd ./ECE461_Phase2 && bash getSecret.sh"
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@3.137.163.91 "rm -rf ECE461_Phase2 && git clone https://github.com/TenGui/ECE461_Phase2.git && cd ./ECE461_Phase2 && bash getSecret.sh"
 # Add your commands for deploying or running tasks on the EC2 instance here
         
     - name: Install Dependencies and Compile Server file
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "cd ECE461_Phase2 && bash build.sh"
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@3.137.163.91 "cd ECE461_Phase2 && bash build.sh"
         
     - name: Deploy the Code using pm2
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.227.26.233 "cd ECE461_Phase2 && bash deploy.sh"
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@3.137.163.91 "cd ECE461_Phase2 && bash deploy.sh"
 
