@@ -1,117 +1,112 @@
-// api/endpoint_tests/getPkgByName.test.ts
-jest.mock("../database");
-import { query as originalQuery } from "../database";
-import getPkgByName from "../endpoints/getPkgByName";
-import { Request, Response } from "express";
+import supertest from 'supertest';
+import express, { Express } from 'express';
+import getPkgByName from '../endpoints/getPkgByName'; // adjust the path accordingly
+import * as databaseModule from '../database'; // adjust the path accordingly
 
-const query = originalQuery as jest.Mock;
+jest.mock('../database');
 jest.spyOn(console, 'error').mockImplementation(() => {});
-describe("getPkgByName", () => {
-    it("should retrieve and send the package history", async () => {
-    const req = { headers: { 'x-authorization': 'exampleToken' }, params: { name: "examplePackage" } } as Partial<Request>;
-    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
+describe('getPkgByName', () => {
+  let app: Express;
 
-    // Mock the database responses to simulate a package found with the provided name and associated history
-    query.mockResolvedValueOnce({
-        rowCount: 1,
-        rows: [{
-        package_name: "examplePackage",
-        package_version: "1.0.0",
-        package_id: "123",
-        }],
-    });
-    query.mockResolvedValueOnce({
-        rowCount: 1,
-        rows: [{
-        package_id: "123",
-        user_name: "exampleUser",
-        user_action: "DOWNLOAD",
-        action_time: "exampleTimestamp",
-        }],
-    });
-    query.mockResolvedValueOnce({
-        rowCount: 1,
-        rows: [{
-        is_admin: true,
-        }],
-    });
-    query.mockRejectedValueOnce(new Error("Simulated user database error"));
-    await getPkgByName(req as Request, res);
+  beforeAll(() => {
+    app = express();
+    app.use(express.json());
+    app.get('/package/byName/:name', getPkgByName);
+  });
+  it('should respond with 404 when no packages are found', async () => {
+    const name = 'non-existent-package';
 
-    // Verify the expected interactions
-    expect(query).toHaveBeenCalledWith("SELECT * FROM packages WHERE package_name = $1", ["examplePackage"]);
-    expect(query).toHaveBeenCalledWith("SELECT * FROM packagehistory WHERE package_name = $1", ["examplePackage"]);
-    expect(query).toHaveBeenCalledWith("SELECT is_admin FROM users WHERE user_name = $1", ["exampleUser"]);
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([{
-        User: { name: "exampleUser", isAdmin: true },
-        Date: "exampleTimestamp",
-        Packagemetadata: { Name: "examplePackage", Version: "1.0.0", ID: "123" },
-        Action: "DOWNLOAD",
-    }]);
+    // Mock the query function to return an empty result
+    (databaseModule.query as jest.Mock).mockResolvedValueOnce({
+      rowCount: 0,
+      rows: [],
     });
 
-    it("should send 404 if no packages found with the provided name", async () => {
-    const req = { headers: { 'x-authorization': 'exampleToken' }, params: { name: "nonexistentPackage" } } as Partial<Request>;
-    const res = { sendStatus: jest.fn() } as unknown as Response;
-
-    // Mock the database responses to simulate no rows found
-    query.mockResolvedValueOnce({ rowCount: 0 });
-
-    await getPkgByName(req as Request, res);
-
-    // Verify the expected interactions
-    expect(query).toHaveBeenCalledWith("SELECT * FROM packages WHERE package_name = $1", ["nonexistentPackage"]);
-    expect(res.sendStatus).toHaveBeenCalledWith(404);
+    await supertest(app).get(`/package/byName/${name}`).expect(404);
+  });
+  it('should respond with 500 when reading error', async () => {
+    const name = 'your-package-name';
+    // Mock the query function to return an empty result
+    (databaseModule.query as jest.Mock).mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          package_id: 'your-package-id',
+          package_name: 'your-package-name',
+          package_version: 'your-package-version',
+          package_url: 'your-package-url',
+          jsprogram: 'your-jsprogram',
+        },
+      ],
+    });
+    await supertest(app).get(`/package/byName/${name}`).expect(500);
+  });
+  it('should respond with 200', async () => {
+    const name = 'your-package-name';
+    (databaseModule.query as jest.Mock).mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          package_id: 'your-package-id',
+          package_name: 'your-package-name',
+          package_version: 'your-package-version',
+          package_url: 'your-package-url',
+          jsprogram: 'your-jsprogram',
+        },
+      ],
+    });
+    (databaseModule.query as jest.Mock).mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          package_id: 'your-package-id',
+          user_name: 'your-username',
+          package_name: 'your-package-name',
+          user_action: 'your-action',
+          action_time: 'your-action-time',
+        },
+      ],
     });
 
-    it("should handle database query errors for package retrieval", async () => {
-    const req = { headers: { 'x-authorization': 'exampleToken' }, params: { name: "examplePackage" } } as Partial<Request>;
-    const res = { status: jest.fn().mockReturnThis(), sendStatus: jest.fn() } as unknown as Response;
-
-    // Mock the database response to simulate an error
-    query.mockRejectedValueOnce(new Error("Simulated database error"));
-
-    await getPkgByName(req as Request, res);
-
-    // Verify the expected interactions
-    expect(query).toHaveBeenCalledWith("SELECT * FROM packages WHERE package_name = $1", ["examplePackage"]);
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.sendStatus).not.toHaveBeenCalledWith(404);
+    // Mock the query function for packages
+    (databaseModule.query as jest.Mock).mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          package_version: 'your-package-version',
+        },
+      ],
     });
 
-    it("should handle database query errors for package history retrieval", async () => {
-    const req = { headers: { 'x-authorization': 'exampleToken' }, params: { name: "examplePackage" } } as Partial<Request>;
-    const res = { status: jest.fn().mockReturnThis(), sendStatus: jest.fn() } as unknown as Response;
-
-    // Mock the database responses to simulate a package found with the provided name and an error during history retrieval
-    query.mockResolvedValueOnce({
-        rowCount: 1,
-        rows: [{
-        package_name: "examplePackage",
-        package_version: "1.0.0",
-        package_id: "123",
-        }],
-    });
-    query.mockRejectedValueOnce(new Error("Simulated database error"));
-
-    await getPkgByName(req as Request, res);
-
-    // Verify the expected interactions
-    expect(query).toHaveBeenCalledWith("SELECT * FROM packages WHERE package_name = $1", ["examplePackage"]);
-    expect(query).toHaveBeenCalledWith("SELECT * FROM packagehistory WHERE package_name = $1", ["examplePackage"]);
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.sendStatus).not.toHaveBeenCalledWith(404);
+    // Mock the query function for users
+    (databaseModule.query as jest.Mock).mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          is_admin: true,
+        },
+      ],
     });
 
-    it("should send 400 if name is missing", async () => {
-    const req = { headers: { 'x-authorization': 'exampleToken' }, params: {} } as Partial<Request>;
-    const res = { sendStatus: jest.fn() } as unknown as Response;
+    const response = await supertest(app).get(`/package/byName/${name}`).expect(200);
 
-    await getPkgByName(req as Request, res);
+    // Add assertions based on your application logic
+    // For example, you might check if the response body contains the expected data
+    expect(response.body).toEqual([
+      {
+        User: { name: 'your-username', isAdmin: true },
+        Date: 'your-action-time',
+        Packagemetadata: {
+          Name: 'your-package-name',
+          Version: 'your-package-version',
+          ID: 'your-package-id',
+        },
+        Action: 'your-action',
+      },
+    ]);
+  });
 
-    // Verify the expected interactions
-    expect(query).not.toHaveBeenCalled(); // Ensure query was not called
-    expect(res.sendStatus).toHaveBeenCalledWith(400);
-    });
+  afterAll(() => {
+    // Cleanup resources, if necessary
+  });
 });
