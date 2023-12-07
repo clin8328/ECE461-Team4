@@ -20,7 +20,7 @@ node_modules
 package-lock.json
 *.7z
 *.dmg
-*.gzc
+*.gz
 *.iso
 *.jar
 *.rar
