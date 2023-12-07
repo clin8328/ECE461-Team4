@@ -21,7 +21,7 @@ export async function ResetRegistry(req: Request, res: Response) {
   //       return res.sendStatus(401);
   //     } else {
   try {
-    await query("DELETE FROM users WHERE user_name != $1;", [defaultUsername]);
+        await query("DELETE FROM users WHERE user_name != $1;", [defaultUsername]);
         await query("DELETE FROM packagehistory;")
         await query("DELETE FROM packages;");
         return res.sendStatus(200);

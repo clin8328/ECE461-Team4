@@ -20,7 +20,10 @@ jobs:
           node-version: 16
     - name: Install dependencies
       run: |
-        npm install
+        npm install && cd /home/runner/work/ECE461_Phase2/ECE461_Phase2/api && npm install
     - name: Linting
       run: |
         npm run lint
+    - name: Testing
+      run: |
+        npm test
