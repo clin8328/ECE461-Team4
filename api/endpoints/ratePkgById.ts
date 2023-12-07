@@ -34,7 +34,6 @@ async function ratePkgById(req: Request, res: Response) {
         const hisInsert = await query('INSERT INTO packageHistory (package_name, user_name, user_action, package_id) VALUES($1, $2, $3, $4)', [pkg.rows[0].package_name, username, 'RATE', id]);
         return res.status(200).json(trimmedResult);
     } catch (error) {
-
         console.error("Error rating package by ID: ", error)
         return res.sendStatus(500)
     }
