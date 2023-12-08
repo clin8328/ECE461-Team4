@@ -49,9 +49,7 @@
         <div class="home-hero1">
           <div class="home-container1">
             <h1 class="home-hero-heading heading1">Package Registry</h1>
-            <span class="home-hero-sub-heading">
-              Efficiently manage and organize your packages
-            </span>
+            <span class="home-hero-sub-heading">Efficiently manage and organize your packages</span>
             <div class="home-btn-group"></div>
           </div>
         </div>
@@ -60,9 +58,9 @@
         <div class="home-features-container">
           <div class="home-features1">
             <div class="home-upload-container hidden">
-              <h1 class="home-text">Upload By:</h1>
+              <h1 class="home-text">Upload By</h1>
               <div class="home-file-container">
-                <label for="fileInput" class="home-text1">File:</label>
+                <label for="fileInput" class="home-text5">File:</label>
                 <br><br>
                 <input type="file" id="fileInput" class="home-file-label" accept=".zip"/>
                     <span id="selectedFileName"></span>
@@ -76,9 +74,8 @@
                   class="home-textinput input"
                 />
               </div>
-              <div class="home-upload-but-container">
-                <button type="button" class="home-button1 button" id="uploadButton">UPLOAD</button>
-              </div>
+              <br><br>
+              <button type="button" class="home-button1 button" id="uploadButton">UPLOAD</button>
             </div>
           </div>
         </div>
@@ -86,24 +83,79 @@
       <div class="home-search">
         <div class="home-search-pack-container">
           <div class="home-search1">
-            <div class="home-search-container hidden">
-              <label for="search-type" class="home-text1">Search By:</label>
+            <div class="home-search-container">
+              <h1 class="home-text">Search By</h1>
+              <button type="button" class="button" id="searchAllButton">Search All Packages</button>
               <select name="search-type" id="search-type">
-                <option value="id">ID</option>
-                <option value="name">Name</option>
-                <option value="regex">Regex</option>
-              <input
-                type="text"
-                placeholder="Search for package"
-                class="home-textinput1 input"
-              />
+                <option value="id">By ID</option>
+                <option value="name"> By Name</option>
+                <option value="regex">By Regex</option>
+              </select>
+                <div class="search-container">
+                  <input type="text" placeholder="Search for package" class="home-textinput1" id="searchInput"/>
+                  <button type="button" class="button" id="search-button">Retrieve Package</button>
+                </div>
+              <div id="resultContainer">
+
+              </div>
+              <br>
             </div>
           </div>
         </div>
       </div>
-      <div class="home-footer"><footer class="home-footer1"></footer></div>
+      <div class="home-search">
+        <div class="home-search-pack-container">
+          <div class="home-search1">
+            <div class="home-search-container">
+              <h1 class="home-text">Rate Package</h1>
+              <input type="text" placeholder="Enter package ID" class="home-textinput1" id="rateInput"/>
+              <button type="button" class="button" id="rate-button">Rate Package</button>
+              <div id="rate-container">
+
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="home-search">
+        <div class="home-search-pack-container">
+          <div class="home-search1">
+            <div class="home-upload-container">
+              <h1 class="home-text">Update Package</h1>
+              <em>Name</em>
+              <input type="text" id="updateName" placeholder="Package Name" class="home-textinput input"/>
+              <em>Version</em>
+              <input type="text" id="updateVersion" placeholder="Package Version" class="home-textinput input"/>
+              <em>ID</em>
+              <input type="text" id="updateID" placeholder="Package ID" class="home-textinput input"/>
+              <br>
+              <div class="home-file-container">
+                <label for="updateFileInput" class="home-text5">Update with File:</label>
+                <br><br>
+                <input type="file" id="updateFileInput" class="home-file-label" accept=".zip"/>
+                    <span id="updateSelectedFileName"></span>
+              </div>
+              <div class="home-url-container">
+                <span class="home-text5">Update with URL:</span>
+                <input
+                  type="text"
+                  id="updateUrlInput"
+                  placeholder="URL"
+                  class="home-textinput input"
+                />
+              </div>
+              <br><br>
+              <button type="button" class="home-button1 button" id="updateButton">UPDATE</button>
+            </div>
+          </div> 
+        </div>
+      </div>
     </div>
 </div>
-<script src="/app.js"></script>
+<div class="home-footer"><footer class="home-footer1">
+  <button id="resetButton">Reset Registry</button></footer>
+</div>
+<script src="/app.js" defer></script>
 </body>
 </html>
