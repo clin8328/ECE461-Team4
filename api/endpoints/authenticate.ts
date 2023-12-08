@@ -25,8 +25,7 @@ async function authenticate(req: Request, res: Response) {
     }
   }
   const user_credential = {username: username, password: password};
-  let  token = jwt.sign(user_credential, tokenKey, { expiresIn: '10h' });
-  token = 'bearer ' + token
+  const token = jwt.sign(user_credential, tokenKey, { expiresIn: '10h' });
   await query("UPDATE users SET token = $1 WHERE user_name = $2", [token, username]);
   const json_token = JSON.stringify(token)
   return res.status(200).send(json_token);
