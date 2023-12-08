@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (username && password) {
             try {
-                const response = await fetch('http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/authenticate', {
+                const response = await fetch('http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/authenticate', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const response = await fetch('http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/reset', {
+            const response = await fetch('http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/reset', {
                 method: 'DELETE',
                 headers: {
                     'X-Authorization': authToken,
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const response = await fetch('http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/package', {
+            const response = await fetch('http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/package', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Search by Regex
     async function searchByRegex(regex: string) {
         try {
-            const response = await fetch('http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/package/byRegex', {
+            const response = await fetch('http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/package/byRegex', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Search by ID
     async function searchById(id: string) {
         try {
-            const response = await fetch(`http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/package/${id}`, {
+            const response = await fetch(`http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/package/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const packageId = rateInput.value;
 
         try {
-            const response = await fetch(`http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/package/${packageId}/rate`, {
+            const response = await fetch(`http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/package/${packageId}/rate`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const response = await fetch(`http://ec2-18-227-26-233.us-east-2.compute.amazonaws.com/package/${metadata.ID}`, {
+            const response = await fetch(`http://ec2-3-137-163-91.us-east-2.compute.amazonaws.com/package/${metadata.ID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
