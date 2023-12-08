@@ -17,18 +17,18 @@ const rootPath = path.join(__dirname, '..');
 const defaultUsername = 'ece30861defaultadminuser';
 async function uploadPackage(req: Request, res: Response) {
   const request = req.body;
-  //const token = req.headers['x-authorization'] as string;
+  const token = req.headers['x-authorization'] as string;
   const enable_debloat = req.query['debloat-enabled'] === 'true' || false;
   const jsprogram = req.body.JSProgram || null;
   //if the token is not valid, return 400
-  // let decoded = null;
-  // try {
-  //   decoded = await verifyToken(token);
-  // } catch (err) {
-  //   console.error(err);
-  //   return res.sendStatus(400);
-  // }
-  // if (!decoded) return res.sendStatus(400)
+  let decoded = null;
+  try {
+     decoded = await verifyToken(token);
+   } catch (err) {
+     console.error(err);
+     return res.sendStatus(400);
+   }
+  if (!decoded) return res.sendStatus(400)
   const username = defaultUsername;
   //check the request body, content and url
   if ((request.Content && request.URL) || (!request.Content && !request.URL)) return res.sendStatus(400);
