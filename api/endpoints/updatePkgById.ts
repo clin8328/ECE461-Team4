@@ -50,16 +50,19 @@ async function updatePkgById(req: Request, res: Response) {
         return res.sendStatus(200);
     } else {
         if (data.URL.includes('github.com')) {
-            const endpoints = parseUrl(data.URL)
+            const ownerRepo = data.URL.split('github.com/')[1].split('.git')[0];
             let response = null
             try {
-                response = await axios.get(endpoints[0], { responseType: 'arraybuffer' })
-                if (response.status !== 200) {
-                response = await axios.get(endpoints[1], { responseType: 'arraybuffer' })
+              const repoInfo = await axios.get(`https://api.github.com/repos/${ownerRepo}`, {
+                headers:{
+                  Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
                 }
-            } catch (err) {
-                console.error(err);
-                return res.sendStatus(400);
+              })
+              const defaultBranch = repoInfo.data.default_branch;
+              response = await axios.get('https://github.com' + `/${ownerRepo}` + `/archive/${defaultBranch}.zip`, { responseType: 'arraybuffer' })
+            } catch (err){
+              console.error(err);
+              return res.sendStatus(400);
             }
             if (!response.data) return res.sendStatus(400);
             const bytea = Buffer.from(response.data, 'binary')
