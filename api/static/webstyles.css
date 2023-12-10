@@ -6,7 +6,7 @@
     --dl-space-space-fourunits: 64px;
     --dl-space-space-sixunits: 96px;
   
-    --dl-color-primary1-blue80: #5da2fd;
+    --dl-color-primary1-blue80: #93bff8;
     --dl-color-primary1-blue100: #0041a1;
     --dl-color-secondary-grey400: #e4e4e4;
     --dl-color-gray-white: #fff;
@@ -246,14 +246,14 @@
     justify-content: flex-start;
   }
   .home-hero-heading {
-    color: var(--dl-color-gray-white);
+    color: var(--dl-color-gray-black);
     max-width: 800px;
     text-align: center;
     font-family: "Raleway";
     line-height: 1.6;
   }
   .home-hero-sub-heading {
-    color: var(--dl-color-gray-white);
+    color: var(--dl-color-gray-black);
     font-size: 18px;
     text-align: center;
     line-height: 1.6;
