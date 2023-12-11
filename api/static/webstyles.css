@@ -76,7 +76,6 @@
   }
   .search-container {
     display: flex;
-    gap: 8px; /* Adjust the gap as needed */
     align-items: center;
   }
   .home-login {
@@ -422,7 +421,8 @@
     width: auto;
   }
   .home-textinput1 {
-    width: auto;
+    flex: 1;
+    margin-right: 8px;
     display: inline-block;
   }
   .home-footer {
@@ -457,5 +457,10 @@
 
   .resultItem {
       margin-bottom: 10px;
+  }
+  .result-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
   }
   
