@@ -3,20 +3,20 @@ import { query } from "../database";
 import { verifyToken} from "../common";
 const defaultUsername = 'ece30861defaultadminuser';
 async function packageById(req: Request, res: Response) {
-    // const token = req.headers['x-authorization'] as string;
+    const token = req.headers['x-authorization'] as string;
     const packageId = req.params.id;
     if (!packageId) return res.sendStatus(400);
-    // let decoded = null
+    let decoded = null
     // // Verify the JWT.
-    // try {
-    //     decoded = await verifyToken(token);
-    //     if (!decoded) {
-    //         return res.sendStatus(400);
-    //     }
-    // } catch (err) {
-    //     console.log(err);
-    //     return res.sendStatus(400)
-    // }
+    try {
+        decoded = await verifyToken(token);
+        if (!decoded) {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400)
+    }
     try {
       const result = await query("SELECT * FROM packages WHERE package_id = $1", [packageId]);
       if (result.rowCount == 0) {

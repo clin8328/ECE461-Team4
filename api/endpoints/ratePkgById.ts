@@ -7,17 +7,16 @@ import fs from "fs";
 const defaultUsername = 'ece30861defaultadminuser';
 
 async function ratePkgById(req: Request, res: Response) {
-    // const token = req.headers['x-authorization'] as string;
+    const token = req.headers['x-authorization'] as string;
     // if (!token) return res.sendStatus(400)
     const id = req.params.id;
     if (!id) return res.sendStatus(400);
-    // let decoded = null
-    // try {
-    //     decoded = await verifyToken(token);
-    // } catch (err) {
-    //     return res.sendStatus(400);
-    // }
-    
+    let decoded = null
+    try {
+        decoded = await verifyToken(token);
+    } catch (err) {
+        return res.sendStatus(400);
+    }
     const pkg = await query("SELECT * FROM packages WHERE package_id = $1;", [id]);
     if (pkg.rowCount == 0 ) return res.sendStatus(404);
     let pkg_url = pkg.rows[0].package_url;

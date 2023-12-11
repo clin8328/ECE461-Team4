@@ -4,17 +4,17 @@ import jwt from "jsonwebtoken";
 import { verifyToken} from "../common";
 const safe = require('safe-regex');
 async function getPackageByRegEx(req: Request, res: Response) {
-    // const token = req.headers['x-authorization'] as string;
-    // let decoded = null
-    // try {
-    //     decoded = await verifyToken(token);
-    //     if (!decoded) {
-    //         return res.sendStatus(400);
-    //     }
-    // } catch (err) {
-    //     console.log(err);
-    //     return res.sendStatus(400)
-    // }
+    const token = req.headers['x-authorization'] as string;
+    let decoded = null
+    try {
+        decoded = await verifyToken(token);
+        if (!decoded) {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400)
+    }
     const regex = req.body.RegEx;
     const isSafe = safe(regex);
     if(!isSafe) {

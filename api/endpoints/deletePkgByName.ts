@@ -3,16 +3,15 @@ import { query } from "../database";
 import { verifyToken } from "../common";
 
 async function deletePkgByName(req: Request, res: Response) {
-    // const token = req.headers['x-authorization'] as string;
-    // if (!token) return res.sendStatus(400)
+    const token = req.headers['x-authorization'] as string;
     const name = req.params.name;
     if (!name) return res.sendStatus(400);
-    // let decoded = null
-    // try {
-    //     decoded = await verifyToken(token);
-    // } catch (err) {
-    //     return res.sendStatus(400);
-    // }
+    let decoded = null
+    try {
+        decoded = await verifyToken(token);
+    } catch (err) {
+        return res.sendStatus(400);
+    }
     //delete pkg
     try {
         const pkg = await query("SELECT * FROM packages WHERE package_name = $1;", [name]);

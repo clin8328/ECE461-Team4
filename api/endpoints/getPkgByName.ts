@@ -10,13 +10,13 @@ async function getPkgByName(req: Request, res: Response) {
       console.error("Error fetching packages by name: name is empty");
       return res.sendStatus(400)
     }
-    // let encoded = null;
-    // try {
-    //     encoded = await verifyToken(token);
-    // } catch (error) {
-    //   console.error("Error verifying token: ", error);
-    //   return res.status(400).send("Unauthorized");
-    // }
+    let encoded = null;
+    try {
+        encoded = await verifyToken(token);
+    } catch (error) {
+      console.error("Error verifying token: ", error);
+      return res.status(400).send("Unauthorized");
+    }
     try {
       const result = await query("SELECT * FROM packages WHERE package_name = $1", [name]);
       if (result.rowCount === 0) {
