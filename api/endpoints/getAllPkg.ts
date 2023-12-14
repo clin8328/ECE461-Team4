@@ -71,9 +71,12 @@ async function packages(req: Request<IPackagesRequest>, res: Response) {
     const querystr = `SELECT package_id, package_version, package_name FROM packages WHERE ${strlist.join(
       " OR "
     )};`;
-    console.log("QUERYSTR: ", querystr);
-
-    return res.sendStatus(200);
+    const result = await query(
+      "SELECT package_id, package_version, package_name FROM packages LIMIT $1 OFFSET $2;",
+      [PER_PAGE, Number(offset) * PER_PAGE]
+    );
+    res.status(200).json(result.rows);
+    return;
   } catch (err) {
     console.log(err);
     return res.sendStatus(500);
